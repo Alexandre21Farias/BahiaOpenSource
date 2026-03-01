@@ -1,0 +1,29 @@
+.about-section {
+  background: var(--bahia-surface);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.stats-card {
+  padding: 3rem;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.stats-card h3 {
+  font-size: 2.5rem;
+  color: var(--bahia-accent);
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}

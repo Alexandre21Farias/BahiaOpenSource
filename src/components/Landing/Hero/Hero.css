@@ -1,0 +1,40 @@
+.hero {
+  padding: 8rem 0 6rem;
+  text-align: center;
+  background:
+    radial-gradient(
+      circle at top right,
+      var(--bahia-accent-glow),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      var(--bahia-accent-glow),
+      transparent 40%
+    );
+}
+
+.hero h1 {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--bahia-text);
+  max-width: 800px;
+  margin: 0 auto 2.5rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+}
