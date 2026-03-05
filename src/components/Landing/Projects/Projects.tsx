@@ -51,7 +51,11 @@ const Projects: React.FC = () => {
               <span className="project-tag">{p.tag}</span>
               <h3>{p.title}</h3>
               <p className="project-description">{p.description}</p>
-              <a href="#" className="project-link">
+              <a
+                href="https://discord.gg/4f5Up8sk"
+                className="project-link"
+                target="_blank"
+              >
                 Saber mais →
               </a>
             </div>
