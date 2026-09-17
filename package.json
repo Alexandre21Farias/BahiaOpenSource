@@ -23,8 +23,11 @@
     "pre-commit": "lint-staged"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
+    "lucide-react": "^1.46.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.2",
