@@ -8,7 +8,7 @@ export function AuthLayout() {
       <div className="auth-content">
         <div className="auth-header">
           <Link to="/" className="auth-logo gradient-text">
-            Open Source Bahia
+            Bahia Open Source
           </Link>
         </div>
         <div className="auth-form-container">
