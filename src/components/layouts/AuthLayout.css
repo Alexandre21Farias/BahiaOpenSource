@@ -52,7 +52,10 @@
   display: none;
   position: relative;
   overflow: hidden;
-  background: url("/bg-auth.png") center/cover no-repeat;
+  background-image: url("../../public/bg-auth.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .auth-image-panel::before {
