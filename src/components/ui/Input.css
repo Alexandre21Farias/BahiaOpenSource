@@ -1,0 +1,106 @@
+/* ============================================================
+   CAMPOS DE FORMULÁRIO
+   ============================================================ */
+.input-wrapper {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-mid);
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  display: flex;
+  color: var(--text-muted);
+  transition: color var(--duration-normal) var(--ease-out);
+}
+
+.input-field {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: rgba(9, 14, 23, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  color: var(--text-bright);
+  caret-color: var(--color-accent);
+  transition-property: border-color, box-shadow, background-color;
+  transition-duration: var(--duration-normal);
+  transition-timing-function: var(--ease-out);
+}
+
+.input-field:hover:not(:focus) {
+  border-color: var(--border-hover);
+}
+
+.input-field::placeholder {
+  color: var(--text-ghost);
+}
+
+.input-field.has-right-element {
+  padding-right: 2.75rem;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.14);
+}
+
+.input-container:focus-within .input-icon {
+  color: var(--color-primary);
+}
+
+.input-right-element {
+  position: absolute;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--duration-normal) var(--ease-out);
+}
+
+.password-toggle-btn:hover {
+  color: var(--color-primary);
+}
+
+.input-error .input-field {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(255, 100, 124, 0.12);
+}
+
+.error-text {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--color-danger);
+}

@@ -16,7 +16,7 @@ import { supabase } from "../../lib/supabase";
 
 export function Login() {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, authError } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
@@ -27,6 +27,12 @@ export function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+
+  useEffect(() => {
+    if (authError) {
+      setError(translateError(authError));
+    }
+  }, [authError]);
 
   // Redireciona se o usuário já estiver autenticado
   useEffect(() => {
@@ -201,7 +207,7 @@ export function Login() {
         </Button>
       </form>
 
-      {/* Opções de Login Social (GitHub & Google) */}
+      {/* Opções de Login Social (GitHub & Discord) */}
       <SocialAuthButtons
         onError={(msg) => setError(msg ? translateError(msg) : null)}
         disabled={loading}
