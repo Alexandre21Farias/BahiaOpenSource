@@ -10,7 +10,7 @@ import {
   LogOut,
   User,
   Menu,
-  ChevronDown
+  ChevronDown,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
@@ -46,7 +46,10 @@ export function MainLayout() {
   // Close dropdown on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     }
@@ -60,7 +63,8 @@ export function MainLayout() {
     navigate("/login");
   };
 
-  const displayName = profileUsername || (user?.email ? user.email.split("@")[0] : "AlexDev21");
+  const displayName =
+    profileUsername || (user?.email ? user.email.split("@")[0] : "AlexDev21");
 
   return (
     <div className="app-container">
@@ -85,18 +89,23 @@ export function MainLayout() {
         </div>
 
         <div className="navbar-right" ref={dropdownRef}>
-
           {user ? (
             <button
               className="user-menu-trigger"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <User size={18} />
-              <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{displayName}</span>
+              <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                {displayName}
+              </span>
               <Menu size={18} style={{ marginLeft: "0.2rem" }} />
             </button>
           ) : (
-            <Link to="/login" className="nav-forum-btn" style={{ fontSize: "0.85rem", padding: "0.4rem 0.9rem" }}>
+            <Link
+              to="/login"
+              className="nav-forum-btn"
+              style={{ fontSize: "0.85rem", padding: "0.4rem 0.9rem" }}
+            >
               Entrar
             </Link>
           )}
@@ -119,7 +128,7 @@ export function MainLayout() {
               </Link>
 
               <Link
-                to="/profile"
+                to={profileUsername ? `/${profileUsername}` : "/profile"}
                 className="dropdown-item"
                 onClick={() => setDropdownOpen(false)}
               >
@@ -128,7 +137,11 @@ export function MainLayout() {
               </Link>
 
               <Link
-                to="/profile"
+                to={
+                  profileUsername
+                    ? `/${profileUsername}?edit=true`
+                    : "/profile?edit=true"
+                }
                 className="dropdown-item"
                 onClick={() => setDropdownOpen(false)}
               >
@@ -147,10 +160,7 @@ export function MainLayout() {
                 <span>Resgatar código</span>
               </button>
 
-              <button
-                className="dropdown-item logout"
-                onClick={handleSignOut}
-              >
+              <button className="dropdown-item logout" onClick={handleSignOut}>
                 <LogOut size={16} />
                 <span>Deslogar</span>
               </button>

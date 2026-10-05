@@ -18,6 +18,8 @@ function App(): React.JSX.Element {
             <Route path="/" element={<Home />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:username" element={<Profile />} />
+            <Route path="/:username" element={<Profile />} />
           </Route>
 
           <Route element={<AuthLayout />}>
