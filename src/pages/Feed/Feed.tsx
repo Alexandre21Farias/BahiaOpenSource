@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { 
-  Plus, 
-  MessageSquare, 
-  Send, 
-  Trash2, 
-  ChevronDown, 
-  ChevronUp, 
+import { useLocation, Link } from "react-router-dom";
+import {
+  Plus,
+  MessageSquare,
+  Send,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
   Clock,
-  Sparkles
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import { 
-  fetchPublications, 
-  createPublication, 
+import {
+  fetchPublications,
+  createPublication,
   deletePublication,
   fetchComments,
   addComment,
   deleteComment,
-  Publication, 
-  PublicationComment 
+  Publication,
+  PublicationComment,
 } from "../../services/publications";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -41,10 +41,18 @@ export function Feed() {
 
   // Expanded post for viewing details/comments
   const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
-  const [commentsMap, setCommentsMap] = useState<{ [key: string]: PublicationComment[] }>({});
-  const [commentInputs, setCommentInputs] = useState<{ [key: string]: string }>({});
-  const [loadingComments, setLoadingComments] = useState<{ [key: string]: boolean }>({});
-  const [submittingComment, setSubmittingComment] = useState<{ [key: string]: boolean }>({});
+  const [commentsMap, setCommentsMap] = useState<{
+    [key: string]: PublicationComment[];
+  }>({});
+  const [commentInputs, setCommentInputs] = useState<{ [key: string]: string }>(
+    {},
+  );
+  const [loadingComments, setLoadingComments] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [submittingComment, setSubmittingComment] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   useEffect(() => {
     loadPublications();
@@ -153,8 +161,8 @@ export function Feed() {
         prev.map((pub) =>
           pub.id === publicationId
             ? { ...pub, comments_count: (pub.comments_count || 0) + 1 }
-            : pub
-        )
+            : pub,
+        ),
       );
 
       setCommentInputs((prev) => ({ ...prev, [publicationId]: "" }));
@@ -166,20 +174,28 @@ export function Feed() {
     }
   };
 
-  const handleDeleteComment = async (publicationId: string, commentId: string) => {
+  const handleDeleteComment = async (
+    publicationId: string,
+    commentId: string,
+  ) => {
     try {
       await deleteComment(commentId);
       setCommentsMap((prev) => ({
         ...prev,
-        [publicationId]: (prev[publicationId] || []).filter((c) => c.id !== commentId),
+        [publicationId]: (prev[publicationId] || []).filter(
+          (c) => c.id !== commentId,
+        ),
       }));
 
       setPublications((prev) =>
         prev.map((pub) =>
           pub.id === publicationId
-            ? { ...pub, comments_count: Math.max(0, (pub.comments_count || 1) - 1) }
-            : pub
-        )
+            ? {
+                ...pub,
+                comments_count: Math.max(0, (pub.comments_count || 1) - 1),
+              }
+            : pub,
+        ),
       );
     } catch (err) {
       console.error("Erro ao excluir comentário:", err);
@@ -196,8 +212,9 @@ export function Feed() {
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
     if (diffInMinutes < 60) return `ativo há ${diffInMinutes || 1} min`;
-    if (diffInHours < 24) return `ativo há ${diffInHours} ${diffInHours === 1 ? 'hora' : 'horas'}`;
-    return `ativo há ${diffInDays} ${diffInDays === 1 ? 'dia' : 'dias'}`;
+    if (diffInHours < 24)
+      return `ativo há ${diffInHours} ${diffInHours === 1 ? "hora" : "horas"}`;
+    return `ativo há ${diffInDays} ${diffInDays === 1 ? "dia" : "dias"}`;
   };
 
   return (
@@ -206,8 +223,8 @@ export function Feed() {
       <div className="forum-header-row">
         <h1 className="forum-title-heading">Fórum</h1>
         {user && (
-          <button 
-            className="btn-create-post" 
+          <button
+            className="btn-create-post"
             onClick={() => setShowCreateForm(!showCreateForm)}
           >
             <Plus size={18} />
@@ -218,21 +235,34 @@ export function Feed() {
 
       {/* Creation Form Box */}
       {showCreateForm && (
-        <div 
+        <div
           className="glass reveal"
-          style={{ 
-            borderRadius: "var(--radius-lg)", 
-            padding: "1.5rem", 
+          style={{
+            borderRadius: "var(--radius-lg)",
+            padding: "1.5rem",
             marginBottom: "2rem",
-            border: "1px solid var(--border-glow)" 
+            border: "1px solid var(--border-glow)",
           }}
         >
-          <h2 style={{ fontSize: "1.2rem", marginTop: 0, marginBottom: "1rem", color: "var(--text-bright)" }}>
+          <h2
+            style={{
+              fontSize: "1.2rem",
+              marginTop: 0,
+              marginBottom: "1rem",
+              color: "var(--text-bright)",
+            }}
+          >
             Nova publicação no Fórum
           </h2>
 
           {errorMsg && (
-            <div style={{ color: "var(--red-star)", marginBottom: "1rem", fontSize: "0.9rem" }}>
+            <div
+              style={{
+                color: "var(--red-star)",
+                marginBottom: "1rem",
+                fontSize: "0.9rem",
+              }}
+            >
               {errorMsg}
             </div>
           )}
@@ -249,16 +279,16 @@ export function Feed() {
             </div>
 
             <div style={{ marginBottom: "1.2rem" }}>
-              <label 
-                className="input-label" 
-                style={{ 
-                  display: "block", 
-                  marginBottom: "0.5rem", 
-                  fontSize: "0.82rem", 
-                  color: "var(--text-mid)", 
-                  textTransform: "uppercase", 
+              <label
+                className="input-label"
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontSize: "0.82rem",
+                  color: "var(--text-mid)",
+                  textTransform: "uppercase",
                   letterSpacing: "0.08em",
-                  fontFamily: "var(--font-display)"
+                  fontFamily: "var(--font-display)",
                 }}
               >
                 Conteúdo
@@ -274,8 +304,19 @@ export function Feed() {
               />
             </div>
 
-            <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
-              <Button type="button" variant="secondary" onClick={() => setShowCreateForm(false)} disabled={publishing}>
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setShowCreateForm(false)}
+                disabled={publishing}
+              >
                 Cancelar
               </Button>
               <Button type="submit" isLoading={publishing}>
@@ -293,26 +334,38 @@ export function Feed() {
           <div className="spinner"></div>
         </div>
       ) : publications.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-mid)" }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "3rem",
+            color: "var(--text-mid)",
+          }}
+        >
           Nenhuma publicação encontrada no fórum ainda.
         </div>
       ) : (
         <div className="forum-list">
           {publications.map((pub, index) => {
             const isExpanded = expandedPostId === pub.id;
-            const authorName = pub.profiles?.username || pub.profiles?.full_name?.split(" ")[0] || "membro";
+            const authorName =
+              pub.profiles?.username ||
+              pub.profiles?.full_name?.split(" ")[0] ||
+              "membro";
             const coinsCount = (index + 1) * 3 + (pub.comments_count || 0) * 2;
             const commentsCount = pub.comments_count || 0;
             const relativeTime = getRelativeTimeText(pub.created_at);
             const isOwner = user && user.id === pub.user_id;
 
             return (
-              <div key={pub.id} style={{ display: "flex", flexDirection: "column" }}>
+              <div
+                key={pub.id}
+                style={{ display: "flex", flexDirection: "column" }}
+              >
                 <div className="forum-item">
                   <span className="forum-number">{index + 1}.</span>
                   <div className="forum-item-content">
-                    <span 
-                      className="forum-item-title" 
+                    <span
+                      className="forum-item-title"
                       onClick={() => togglePostDetails(pub.id)}
                     >
                       {pub.title}
@@ -322,9 +375,25 @@ export function Feed() {
                     <div className="forum-item-meta">
                       <span>{coinsCount} coins</span>
                       <span className="forum-meta-dot">·</span>
-                      <span>{commentsCount} {commentsCount === 1 ? 'comentário' : 'comentários'}</span>
+                      <span>
+                        {commentsCount}{" "}
+                        {commentsCount === 1 ? "comentário" : "comentários"}
+                      </span>
                       <span className="forum-meta-dot">·</span>
-                      <span style={{ color: "var(--text-bright)", fontWeight: 500 }}>{authorName}</span>
+                      <Link
+                        to={
+                          pub.profiles?.username
+                            ? `/${pub.profiles.username}`
+                            : "#"
+                        }
+                        style={{
+                          color: "var(--supernova-cyan)",
+                          fontWeight: 500,
+                          textDecoration: "none",
+                        }}
+                      >
+                        {authorName}
+                      </Link>
                       <span className="forum-meta-dot">·</span>
                       <span>{relativeTime}</span>
 
@@ -339,7 +408,7 @@ export function Feed() {
                               color: "var(--red-star)",
                               cursor: "pointer",
                               fontSize: "0.8rem",
-                              padding: 0
+                              padding: 0,
                             }}
                             title="Deletar postagem"
                           >
@@ -353,61 +422,138 @@ export function Feed() {
 
                 {/* Expanded Details & Comments */}
                 {isExpanded && (
-                  <div 
+                  <div
                     className="glass"
-                    style={{ 
-                      marginLeft: "2.4rem", 
-                      marginBottom: "1rem", 
-                      padding: "1.2rem", 
+                    style={{
+                      marginLeft: "2.4rem",
+                      marginBottom: "1rem",
+                      padding: "1.2rem",
                       borderRadius: "8px",
-                      border: "1px solid var(--border-glow)" 
+                      border: "1px solid var(--border-glow)",
                     }}
                   >
-                    <p style={{ color: "var(--text-bright)", lineHeight: "1.6", whiteSpace: "pre-wrap", marginBottom: "1.2rem", fontSize: "0.95rem" }}>
+                    <p
+                      style={{
+                        color: "var(--text-bright)",
+                        lineHeight: "1.6",
+                        whiteSpace: "pre-wrap",
+                        marginBottom: "1.2rem",
+                        fontSize: "0.95rem",
+                      }}
+                    >
                       {pub.content}
                     </p>
 
                     {/* Comments section */}
-                    <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "1rem" }}>
-                      <h4 style={{ fontSize: "0.9rem", color: "var(--text-mid)", marginBottom: "0.8rem", textTransform: "uppercase", fontFamily: "var(--font-display)" }}>
+                    <div
+                      style={{
+                        borderTop: "1px solid var(--border-subtle)",
+                        paddingTop: "1rem",
+                      }}
+                    >
+                      <h4
+                        style={{
+                          fontSize: "0.9rem",
+                          color: "var(--text-mid)",
+                          marginBottom: "0.8rem",
+                          textTransform: "uppercase",
+                          fontFamily: "var(--font-display)",
+                        }}
+                      >
                         Comentários ({commentsCount})
                       </h4>
 
                       {loadingComments[pub.id] ? (
                         <div style={{ padding: "0.5rem 0" }}>
-                          <div className="spinner" style={{ width: "20px", height: "20px" }}></div>
+                          <div
+                            className="spinner"
+                            style={{ width: "20px", height: "20px" }}
+                          ></div>
                         </div>
                       ) : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginBottom: "1rem" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.6rem",
+                            marginBottom: "1rem",
+                          }}
+                        >
                           {(commentsMap[pub.id] || []).length === 0 ? (
-                            <p style={{ color: "var(--text-mid)", fontSize: "0.85rem", fontStyle: "italic" }}>
-                              Nenhum comentário ainda. Seja o primeiro a responder!
+                            <p
+                              style={{
+                                color: "var(--text-mid)",
+                                fontSize: "0.85rem",
+                                fontStyle: "italic",
+                              }}
+                            >
+                              Nenhum comentário ainda. Seja o primeiro a
+                              responder!
                             </p>
                           ) : (
                             commentsMap[pub.id].map((comm) => {
-                              const isCommOwner = user && user.id === comm.user_id;
-                              const commAuthor = comm.profiles?.username || comm.profiles?.full_name || "membro";
+                              const isCommOwner =
+                                user && user.id === comm.user_id;
+                              const commAuthor =
+                                comm.profiles?.username ||
+                                comm.profiles?.full_name ||
+                                "membro";
 
                               return (
-                                <div 
-                                  key={comm.id} 
-                                  style={{ 
-                                    background: "rgba(0, 0, 0, 0.2)", 
-                                    padding: "0.6rem 0.8rem", 
+                                <div
+                                  key={comm.id}
+                                  style={{
+                                    background: "rgba(0, 0, 0, 0.2)",
+                                    padding: "0.6rem 0.8rem",
                                     borderRadius: "6px",
-                                    border: "1px solid var(--border-subtle)"
+                                    border: "1px solid var(--border-subtle)",
                                   }}
                                 >
-                                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.3rem", fontSize: "0.82rem" }}>
-                                    <span style={{ color: "var(--cyan)", fontWeight: 600 }}>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      marginBottom: "0.3rem",
+                                      fontSize: "0.82rem",
+                                    }}
+                                  >
+                                    <Link
+                                      to={
+                                        comm.profiles?.username
+                                          ? `/${comm.profiles.username}`
+                                          : "#"
+                                      }
+                                      style={{
+                                        color: "var(--cyan)",
+                                        fontWeight: 600,
+                                        textDecoration: "none",
+                                      }}
+                                    >
                                       {commAuthor}
-                                    </span>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-muted)" }}>
-                                      <span>{getRelativeTimeText(comm.created_at)}</span>
+                                    </Link>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "0.5rem",
+                                        color: "var(--text-muted)",
+                                      }}
+                                    >
+                                      <span>
+                                        {getRelativeTimeText(comm.created_at)}
+                                      </span>
                                       {isCommOwner && (
                                         <button
-                                          onClick={() => handleDeleteComment(pub.id, comm.id)}
-                                          style={{ background: "none", border: "none", color: "var(--red-star)", cursor: "pointer", padding: 0 }}
+                                          onClick={() =>
+                                            handleDeleteComment(pub.id, comm.id)
+                                          }
+                                          style={{
+                                            background: "none",
+                                            border: "none",
+                                            color: "var(--red-star)",
+                                            cursor: "pointer",
+                                            padding: 0,
+                                          }}
                                           title="Deletar comentário"
                                         >
                                           <Trash2 size={12} />
@@ -415,7 +561,13 @@ export function Feed() {
                                       )}
                                     </div>
                                   </div>
-                                  <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-bright)" }}>
+                                  <p
+                                    style={{
+                                      margin: 0,
+                                      fontSize: "0.9rem",
+                                      color: "var(--text-bright)",
+                                    }}
+                                  >
                                     {comm.content}
                                   </p>
                                 </div>
@@ -434,7 +586,10 @@ export function Feed() {
                             placeholder="Escreva sua resposta..."
                             value={commentInputs[pub.id] || ""}
                             onChange={(e) =>
-                              setCommentInputs((prev) => ({ ...prev, [pub.id]: e.target.value }))
+                              setCommentInputs((prev) => ({
+                                ...prev,
+                                [pub.id]: e.target.value,
+                              }))
                             }
                             onKeyDown={(e) => {
                               if (e.key === "Enter") handleAddComment(pub.id);
@@ -444,7 +599,11 @@ export function Feed() {
                           <Button
                             onClick={() => handleAddComment(pub.id)}
                             isLoading={submittingComment[pub.id]}
-                            style={{ height: "38px", padding: "0 0.9rem", fontSize: "0.85rem" }}
+                            style={{
+                              height: "38px",
+                              padding: "0 0.9rem",
+                              fontSize: "0.85rem",
+                            }}
                           >
                             <Send size={14} />
                           </Button>
