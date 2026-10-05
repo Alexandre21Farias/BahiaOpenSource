@@ -15,7 +15,7 @@ export function AuthLayout() {
           <Outlet />
         </div>
       </div>
-      <div className="auth-image-panel glass">
+      <div className="auth-image-panel reveal">
         <div className="auth-image-overlay">
           <h2 className="reveal-delay-1">Bem-vindo à comunidade.</h2>
           <p className="reveal-delay-2">
