@@ -6,6 +6,7 @@ import { MainLayout } from "./layouts/MainLayout";
 import { Login } from "../pages/Auth/Login";
 import { Register } from "../pages/Auth/Register";
 import { Profile } from "../pages/Profile/Profile";
+import { Feed } from "../pages/Feed/Feed";
 import Home from "../pages/Home";
 
 function App(): React.JSX.Element {
@@ -15,6 +16,7 @@ function App(): React.JSX.Element {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/feed" element={<Feed />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
 

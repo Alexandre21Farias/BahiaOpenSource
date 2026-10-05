@@ -1,0 +1,208 @@
+/* ============================================================
+   AUTENTICAÇÃO (LAYOUT E TELAS DE LOGIN/REGISTRO)
+   ============================================================ */
+.auth-layout {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+}
+
+.auth-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  padding: 2rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    160deg,
+    rgba(7, 11, 18, 0.97) 0%,
+    rgba(11, 17, 27, 0.97) 100%
+  );
+  border-right: 1px solid var(--border-subtle);
+}
+
+.auth-content > * {
+  position: relative;
+  z-index: 2;
+}
+
+.auth-header {
+  margin-bottom: auto;
+}
+
+.auth-logo {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.auth-form-container {
+  align-self: center;
+  width: 100%;
+  max-width: 400px;
+  margin: auto 0;
+}
+
+.auth-image-panel {
+  flex: 1;
+  display: none;
+  position: relative;
+  overflow: hidden;
+  background: url("/bg-auth.png") center/cover no-repeat;
+}
+
+.auth-image-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(
+      ellipse 60% 70% at 30% 35%,
+      rgba(22, 119, 255, 0.2) 0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 85% 20%,
+      rgba(53, 214, 176, 0.14) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(7, 11, 18, 0.3) 0%,
+      transparent 40%,
+      rgba(7, 11, 18, 0.9) 100%
+    );
+}
+
+@media (min-width: 768px) {
+  .auth-image-panel {
+    display: block;
+  }
+}
+
+.auth-image-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 3.5rem;
+  background: linear-gradient(transparent, rgba(5, 8, 13, 0.9));
+}
+
+.auth-image-overlay h2 {
+  margin-bottom: 0.75rem;
+  font-size: 2rem;
+  color: var(--text-bright);
+}
+
+.auth-image-overlay p {
+  color: var(--text-mid);
+  font-size: 0.95rem;
+}
+
+.auth-form-wrapper h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.7rem;
+}
+
+.auth-subtitle {
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.auth-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  font-size: 0.88rem;
+  color: var(--text-mid);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  accent-color: var(--color-accent);
+}
+
+.forgot-password {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.forgot-password:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.auth-footer a {
+  font-weight: 600;
+  color: var(--color-sun);
+}
+
+.auth-footer a:hover {
+  color: var(--color-sun-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-error-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1rem 0.85rem 1.25rem;
+  border: 1px solid rgba(255, 100, 124, 0.3);
+  border-radius: var(--radius-md);
+  background: var(--danger-soft);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: #ff9aab;
+  animation: fadeInDown 0.25s var(--ease-out) both;
+}
+
+.auth-error-alert::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-danger);
+}
+
+.auth-error-alert svg {
+  flex-shrink: 0;
+  color: var(--color-danger);
+}
+
+@media (max-width: 768px) {
+  .auth-content {
+    max-width: none;
+    padding: 1.5rem;
+  }
+}

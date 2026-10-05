@@ -179,7 +179,7 @@ export function Register() {
         </Button>
       </form>
 
-      {/* Opções de Cadastro Social (GitHub & Google) */}
+      {/* Opções de Cadastro Social (GitHub & Discord) */}
       <SocialAuthButtons
         onError={(msg) => setError(msg ? translateError(msg) : null)}
         disabled={loading}
