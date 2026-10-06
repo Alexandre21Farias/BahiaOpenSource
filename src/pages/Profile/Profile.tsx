@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
+import { Icon } from "@/components/ui/icon";
 import {
+  Gear,
   MapPin,
-  Link as LinkIcon,
+  LinkSimple,
   Calendar,
-  LogOut,
-  Edit2,
-  Save,
+  GithubLogo,
+  TwitterLogo,
+  LinkedinLogo,
+  ArrowLeft,
+  PencilSimple,
+  SignOut,
   X,
-  MessageSquare,
+  FloppyDisk,
   Clock,
-} from "lucide-react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+  ChatCircle,
+} from "@phosphor-icons/react";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
 import { Button } from "../../components/ui/Button";
@@ -285,7 +291,10 @@ export function Profile() {
                       onClick={handleEditClick}
                       title="Editar Perfil"
                     >
-                      <Edit2 size={18} style={{ marginRight: "0.5rem" }} />
+                      <PencilSimple
+                        size="md"
+                        style={{ marginRight: "0.5rem" }}
+                      />
                       Editar
                     </Button>
                     <Button
@@ -294,7 +303,7 @@ export function Profile() {
                       title="Sair"
                       style={{ padding: "0.8rem" }}
                     >
-                      <LogOut size={20} />
+                      <SignOut size="md" />
                     </Button>
                   </div>
                 )}
@@ -311,12 +320,12 @@ export function Profile() {
               >
                 {profile.location && (
                   <span>
-                    <MapPin size={16} /> {profile.location}
+                    <Icon icon={MapPin} size="sm" /> {profile.location}
                   </span>
                 )}
                 {profile.website && (
                   <span>
-                    <LinkIcon size={16} />
+                    <Icon icon={LinkSimple} size="sm" />
                     <a
                       href={
                         profile.website.startsWith("http")
@@ -332,7 +341,7 @@ export function Profile() {
                   </span>
                 )}
                 <span>
-                  <Calendar size={16} /> Entrou em{" "}
+                  <Icon icon={Calendar} size="sm" /> Entrou em{" "}
                   {new Date(profile.created_at).toLocaleDateString("pt-BR")}
                 </span>
               </div>
@@ -360,7 +369,7 @@ export function Profile() {
                     disabled={saving}
                     style={{ padding: "0.5rem" }}
                   >
-                    <X size={20} />
+                    <X size="md" />
                   </Button>
                 </div>
               </div>
@@ -439,7 +448,7 @@ export function Profile() {
                     setFormData({ ...formData, location: e.target.value })
                   }
                   placeholder="Sua galáxia / cidade"
-                  icon={<MapPin size={16} />}
+                  icon={<Icon icon={MapPin} size="sm" />}
                   disabled={saving}
                 />
                 <Input
@@ -449,14 +458,14 @@ export function Profile() {
                     setFormData({ ...formData, website: e.target.value })
                   }
                   placeholder="seusite.com"
-                  icon={<LinkIcon size={16} />}
+                  icon={<Icon icon={LinkSimple} size="sm" />}
                   disabled={saving}
                 />
               </div>
 
               <div style={{ display: "flex", gap: "1rem" }}>
                 <Button type="submit" isLoading={saving}>
-                  <Save size={18} style={{ marginRight: "0.5rem" }} />
+                  <FloppyDisk size="md" style={{ marginRight: "0.5rem" }} />
                   Salvar Alterações
                 </Button>
                 <Button
@@ -562,7 +571,7 @@ export function Profile() {
                         gap: "0.3rem",
                       }}
                     >
-                      <Clock size={14} />
+                      <Clock size="sm" />
                       {new Date(pub.created_at).toLocaleDateString("pt-BR")}
                     </span>
                     <span
@@ -572,7 +581,7 @@ export function Profile() {
                         gap: "0.3rem",
                       }}
                     >
-                      <MessageSquare size={14} />
+                      <ChatCircle size="sm" />
                       {pub.comments_count || 0} comentários
                     </span>
                   </div>
