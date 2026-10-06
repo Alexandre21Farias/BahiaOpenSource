@@ -9,6 +9,9 @@ import {
   ChevronUp,
   Clock,
   Sparkles,
+  Image as ImageIcon,
+  Paperclip,
+  X,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -20,6 +23,7 @@ import {
   deleteComment,
   Publication,
   PublicationComment,
+  uploadPublicationImage,
 } from "../../services/publications";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -36,6 +40,7 @@ export function Feed() {
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [newCategory, setNewCategory] = useState("discussao");
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [publishing, setPublishing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -87,16 +92,23 @@ export function Feed() {
     setErrorMsg(null);
 
     try {
+      let imageUrl = undefined;
+      if (imageFile) {
+        imageUrl = await uploadPublicationImage(user.id, imageFile);
+      }
+
       const created = await createPublication({
         userId: user.id,
         title: newTitle.trim(),
         content: newContent.trim(),
         category: newCategory,
+        imageUrl: imageUrl,
       });
 
       setPublications((prev) => [created, ...prev]);
       setNewTitle("");
       setNewContent("");
+      setImageFile(null);
       setShowCreateForm(false);
     } catch (err: any) {
       console.error("Erro ao publicar:", err);
@@ -300,8 +312,71 @@ export function Feed() {
                 value={newContent}
                 onChange={(e) => setNewContent(e.target.value)}
                 disabled={publishing}
-                style={{ resize: "vertical" }}
+                style={{ resize: "vertical", marginBottom: "0.5rem" }}
               />
+
+              {/* Image Upload Input */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  marginTop: "0.5rem",
+                }}
+              >
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                    color: "var(--supernova-cyan)",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  <ImageIcon size={18} />
+                  <span>Anexar Imagem</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setImageFile(e.target.files[0]);
+                      }
+                    }}
+                    disabled={publishing}
+                  />
+                </label>
+                {imageFile && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      fontSize: "0.85rem",
+                      color: "var(--text-bright)",
+                    }}
+                  >
+                    <Paperclip size={14} />
+                    <span>{imageFile.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => setImageFile(null)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "var(--red-star)",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div
@@ -380,20 +455,41 @@ export function Feed() {
                         {commentsCount === 1 ? "comentário" : "comentários"}
                       </span>
                       <span className="forum-meta-dot">·</span>
-                      <Link
-                        to={
-                          pub.profiles?.username
-                            ? `/${pub.profiles.username}`
-                            : "#"
-                        }
+                      <div
                         style={{
-                          color: "var(--supernova-cyan)",
-                          fontWeight: 500,
-                          textDecoration: "none",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.4rem",
                         }}
                       >
-                        {authorName}
-                      </Link>
+                        <img
+                          src={
+                            pub.profiles?.avatar_url ||
+                            `https://ui-avatars.com/api/?name=${authorName}&background=random`
+                          }
+                          alt={authorName}
+                          style={{
+                            width: 16,
+                            height: 16,
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <Link
+                          to={
+                            pub.profiles?.username
+                              ? `/${pub.profiles.username}`
+                              : "#"
+                          }
+                          style={{
+                            color: "var(--supernova-cyan)",
+                            fontWeight: 500,
+                            textDecoration: "none",
+                          }}
+                        >
+                          {authorName}
+                        </Link>
+                      </div>
                       <span className="forum-meta-dot">·</span>
                       <span>{relativeTime}</span>
 
@@ -443,6 +539,22 @@ export function Feed() {
                     >
                       {pub.content}
                     </p>
+
+                    {pub.image_url && (
+                      <div style={{ marginBottom: "1.2rem" }}>
+                        <img
+                          src={pub.image_url}
+                          alt="Anexo da publicação"
+                          style={{
+                            maxWidth: "100%",
+                            maxHeight: "400px",
+                            borderRadius: "var(--radius-md)",
+                            objectFit: "contain",
+                            border: "1px solid var(--border-subtle)",
+                          }}
+                        />
+                      </div>
+                    )}
 
                     {/* Comments section */}
                     <div

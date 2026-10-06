@@ -6,6 +6,7 @@ export interface Publication {
   title: string;
   content: string;
   category: string;
+  image_url?: string;
   created_at: string;
   updated_at: string;
   profiles?: {
@@ -34,10 +35,13 @@ export interface PublicationComment {
 /**
  * Busca todas as publicações com suporte a join de perfil do autor e contagem de comentários.
  */
-export async function fetchPublications(categoryFilter?: string): Promise<Publication[]> {
+export async function fetchPublications(
+  categoryFilter?: string,
+): Promise<Publication[]> {
   let query = supabase
     .from("publications")
-    .select(`
+    .select(
+      `
       *,
       profiles!user_id (
         id,
@@ -46,7 +50,8 @@ export async function fetchPublications(categoryFilter?: string): Promise<Public
         avatar_url
       ),
       publication_comments (id)
-    `)
+    `,
+    )
     .order("created_at", { ascending: false });
 
   if (categoryFilter && categoryFilter !== "all") {
@@ -62,17 +67,22 @@ export async function fetchPublications(categoryFilter?: string): Promise<Public
 
   return (data || []).map((item: any) => ({
     ...item,
-    comments_count: item.publication_comments ? item.publication_comments.length : 0,
+    comments_count: item.publication_comments
+      ? item.publication_comments.length
+      : 0,
   }));
 }
 
 /**
  * Busca publicações de um usuário específico.
  */
-export async function fetchUserPublications(userId: string): Promise<Publication[]> {
+export async function fetchUserPublications(
+  userId: string,
+): Promise<Publication[]> {
   const { data, error } = await supabase
     .from("publications")
-    .select(`
+    .select(
+      `
       *,
       profiles!user_id (
         id,
@@ -81,7 +91,8 @@ export async function fetchUserPublications(userId: string): Promise<Publication
         avatar_url
       ),
       publication_comments (id)
-    `)
+    `,
+    )
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
@@ -92,7 +103,9 @@ export async function fetchUserPublications(userId: string): Promise<Publication
 
   return (data || []).map((item: any) => ({
     ...item,
-    comments_count: item.publication_comments ? item.publication_comments.length : 0,
+    comments_count: item.publication_comments
+      ? item.publication_comments.length
+      : 0,
   }));
 }
 
@@ -104,6 +117,7 @@ export async function createPublication(params: {
   title: string;
   content: string;
   category?: string;
+  imageUrl?: string;
 }): Promise<Publication> {
   const { data, error } = await supabase
     .from("publications")
@@ -113,9 +127,11 @@ export async function createPublication(params: {
         title: params.title,
         content: params.content,
         category: params.category || "discussao",
+        image_url: params.imageUrl,
       },
     ])
-    .select(`
+    .select(
+      `
       *,
       profiles!user_id (
         id,
@@ -123,7 +139,8 @@ export async function createPublication(params: {
         username,
         avatar_url
       )
-    `)
+    `,
+    )
     .single();
 
   if (error) {
@@ -148,10 +165,13 @@ export async function deletePublication(id: string): Promise<void> {
 /**
  * Busca os comentários de uma publicação específica.
  */
-export async function fetchComments(publicationId: string): Promise<PublicationComment[]> {
+export async function fetchComments(
+  publicationId: string,
+): Promise<PublicationComment[]> {
   const { data, error } = await supabase
     .from("publication_comments")
-    .select(`
+    .select(
+      `
       *,
       profiles!user_id (
         id,
@@ -159,7 +179,8 @@ export async function fetchComments(publicationId: string): Promise<PublicationC
         username,
         avatar_url
       )
-    `)
+    `,
+    )
     .eq("publication_id", publicationId)
     .order("created_at", { ascending: true });
 
@@ -188,7 +209,8 @@ export async function addComment(params: {
         content: params.content,
       },
     ])
-    .select(`
+    .select(
+      `
       *,
       profiles!user_id (
         id,
@@ -196,7 +218,8 @@ export async function addComment(params: {
         username,
         avatar_url
       )
-    `)
+    `,
+    )
     .single();
 
   if (error) {
@@ -211,9 +234,36 @@ export async function addComment(params: {
  * Deleta um comentário.
  */
 export async function deleteComment(id: string): Promise<void> {
-  const { error } = await supabase.from("publication_comments").delete().eq("id", id);
+  const { error } = await supabase
+    .from("publication_comments")
+    .delete()
+    .eq("id", id);
   if (error) {
     console.error("Erro ao deletar comentário:", error);
     throw error;
   }
+}
+
+/**
+ * Faz o upload de uma imagem para a publicação.
+ */
+export async function uploadPublicationImage(
+  userId: string,
+  file: File,
+): Promise<string> {
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${userId}_${Math.random()}.${fileExt}`;
+  const filePath = `${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("publications")
+    .upload(filePath, file);
+
+  if (uploadError) {
+    console.error("Erro ao fazer upload da imagem:", uploadError);
+    throw uploadError;
+  }
+
+  const { data } = supabase.storage.from("publications").getPublicUrl(filePath);
+  return data.publicUrl;
 }
