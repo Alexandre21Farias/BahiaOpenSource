@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Icon } from "@/components/ui/icon";
 import {
-  Mail,
-  Lock,
   User,
+  EnvelopeSimple,
+  LockKey,
+  Code,
+  ArrowRight,
+  WarningCircle,
   Eye,
-  EyeOff,
-  AlertCircle,
-  CheckCircle2,
-} from "lucide-react";
+  EyeSlash,
+  CheckCircle,
+} from "@phosphor-icons/react";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { SocialAuthButtons } from "../../components/auth/SocialAuthButtons";
@@ -108,7 +111,7 @@ export function Register() {
 
       {error && (
         <div className="auth-error-alert" role="alert">
-          <AlertCircle size={18} />
+          <Icon icon={WarningCircle} size="md" />
           <span>{error}</span>
         </div>
       )}
@@ -123,7 +126,7 @@ export function Register() {
           }}
           role="status"
         >
-          <CheckCircle2 size={18} style={{ color: "#22c55e" }} />
+          <Icon icon={CheckCircle} size="md" style={{ color: "#22c55e" }} />
           <span>{successInfo}</span>
         </div>
       )}
@@ -133,7 +136,7 @@ export function Register() {
           label="Nome completo"
           type="text"
           placeholder="ex: Alexandre Farias"
-          icon={<User size={20} />}
+          icon={<Icon icon={User} size="md" />}
           value={name}
           onChange={(e) => setName(e.target.value)}
           disabled={loading}
@@ -144,7 +147,7 @@ export function Register() {
           label="Email"
           type="email"
           placeholder="seu@email.com"
-          icon={<Mail size={20} />}
+          icon={<Icon icon={EnvelopeSimple} size="md" />}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={loading}
@@ -155,7 +158,7 @@ export function Register() {
           label="Senha (mínimo 6 caracteres)"
           type={showPassword ? "text" : "password"}
           placeholder="••••••••"
-          icon={<Lock size={20} />}
+          icon={<Icon icon={LockKey} size="md" />}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={loading}
@@ -169,7 +172,11 @@ export function Register() {
               title={showPassword ? "Ocultar senha" : "Exibir senha"}
               tabIndex={-1}
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword ? (
+                <Icon icon={EyeSlash} size="md" />
+              ) : (
+                <Icon icon={Eye} size="md" />
+              )}
             </button>
           }
         />

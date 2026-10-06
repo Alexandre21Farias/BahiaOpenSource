@@ -114,6 +114,11 @@
   background: var(--surface-0);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  transition: transform 0.3s ease-in-out;
+}
+
+.navbar-hidden {
+  transform: translateY(-100%);
 }
 
 .navbar-left {

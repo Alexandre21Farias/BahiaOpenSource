@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Icon } from "@/components/ui/icon";
 import {
-  Search,
+  MagnifyingGlass,
   Code,
-  MessageSquare,
-  List,
-  Settings,
+  ChatCircle,
+  ListBullets,
+  Gear,
   Gift,
-  LogOut,
+  SignOut,
   User,
-  Menu,
-  ChevronDown,
-} from "lucide-react";
+  List,
+  CaretDown,
+} from "@phosphor-icons/react";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
 import "./MainLayout.css";
@@ -57,6 +58,28 @@ export function MainLayout() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Hide header on scroll down, show on scroll up
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Hide if scrolling down more than 10px from top, show if scrolling up
+      if (currentScrollY > lastScrollY && currentScrollY > 75) {
+        setShowNavbar(false);
+      } else if (currentScrollY < lastScrollY) {
+        setShowNavbar(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
   const handleSignOut = async () => {
     setDropdownOpen(false);
     await supabase.auth.signOut();
@@ -69,18 +92,18 @@ export function MainLayout() {
   return (
     <div className="app-container">
       {/* curso.dev Top Header Navbar */}
-      <header className="top-navbar">
+      <header className={`top-navbar ${showNavbar ? "" : "navbar-hidden"}`}>
         <div className="navbar-left">
           <Link to="/" className="logo-terminal">
             OpenBahia
           </Link>
 
           <Link to="/code" className="nav-icon-btn" title="Código / Exercícios">
-            <Code size={16} />
+            <Icon icon={Code} size="sm" />
           </Link>
 
           <Link to="/search" className="nav-icon-btn" title="Buscar">
-            <Search size={16} />
+            <Icon icon={MagnifyingGlass} size="sm" />
           </Link>
 
           <Link to="/feed" className="nav-forum-btn">
@@ -94,11 +117,11 @@ export function MainLayout() {
               className="user-menu-trigger"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
-              <User size={18} />
+              <Icon icon={User} size="md" />
               <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
                 {displayName}
               </span>
-              <Menu size={18} style={{ marginLeft: "0.2rem" }} />
+              <Icon icon={List} size="md" style={{ marginLeft: "0.2rem" }} />
             </button>
           ) : (
             <Link
@@ -114,7 +137,11 @@ export function MainLayout() {
           {dropdownOpen && (
             <div className="user-dropdown-menu">
               <div className="dropdown-user-header">
-                <User size={16} style={{ color: "var(--supernova-cyan)" }} />
+                <Icon
+                  icon={User}
+                  size="sm"
+                  style={{ color: "var(--supernova-cyan)" }}
+                />
                 <span>{displayName}</span>
               </div>
 
@@ -123,7 +150,7 @@ export function MainLayout() {
                 className="dropdown-item"
                 onClick={() => setDropdownOpen(false)}
               >
-                <MessageSquare size={16} />
+                <Icon icon={ChatCircle} size="sm" />
                 <span>Publicar no fórum</span>
               </Link>
 
@@ -132,7 +159,7 @@ export function MainLayout() {
                 className="dropdown-item"
                 onClick={() => setDropdownOpen(false)}
               >
-                <List size={16} />
+                <Icon icon={ListBullets} size="sm" />
                 <span>Meus conteúdos</span>
               </Link>
 
@@ -145,7 +172,7 @@ export function MainLayout() {
                 className="dropdown-item"
                 onClick={() => setDropdownOpen(false)}
               >
-                <Settings size={16} />
+                <Icon icon={Gear} size="sm" />
                 <span>Editar perfil</span>
               </Link>
 
@@ -156,12 +183,12 @@ export function MainLayout() {
                   alert("Código promocional / cupom de convite em breve!");
                 }}
               >
-                <Gift size={16} />
+                <Icon icon={Gift} size="sm" />
                 <span>Resgatar código</span>
               </button>
 
               <button className="dropdown-item logout" onClick={handleSignOut}>
-                <LogOut size={16} />
+                <Icon icon={SignOut} size="sm" />
                 <span>Deslogar</span>
               </button>
             </div>

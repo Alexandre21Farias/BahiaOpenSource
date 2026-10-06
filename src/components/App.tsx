@@ -8,6 +8,7 @@ import { Register } from "../pages/Auth/Register";
 import { Profile } from "../pages/Profile/Profile";
 import { Feed } from "../pages/Feed/Feed";
 import Home from "../pages/Home";
+import { UiDemo } from "../pages/UiDemo";
 
 function App(): React.JSX.Element {
   return (
@@ -16,6 +17,7 @@ function App(): React.JSX.Element {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/ui-demo" element={<UiDemo />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:username" element={<Profile />} />
