@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {} from "react-router-dom";
-import { Icon } from "@/components/ui/icon";
+import { Icon } from "../../../components/ui/icon";
 import {
   X,
   Image,

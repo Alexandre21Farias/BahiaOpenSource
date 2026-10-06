@@ -4,7 +4,7 @@ import { cn } from "cn";
 
 import { Button } from "@/components/ui/Button";
 import { X } from "@phosphor-icons/react";
-import { Icon } from "@/components/ui/icon";
+import { Icon } from "./icon";
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;

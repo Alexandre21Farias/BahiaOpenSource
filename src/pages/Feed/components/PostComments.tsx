@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Icon } from "@/components/ui/icon";
+import { Icon } from "../../../components/ui/icon";
 import { PaperPlaneRight, Trash } from "@phosphor-icons/react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { PublicationComment } from "../types";

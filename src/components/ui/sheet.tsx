@@ -4,7 +4,7 @@ import { cn } from "cn";
 
 import { Button } from "@/components/ui/Button";
 import { X } from "@phosphor-icons/react";
-import { Icon } from "@/components/ui/icon";
+import { Icon } from "./icon";
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
