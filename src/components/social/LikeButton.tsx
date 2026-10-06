@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Heart } from "@phosphor-icons/react";
-import { Icon } from "@/components/ui/icon";
+import { Icon } from "../ui/icon";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/Button";
 

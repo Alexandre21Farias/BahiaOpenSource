@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Icon } from "@/components/ui/icon";
+import { Icon } from "../../components/ui/icon";
 import {
   Gear,
   MapPin,

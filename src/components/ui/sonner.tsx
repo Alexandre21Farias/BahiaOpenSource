@@ -9,7 +9,7 @@ import {
   XCircle,
   Spinner,
 } from "@phosphor-icons/react";
-import { Icon } from "@/components/ui/icon";
+import { Icon } from "./icon";
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();

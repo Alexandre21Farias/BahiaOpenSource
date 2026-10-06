@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Icon } from "@/components/ui/icon";
+import { Icon } from "../../components/ui/icon";
 import {
   User,
   EnvelopeSimple,

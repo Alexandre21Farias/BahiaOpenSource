@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon } from "@/components/ui/icon";
+import { Icon } from "../../../components/ui/icon";
 import { VideoCamera, Image, Article, Sparkle } from "@phosphor-icons/react";
 import { useAuth } from "../../../contexts/AuthContext";
 
