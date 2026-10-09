@@ -2,9 +2,9 @@ node_modules
 dist
 *.tsbuildinfo
 
-#Ignorar arquivos de design
+# Claude Code context (não commitar)
+.claude/
+
+# Ignorar arquivos de design
 design-system-bahia.html
 design-system.html
-
-#ignorar design
-design-system-bahia.html

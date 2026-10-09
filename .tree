@@ -1,0 +1,110 @@
+BahiaOpenSource/
+│
+├── 📚 DOCUMENTAÇÃO & CLAUDE CONTEXT
+├── README.md                        # 👈 Leia aqui primeiro!
+├── .claude/                        # 🤖 Contexto Claude (NÃO COMMITAR)
+│   ├── docs/
+│   │   ├── CLAUDE.md              # Guia técnico completo
+│   │   └── CODE_REDUCTION_MAP.md
+│   ├── memory/
+│   │   ├── MEMORY.md              # Índice de memórias
+│   │   ├── user_profile.md
+│   │   ├── project_bos.md
+│   │   ├── tech_stack.md
+│   │   ├── code_conventions.md    # 👈 Siga estas convenções!
+│   │   ├── feature_status.md
+│   │   ├── monetization_strategy.md
+│   │   └── README.md
+│   └── .clodeignore
+│
+├── .agents/                        # Claude Code agents
+│   └── skills/
+│
+├── 💻 CÓDIGO-FONTE
+├── src/
+│   ├── components/                # Componentes React
+│   │   ├── ui/                   # shadcn components (Button, Dialog, etc)
+│   │   ├── layouts/              # MainLayout, AuthLayout
+│   │   └── [feature-components]/
+│   ├── pages/                    # Páginas (rotas)
+│   │   ├── Home.tsx
+│   │   ├── Auth/
+│   │   │   ├── Login.tsx
+│   │   │   └── Register.tsx
+│   │   ├── Feed/
+│   │   │   ├── Feed.tsx
+│   │   │   └── types.ts
+│   │   ├── Profile/
+│   │   │   └── Profile.tsx
+│   │   └── UiDemo.tsx
+│   ├── contexts/                 # React Contexts
+│   │   └── AuthContext.tsx       # Autenticação global
+│   ├── services/                 # API/DB calls
+│   │   └── publications.ts
+│   ├── lib/
+│   │   ├── supabase.ts          # Cliente Supabase
+│   │   └── utils.ts             # Utilitários
+│   └── main.tsx                 # Entry point
+│
+├── public/                       # Assets estáticos (images, etc)
+│
+├── 🔧 CONFIGURAÇÃO
+├── vite.config.ts               # Vite bundler
+├── tsconfig.json                # TypeScript
+├── tsconfig.node.json           # TypeScript (Node)
+├── tailwind.config.js           # TailwindCSS
+├── postcss.config.js            # PostCSS
+├── eslint.config.cjs            # ESLint
+├── .eslintrc.cjs                # ESLint (legacy)
+├── .prettierrc                  # Prettier
+├── commitlint.config.js         # Conventional commits
+├── components.json              # shadcn/ui config
+├── vercel.json                  # Vercel deploy config
+│
+├── 📦 DEPENDÊNCIAS & BANCO
+├── package.json                 # Scripts e dependências
+├── package-lock.json
+├── node_modules/                # (ignorado no git)
+│
+├── 🗄️ DATABASE
+├── supabase_updates.sql         # PostgreSQL migrations
+│
+├── 🔐 VARIÁVEIS DE AMBIENTE
+├── .env                         # (não commitar)
+│
+├── 📋 GIT
+├── .git/
+├── .gitignore                   # 👈 Nota: .claude/ está ignorado
+├── .husky/                      # Git hooks
+│
+└── 📄 OUTROS
+    └── .tree                    # Este arquivo (estrutura visual)
+
+
+════════════════════════════════════════════════════════════════
+🚀 QUICK START
+
+npm install                 # Instalar deps
+npm run dev                 # Iniciar dev server (localhost:5173)
+npm run build               # Build produção
+npm run lint:fix            # Corrigir código
+npm run format              # Formatar com Prettier
+
+════════════════════════════════════════════════════════════════
+📖 IMPORTANTE: Leia primeiro!
+
+1. README.md          - Visão geral e setup
+2. .claude/docs/CLAUDE.md  - Arquitetura técnica
+3. .claude/memory/code_conventions.md - Como codificar
+4. .claude/memory/monetization_strategy.md - Meta de receita
+
+════════════════════════════════════════════════════════════════
+🤖 Para Claude Code:
+
+A pasta .claude/ contém contexto persistente. Ela está ignorada
+no git e usada apenas para facilitar interações com Claude.
+
+Referencie a memória usando: [[nome_do_arquivo]]
+Exemplo: "conforme a [[monetization_strategy]]"
+
+════════════════════════════════════════════════════════════════
