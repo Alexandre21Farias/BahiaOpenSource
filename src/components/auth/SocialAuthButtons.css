@@ -33,45 +33,11 @@
 }
 
 .btn-social {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.65rem;
-  min-height: 44px;
-  padding: 0.7rem 1rem;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--surface-1);
-  color: var(--text-mid);
-  font-family: var(--font-main);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition-property: var(--transition-props);
-  transition-duration: var(--duration-normal);
-  transition-timing-function: var(--ease-out);
-}
-
-.btn-social:hover:not(:disabled) {
-  border-color: var(--border-hover);
-  background: var(--surface-hover);
-  color: var(--text-bright);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-social:active:not(:disabled) {
-  transform: translateY(0) scale(0.98);
-  transition-duration: var(--duration-fast);
-}
-
-.btn-social:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .btn-social-github:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: color-mix(in srgb, var(--brown) 45%, transparent);
 }
 
 .btn-social-discord:hover:not(:disabled) {

@@ -46,7 +46,7 @@ export function SocialAuthButtons({
       <div className="social-auth-grid">
         <button
           type="button"
-          className="btn-social btn-social-github"
+          className="btn btn-outline btn-social btn-social-github"
           onClick={() => handleOAuthLogin("github")}
           disabled={disabled || loadingProvider !== null}
         >
@@ -72,7 +72,7 @@ export function SocialAuthButtons({
 
         <button
           type="button"
-          className="btn-social btn-social-discord"
+          className="btn btn-outline btn-social btn-social-discord"
           onClick={() => handleOAuthLogin("discord")}
           disabled={disabled || loadingProvider !== null}
         >
