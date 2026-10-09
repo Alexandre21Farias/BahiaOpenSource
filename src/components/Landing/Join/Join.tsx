@@ -1,9 +1,18 @@
 import React from "react";
+import CoffeeBeans from "../CoffeeBeans";
 import "./Join.css";
 
 const Join: React.FC = () => {
   return (
     <section id="join" className="join-section landing-dark">
+      <CoffeeBeans
+        beans={[
+          [70, 14, 38, 25],
+          [84, 52, 28, -50],
+          [62, 78, 24, 60],
+          [93, 84, 32, 10],
+        ]}
+      />
       <div className="container">
         <span className="landing-eyebrow reveal">{"// puxe uma cadeira"}</span>
         <h2 className="join-title reveal">

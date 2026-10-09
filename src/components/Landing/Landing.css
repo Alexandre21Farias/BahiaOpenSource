@@ -63,8 +63,43 @@
 
 /* Depois que o café derrama, a landing inteira fica na faixa café */
 .landing-dark {
+  position: relative;
   background: var(--brown);
   color: var(--cream);
+}
+
+.landing-dark > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Grãos de café soltos no fundo (CoffeeBeans.tsx) */
+.landing-beans {
+  --bean-crease: var(--brown);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: color-mix(in srgb, var(--sun) 45%, var(--brown));
+}
+
+.landing-beans svg {
+  position: absolute;
+  animation: bean-float 4s ease-in-out infinite;
+}
+
+.landing-beans svg:nth-child(2n) {
+  animation-delay: -1.3s;
+}
+
+.landing-beans svg:nth-child(3n) {
+  animation-delay: -2.6s;
+}
+
+@keyframes bean-float {
+  50% {
+    translate: 0 -8px;
+  }
 }
 
 .landing-dark .landing-title {

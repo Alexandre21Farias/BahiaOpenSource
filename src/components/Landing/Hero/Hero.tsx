@@ -1,9 +1,31 @@
 import React, { useEffect, useRef } from "react";
 import CoffeeCup from "./CoffeeCup";
+import CoffeeBeans, { type Bean } from "../CoffeeBeans";
+import "@fontsource/titan-one";
 import "./Hero.css";
 
 const clamp = (v: number): number => Math.min(1, Math.max(0, v));
 const smoothstep = (t: number): number => t * t * (3 - 2 * t);
+
+const beans: Bean[] = [
+  [5, 20, 34, -25],
+  [13, 58, 26, 40],
+  [28, 13, 22, -60],
+  [68, 12, 26, 30],
+  [89, 22, 30, 20],
+  [93, 56, 38, -35],
+  [84, 90, 24, 65],
+  [4, 86, 30, 15],
+];
+
+/** Palavra do título com cada letra solta (o desalinho vem do Hero.css). */
+const Word: React.FC<{ text: string }> = ({ text }) => (
+  <span className="hero-word" aria-hidden="true">
+    {text.split("").map((letter, i) => (
+      <span key={i}>{letter}</span>
+    ))}
+  </span>
+);
 
 /**
  * Hero com a xícara que derrama ao rolar.
@@ -67,17 +89,19 @@ const Hero: React.FC = () => {
     <header className="hero-pour" ref={rootRef}>
       <div className="hero-stage">
         <div className="container hero-grid">
-          <div className="hero-copy">
-            <span className="landing-eyebrow hero-eyebrow">
-              {"// Feira de Santana · comunidade de software livre"}
+          <span className="landing-eyebrow hero-eyebrow">
+            {"// Feira de Santana · comunidade de software livre"}
+          </span>
+          <h1 className="hero-title" aria-label="Bahia Open Source">
+            <Word text="Bahia" />
+            <Word text="Open" />
+            <span className="hero-cup" aria-hidden="true">
+              <span className="hero-stream" />
+              <CoffeeCup />
             </span>
-            <h1 className="hero-title">
-              Bahia
-              <br />
-              Open
-              <br />
-              Source
-            </h1>
+            <Word text="Source" />
+          </h1>
+          <div className="hero-foot">
             <p className="hero-subtitle">
               Conectamos desenvolvedores da Bahia para criar o futuro do
               software, preservando nossa cultura e impulsionando a tecnologia
@@ -91,19 +115,10 @@ const Hero: React.FC = () => {
                 Nossa Missão
               </a>
             </div>
-            <span className="hero-hint" aria-hidden="true">
-              role para baixo ↓
-            </span>
           </div>
-
-          <div className="hero-cup">
-            <div className="hero-cup-inner">
-              <div className="hero-stream" aria-hidden="true" />
-              <div className="hero-cup-tilt">
-                <CoffeeCup />
-              </div>
-            </div>
-          </div>
+          <span className="hero-hint" aria-hidden="true">
+            role para baixo ↓
+          </span>
         </div>
 
         <div className="hero-pool" aria-hidden="true">
@@ -115,6 +130,7 @@ const Hero: React.FC = () => {
             <path d="M0 40 C 180 0, 360 60, 540 30 S 900 0, 1080 30 S 1320 60, 1440 20 L1440 60 L0 60 Z" />
           </svg>
         </div>
+        <CoffeeBeans beans={beans} />
       </div>
     </header>
   );

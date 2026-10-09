@@ -1,9 +1,23 @@
 import React from "react";
 
+const line = "var(--cup-line, var(--brown))";
+
+/** Estrelinha de quatro pontas dos cartazes retrô. */
+const Sparkle: React.FC<{ x: number; y: number; s: number }> = ({
+  x,
+  y,
+  s,
+}) => (
+  <path
+    transform={`translate(${x} ${y})`}
+    d={`M0 ${-s} Q0 0 ${s} 0 Q0 0 0 ${s} Q0 0 ${-s} 0 Q0 0 0 ${-s} Z`}
+  />
+);
+
 /**
- * Xícara usada no Hero. A inclinação, o vapor e o nível do café são
- * controlados por variáveis CSS (--cup-rot, --steam, --cup-coffee)
- * que o Hero atualiza conforme o scroll.
+ * Xícara do Hero. O giro (em torno do próprio centro), o vapor e o
+ * nível do café são controlados por variáveis CSS (--tilt, --steam,
+ * --cup-coffee) que o Hero atualiza conforme o scroll.
  */
 const CoffeeCup: React.FC = () => {
   return (
@@ -12,62 +26,72 @@ const CoffeeCup: React.FC = () => {
       width="300"
       height="300"
       viewBox="0 0 300 300"
-      role="img"
-      aria-label="Xícara de café com o símbolo </BA>"
     >
-      <g
-        className="hero-cup-steam"
-        fill="none"
-        stroke="var(--mocha)"
-        strokeWidth="5"
-        strokeLinecap="round"
-      >
-        <path d="M110 70 C95 50, 125 40, 110 18" />
-        <path d="M145 62 C130 42, 160 32, 145 10" />
-        <path d="M180 70 C165 50, 195 40, 180 18" />
+      {/* some quando a xícara começa a girar */}
+      <g className="hero-cup-steam">
+        <ellipse cx="152" cy="285" rx="74" ry="7" fill={line} />
+        <g fill={line}>
+          <Sparkle x={52} y={62} s={13} />
+          <Sparkle x={28} y={92} s={6} />
+          <Sparkle x={266} y={70} s={10} />
+          <Sparkle x={272} y={244} s={12} />
+          <Sparkle x={34} y={248} s={8} />
+        </g>
+        <g
+          fill="none"
+          stroke="var(--mocha)"
+          strokeWidth="5"
+          strokeLinecap="round"
+        >
+          <path d="M118 80 C104 62, 132 52, 118 32" />
+          <path d="M152 74 C138 56, 166 46, 152 26" />
+          <path d="M186 80 C172 62, 200 52, 186 32" />
+        </g>
       </g>
-      <path
-        d="M226 130 C276 130, 276 200, 220 205"
-        fill="none"
-        stroke="var(--cup-line, var(--brown))"
-        strokeWidth="16"
-      />
-      <path
-        d="M58 100 L242 100 L226 236 C222 256, 206 266, 186 266 L114 266 C94 266, 78 256, 74 236 Z"
-        fill="var(--surface)"
-        stroke="var(--cup-line, var(--brown))"
-        strokeWidth="7"
-        strokeLinejoin="round"
-      />
-      <ellipse
-        className="hero-cup-coffee"
-        cx="150"
-        cy="116"
-        rx="84"
-        ry="12"
-        fill="var(--brown)"
-      />
-      <ellipse
-        cx="150"
-        cy="100"
-        rx="92"
-        ry="14"
-        fill="none"
-        stroke="var(--cup-line, var(--brown))"
-        strokeWidth="7"
-      />
-      <rect x="94" y="160" width="112" height="40" rx="4" fill="var(--sun)" />
-      <text
-        x="150"
-        y="187"
-        textAnchor="middle"
-        fontFamily="var(--font-mono)"
-        fontSize="17"
-        fontWeight="600"
-        fill="var(--brown)"
-      >
-        {"</BA>"}
-      </text>
+
+      <g className="hero-cup-tilt">
+        {/* asa */}
+        <path
+          d="M230 128 C282 122, 282 190, 220 184"
+          fill="none"
+          stroke={line}
+          strokeWidth="22"
+          strokeLinecap="round"
+        />
+        <path
+          d="M230 128 C282 122, 282 190, 220 184"
+          fill="none"
+          stroke="var(--surface)"
+          strokeWidth="9"
+          strokeLinecap="round"
+        />
+
+        {/* corpo arredondado */}
+        <path
+          d="M65 110 C65 192, 104 236, 150 236 C196 236, 235 192, 235 110 Z"
+          fill="var(--surface)"
+          stroke={line}
+          strokeWidth="7"
+          strokeLinejoin="round"
+        />
+        <ellipse
+          cx="150"
+          cy="110"
+          rx="85"
+          ry="15"
+          fill="var(--surface)"
+          stroke={line}
+          strokeWidth="7"
+        />
+        <ellipse
+          className="hero-cup-coffee"
+          cx="150"
+          cy="112"
+          rx="72"
+          ry="9"
+          fill="var(--brown)"
+        />
+      </g>
     </svg>
   );
 };

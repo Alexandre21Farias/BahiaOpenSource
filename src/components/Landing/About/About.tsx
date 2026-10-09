@@ -1,9 +1,17 @@
 import React from "react";
+import CoffeeBeans from "../CoffeeBeans";
 import "./About.css";
 
 const About: React.FC = () => {
   return (
     <section id="about" className="about-section landing-dark">
+      <CoffeeBeans
+        beans={[
+          [3, 8, 28, 30],
+          [94, 30, 34, -20],
+          [88, 88, 24, 55],
+        ]}
+      />
       <div className="container">
         <div className="about-grid">
           <figure className="about-photo reveal">
