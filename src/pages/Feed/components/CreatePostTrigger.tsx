@@ -19,8 +19,8 @@ export function CreatePostTrigger({
   const avatar =
     userAvatarUrl ||
     (user
-      ? `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=eebb48&color=0f3b59`
-      : "https://ui-avatars.com/api/?name=User&background=c8dafb&color=0f3b59");
+      ? `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=eebb48&color=3f1d12`
+      : "https://ui-avatars.com/api/?name=User&background=eebb48&color=3f1d12");
 
   return (
     <div className="feed-card create-post-trigger-card">

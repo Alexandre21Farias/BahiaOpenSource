@@ -13,6 +13,7 @@ import {
   List,
   CaretDown,
 } from "@phosphor-icons/react";
+import { toast } from "sonner";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
 import "./MainLayout.css";
@@ -86,8 +87,7 @@ export function MainLayout() {
     navigate("/login");
   };
 
-  const displayName =
-    profileUsername || (user?.email ? user.email.split("@")[0] : "AlexDev21");
+  const displayName = profileUsername || user?.email?.split("@")[0] || "Membro";
 
   return (
     <div className="app-container">
@@ -137,11 +137,7 @@ export function MainLayout() {
           {dropdownOpen && (
             <div className="user-dropdown-menu">
               <div className="dropdown-user-header">
-                <Icon
-                  icon={User}
-                  size="sm"
-                  style={{ color: "var(--supernova-cyan)" }}
-                />
+                <Icon icon={User} size="sm" style={{ color: "var(--sun)" }} />
                 <span>{displayName}</span>
               </div>
 
@@ -180,7 +176,7 @@ export function MainLayout() {
                 className="dropdown-item"
                 onClick={() => {
                   setDropdownOpen(false);
-                  alert("Código promocional / cupom de convite em breve!");
+                  toast("Código promocional / cupom de convite em breve!");
                 }}
               >
                 <Icon icon={Gift} size="sm" />

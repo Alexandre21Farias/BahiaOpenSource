@@ -161,7 +161,7 @@ export function CreatePostModal({
 
   const userAvatar =
     user?.user_metadata?.avatar_url ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(userDisplayName)}&background=eebb48&color=0f3b59`;
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(userDisplayName)}&background=eebb48&color=3f1d12`;
 
   return (
     <div
@@ -315,7 +315,7 @@ export function CreatePostModal({
             <div className="modal-footer-buttons">
               <button
                 type="button"
-                className="feed-btn-ghost"
+                className="btn btn-ghost btn-sm"
                 onClick={onClose}
                 disabled={publishing}
               >
@@ -324,7 +324,7 @@ export function CreatePostModal({
 
               <button
                 type="submit"
-                className="feed-btn-primary"
+                className="btn btn-primary btn-sm"
                 disabled={publishing || (!title.trim() && !content.trim())}
               >
                 {publishing ? (

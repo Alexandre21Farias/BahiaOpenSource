@@ -60,7 +60,7 @@ export function PostComments({
           <img
             src={
               user.user_metadata?.avatar_url ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email?.split("@")[0] || "User")}&background=eebb48&color=0f3b59`
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email?.split("@")[0] || "User")}&background=eebb48&color=3f1d12`
             }
             alt="Seu avatar"
             className="comment-user-avatar"
@@ -112,7 +112,7 @@ export function PostComments({
             const isOwner = user && user.id === comm.user_id;
             const avatarUrl =
               comm.profiles?.avatar_url ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=88b8ce&color=0f3b59`;
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=eebb48&color=3f1d12`;
 
             return (
               <div key={comm.id} className="comment-item">

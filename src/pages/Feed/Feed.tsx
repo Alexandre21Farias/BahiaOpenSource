@@ -8,6 +8,7 @@ import {
   Code,
   Question,
 } from "@phosphor-icons/react";
+import { toast } from "sonner";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   fetchPublications,
@@ -107,7 +108,7 @@ export function Feed() {
       setPublications((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error("Erro ao excluir publicação:", err);
-      alert("Não foi possível excluir a publicação.");
+      toast.error("Não foi possível excluir a publicação.");
     }
   };
 
@@ -218,7 +219,7 @@ export function Feed() {
           {/* Feed Category Filter Chips */}
           <div className="feed-category-filter-row">
             {CATEGORIES.map((cat) => {
-              const Icon = cat.icon;
+              const CatIcon = cat.icon;
               const isActive = activeCategory === cat.id;
               return (
                 <button
@@ -227,7 +228,7 @@ export function Feed() {
                   className={`category-chip ${isActive ? "active" : ""}`}
                   onClick={() => setActiveCategory(cat.id)}
                 >
-                  <Icon size="sm" />
+                  <CatIcon size={16} />
                   <span>{cat.label}</span>
                 </button>
               );
@@ -256,7 +257,7 @@ export function Feed() {
               </p>
               <button
                 type="button"
-                className="feed-btn-primary mt-4"
+                className="btn btn-primary btn-sm mt-4"
                 onClick={() => handleOpenModal("general")}
               >
                 Começar publicação
