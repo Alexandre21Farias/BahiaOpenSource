@@ -73,7 +73,7 @@ export function FeedProfileSidebar({
           </p>
           <Link
             to="/login"
-            className="feed-btn-primary w-full inline-flex items-center justify-center gap-2"
+            className="btn btn-primary btn-sm w-full inline-flex items-center justify-center gap-2"
           >
             <Icon icon={SignIn} size="sm" />
             <span>Fazer login</span>
@@ -94,7 +94,7 @@ export function FeedProfileSidebar({
   const location = profile?.location || "Bahia, Brasil";
   const avatarUrl =
     profile?.avatar_url ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=eebb48&color=0f3b59`;
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=eebb48&color=3f1d12`;
 
   return (
     <aside className="feed-sidebar-left">

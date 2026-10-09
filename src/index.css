@@ -12,8 +12,9 @@
    BAHIA OPEN SOURCE — Design System "Sol da Bahia"
    "Um cafe da tarde para quem gosta de criar software."
 
-   Proporcao: ~60% creme e ceu . 25% azul-aco . 10% amarelo . 5% escuros
-   Escuros (navy, marrom, terracota) = texto, bordas finas e detalhes.
+   Proporcao: ~60% creme e areia . 25% marrom cafe . 10% amarelo . 5% azul
+   Marrom = header, rodape, titulos, botoes escuros e destaques.
+   Azul (navy, steel, sky) = so detalhe: info, fitinha e badge azul.
    ============================================================ */
 
 :root {
@@ -25,21 +26,25 @@
   --navy: #0f3b59;
   --brown: #3f1d12;
   --clay: #a13a1e;
+  /* Papéis: brown = base (texto, header, rodapé) · sun = ação · clay = destaque/perigo
+     cream = fundo · navy = links e info · steel = realce frio · sky = fundo frio suave */
+  --sand: color-mix(in srgb, var(--brown) 12%, var(--cream));
+  --mocha: color-mix(in srgb, var(--brown) 45%, var(--cream));
 
   /* ---------- Fundos e superficies ---------- */
   --bg: var(--cream);
-  --bg-soft: color-mix(in srgb, var(--sky) 28%, var(--cream));
-  --bg-sky: color-mix(in srgb, var(--sky) 55%, var(--cream));
+  --bg-soft: color-mix(in srgb, var(--brown) 6%, var(--cream));
+  --bg-sky: var(--sand);
   --surface: #fffdf8;
   --surface-0: rgba(255, 253, 248, 0.95); /* Vitrificado mais opaco */
-  --surface-hover: color-mix(in srgb, var(--sky) 20%, var(--surface));
+  --surface-hover: color-mix(in srgb, var(--brown) 6%, var(--surface));
 
   /* ---------- Texto ---------- */
   --text: var(--brown);
   --text-mid: #6a4e43;
   --text-muted: #7d655a;
   --text-ghost: #8a7167;
-  --heading: var(--navy);
+  --heading: var(--brown);
 
   /* ---------- Bordas ---------- */
   --border: color-mix(in srgb, var(--brown) 14%, var(--cream));
@@ -48,7 +53,7 @@
   /* ---------- Acao principal ---------- */
   --primary: var(--sun);
   --primary-hover: color-mix(in srgb, var(--sun) 84%, var(--clay));
-  --on-primary: var(--navy);
+  --on-primary: var(--brown);
 
   /* ---------- Status ---------- */
   --info: var(--navy);
@@ -56,7 +61,7 @@
   --warning: color-mix(in srgb, var(--sun) 72%, #a06b00);
   --danger: var(--clay);
 
-  --focus: var(--navy);
+  --focus: var(--brown);
 
   /* ---------- Sombras quentes ---------- */
   --shadow-sm: 0 1px 3px rgba(63, 29, 18, 0.08);
@@ -105,30 +110,39 @@
   --card-foreground: var(--brown);
   --popover: var(--surface);
   --popover-foreground: var(--brown);
-  --primary-foreground: var(--navy);
-  --secondary: var(--sky);
-  --secondary-foreground: var(--navy);
-  --muted: color-mix(in srgb, var(--sky) 28%, var(--cream));
+  --primary-foreground: var(--brown);
+  --secondary: var(--sand);
+  --secondary-foreground: var(--brown);
+  --muted: var(--bg-soft);
   --muted-foreground: #7d655a;
-  --accent: color-mix(in srgb, var(--sky) 55%, var(--cream));
-  --accent-foreground: var(--navy);
+  --accent: var(--sand);
+  --accent-foreground: var(--brown);
   --destructive: var(--clay);
   --input: color-mix(in srgb, var(--brown) 14%, var(--cream));
-  --ring: var(--navy);
+  --ring: var(--brown);
   --chart-1: var(--sun);
-  --chart-2: var(--steel);
-  --chart-3: var(--sky);
-  --chart-4: var(--navy);
-  --chart-5: var(--brown);
+  --chart-2: var(--brown);
+  --chart-3: var(--mocha);
+  --chart-4: var(--clay);
+  --chart-5: var(--steel);
   --radius: 0.625rem;
   --sidebar: var(--surface);
   --sidebar-foreground: var(--brown);
-  --sidebar-primary: var(--navy);
+  --sidebar-primary: var(--brown);
   --sidebar-primary-foreground: var(--cream);
-  --sidebar-accent: color-mix(in srgb, var(--sky) 28%, var(--cream));
-  --sidebar-accent-foreground: var(--navy);
+  --sidebar-accent: var(--bg-soft);
+  --sidebar-accent-foreground: var(--brown);
   --sidebar-border: color-mix(in srgb, var(--brown) 14%, var(--cream));
-  --sidebar-ring: var(--navy);
+  --sidebar-ring: var(--brown);
+}
+
+/* Utilitários de transição e tons derivados */
+:root {
+  --transition-props:
+    color, background-color, border-color, box-shadow, transform, opacity;
+  --transition: all var(--duration-normal) var(--ease-out);
+  --danger-soft: color-mix(in srgb, var(--clay) 10%, var(--surface));
+  --primary-glow: color-mix(in srgb, var(--sun) 45%, transparent);
 }
 
 /* ============================================================
@@ -155,7 +169,7 @@ body {
   background:
     radial-gradient(
       ellipse 70% 45% at 8% 0%,
-      color-mix(in srgb, var(--sky) 55%, transparent),
+      color-mix(in srgb, var(--brown) 10%, transparent),
       transparent 70%
     ),
     radial-gradient(
@@ -194,11 +208,11 @@ a {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--steel);
+  background: var(--mocha);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--navy);
+  background: var(--brown);
 }
 
 /* ============================================================
@@ -307,9 +321,9 @@ abbr[title] {
 p a,
 li a,
 small a {
-  color: var(--navy);
+  color: var(--brown);
   text-decoration: underline;
-  text-decoration-color: var(--steel);
+  text-decoration-color: var(--mocha);
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
 }
@@ -338,7 +352,7 @@ pre {
   border-radius: 4px;
   background: var(--bg-sky);
   border: 1px solid var(--border);
-  color: var(--navy);
+  color: var(--brown);
 }
 kbd {
   padding: 2px 6px;
@@ -351,8 +365,8 @@ kbd {
 pre {
   padding: var(--space-4);
   border-radius: var(--radius-md);
-  background: var(--navy);
-  color: var(--sky);
+  background: var(--brown);
+  color: var(--sand);
   overflow-x: auto;
 }
 blockquote {
@@ -375,7 +389,7 @@ cite {
   margin: 0 auto;
   padding: 0 2rem;
 }
-section {
+:where(.home-page) section {
   padding: 5rem 0;
 }
 .stack {
@@ -424,11 +438,17 @@ section {
 }
 
 .gradient-text {
-  background: linear-gradient(110deg, var(--navy), var(--clay));
+  background: linear-gradient(110deg, var(--brown), var(--clay));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+}
+
+.glass {
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .divider {
@@ -447,7 +467,7 @@ section {
     box-shadow var(--duration-normal) var(--ease-out);
 }
 .surface:hover {
-  border-color: var(--steel);
+  border-color: var(--mocha);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -462,15 +482,15 @@ section {
   color: var(--text-mid);
 }
 .link:hover {
-  color: var(--navy);
+  color: var(--brown);
 }
 
 .code {
   padding: var(--space-4);
-  background: var(--navy);
+  background: var(--brown);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  color: var(--sky);
+  color: var(--sand);
   font-size: 0.9rem;
   overflow-x: auto;
 }
@@ -478,12 +498,12 @@ section {
 .warm-grid {
   background-image:
     linear-gradient(
-      color-mix(in srgb, var(--sky) 30%, transparent) 1px,
+      color-mix(in srgb, var(--brown) 8%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--sky) 30%, transparent) 1px,
+      color-mix(in srgb, var(--brown) 8%, transparent) 1px,
       transparent 1px
     );
   background-size: 40px 40px;
@@ -506,7 +526,7 @@ dl {
   gap: var(--space-2) var(--space-6);
 }
 dt {
-  color: var(--navy);
+  color: var(--brown);
   font-weight: 600;
 }
 
@@ -578,27 +598,27 @@ dt {
 }
 
 .btn-secondary {
-  background: var(--sky);
-  color: var(--navy);
+  background: var(--sand);
+  color: var(--brown);
 }
 .btn-secondary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--steel) 80%, var(--navy));
-  color: var(--navy);
+  background: color-mix(in srgb, var(--brown) 22%, var(--cream));
+  color: var(--brown);
   box-shadow: var(--shadow-sm);
 }
 
 .btn-dark {
-  background: var(--navy);
+  background: var(--brown);
   color: var(--cream);
 }
 .btn-dark:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--navy) 85%, var(--steel));
+  background: color-mix(in srgb, var(--brown) 85%, var(--mocha));
   box-shadow: var(--shadow-md);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--navy);
+  color: var(--brown);
 }
 .btn-ghost:hover:not(:disabled) {
   background: var(--bg-sky);
@@ -611,6 +631,40 @@ dt {
 .btn-danger:hover:not(:disabled) {
   background: color-mix(in srgb, var(--clay) 85%, var(--brown));
   box-shadow: 0 6px 18px color-mix(in srgb, var(--clay) 30%, transparent);
+}
+
+.btn-outline {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--brown);
+}
+.btn-outline:hover:not(:disabled) {
+  background: var(--sand);
+  border-color: var(--mocha);
+}
+
+.btn-link {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--clay);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn-icon {
+  width: 44px;
+  padding: 0;
+}
+.btn-icon.btn-sm {
+  width: 34px;
+}
+.btn-icon.btn-lg {
+  width: 52px;
+}
+
+.btn svg {
+  flex-shrink: 0;
 }
 
 .btn-sm {
@@ -642,8 +696,8 @@ dt {
   display: inline-block;
   width: 18px;
   height: 18px;
-  border: 2px solid color-mix(in srgb, var(--navy) 25%, transparent);
-  border-top-color: var(--navy);
+  border: 2px solid color-mix(in srgb, var(--brown) 25%, transparent);
+  border-top-color: var(--brown);
   border-radius: 50%;
   animation: spin 0.75s linear infinite;
 }
@@ -676,11 +730,11 @@ dt {
     border-color var(--duration-normal) var(--ease-out),
     box-shadow var(--duration-normal) var(--ease-out);
   &:hover:not(:disabled) {
-    border-color: var(--steel);
+    border-color: var(--mocha);
   }
   &:focus {
     outline: none;
-    border-color: var(--navy);
+    border-color: var(--brown);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--sun) 50%, transparent);
   }
   &:user-invalid {
@@ -721,7 +775,7 @@ fieldset {
 legend {
   padding: 0 var(--space-2);
   font-weight: 600;
-  color: var(--navy);
+  color: var(--brown);
 }
 label {
   font-size: 0.9rem;
@@ -751,12 +805,12 @@ input[type="checkbox"],
 input[type="radio"] {
   width: 18px;
   height: 18px;
-  accent-color: var(--navy);
+  accent-color: var(--brown);
   cursor: pointer;
 }
 input[type="range"] {
   width: 100%;
-  accent-color: var(--navy);
+  accent-color: var(--brown);
 }
 input[type="color"] {
   width: 44px;
@@ -775,15 +829,15 @@ input[type="file"]::file-selector-button {
   padding: 0.5rem 1rem;
   border: 0;
   border-radius: var(--radius-md);
-  background: var(--sky);
-  color: var(--navy);
+  background: var(--sand);
+  color: var(--brown);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
   transition: background-color var(--duration-normal) var(--ease-out);
 }
 input[type="file"]::file-selector-button:hover {
-  background: var(--steel);
+  background: var(--mocha);
 }
 
 input[role="switch"] {
@@ -811,7 +865,7 @@ input[role="switch"]::before {
     background-color var(--duration-normal);
 }
 input[role="switch"]:checked {
-  background: var(--navy);
+  background: var(--brown);
 }
 input[role="switch"]:checked::before {
   transform: translateX(18px);
@@ -876,7 +930,7 @@ input[role="switch"]:checked::before {
 }
 .badge-sun {
   background: color-mix(in srgb, var(--sun) 28%, var(--surface));
-  color: var(--navy);
+  color: var(--brown);
   border: 1px solid color-mix(in srgb, var(--sun) 55%, transparent);
 }
 .badge-danger {
@@ -890,10 +944,10 @@ input[role="switch"]:checked::before {
   align-items: center;
   gap: 6px;
   padding: 2px 10px;
-  border: 1px solid var(--steel);
+  border: 1px solid var(--mocha);
   border-radius: var(--radius-sm);
   font-size: 0.8rem;
-  color: var(--navy);
+  color: var(--brown);
   background: var(--bg-soft);
 }
 
@@ -906,9 +960,9 @@ input[role="switch"]:checked::before {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--sky);
+  background: var(--sand);
   border: 2px solid var(--sun);
-  color: var(--navy);
+  color: var(--brown);
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -938,7 +992,7 @@ input[role="switch"]:checked::before {
 }
 a.card:hover,
 .card.is-interactive:hover {
-  border-color: var(--steel);
+  border-color: var(--mocha);
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
 }
@@ -985,7 +1039,7 @@ td {
 }
 th {
   font-weight: 600;
-  color: var(--navy);
+  color: var(--brown);
   background: var(--bg-sky);
 }
 td {
@@ -1013,7 +1067,7 @@ tbody tr:last-child td {
   font-size: 0.9rem;
 }
 .breadcrumb a {
-  color: var(--navy);
+  color: var(--brown);
 }
 .breadcrumb a:hover {
   color: var(--clay);
@@ -1021,7 +1075,7 @@ tbody tr:last-child td {
 .breadcrumb li + li::before {
   content: "/";
   margin-right: var(--space-2);
-  color: var(--steel);
+  color: var(--mocha);
 }
 .breadcrumb [aria-current] {
   color: var(--text);
@@ -1044,10 +1098,10 @@ tbody tr:last-child td {
   transition: color var(--duration-normal) var(--ease-out);
 }
 .tab:hover {
-  color: var(--navy);
+  color: var(--brown);
 }
 .tab.active {
-  color: var(--navy);
+  color: var(--brown);
   font-weight: 600;
 }
 .tab.active::after {
@@ -1076,15 +1130,15 @@ tbody tr:last-child td {
   padding: 0 var(--space-2);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  color: var(--navy);
+  color: var(--brown);
   background: var(--surface);
 }
 .pagination a:hover {
-  background: var(--sky);
+  background: var(--sand);
 }
 .pagination [aria-current] {
-  background: var(--navy);
-  border-color: var(--navy);
+  background: var(--brown);
+  border-color: var(--brown);
   color: var(--cream);
   font-weight: 600;
 }
@@ -1099,19 +1153,19 @@ meter {
   border: 0;
   border-radius: 999px;
   overflow: hidden;
-  background: var(--sky);
-  accent-color: var(--navy);
+  background: var(--sand);
+  accent-color: var(--brown);
 }
 progress::-webkit-progress-bar {
-  background: var(--sky);
+  background: var(--sand);
 }
 progress::-webkit-progress-value {
-  background: linear-gradient(90deg, var(--steel), var(--navy));
+  background: linear-gradient(90deg, var(--mocha), var(--brown));
   border-radius: 999px;
   transition: width var(--duration-slow) var(--ease-out);
 }
 progress::-moz-progress-bar {
-  background: linear-gradient(90deg, var(--steel), var(--navy));
+  background: linear-gradient(90deg, var(--mocha), var(--brown));
 }
 
 details {
@@ -1125,7 +1179,7 @@ details + details {
 summary {
   padding: var(--space-3) var(--space-4);
   font-weight: 600;
-  color: var(--navy);
+  color: var(--brown);
   cursor: pointer;
   list-style: none;
 }
@@ -1159,7 +1213,7 @@ dialog[open] {
   animation: fadeInUp 0.25s var(--ease-out) both;
 }
 dialog::backdrop {
-  background: color-mix(in srgb, var(--navy) 45%, transparent);
+  background: color-mix(in srgb, var(--brown) 45%, transparent);
   backdrop-filter: blur(3px);
 }
 dialog form {

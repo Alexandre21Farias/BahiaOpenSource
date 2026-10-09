@@ -1,7 +1,11 @@
 .footer {
   padding: 4rem 0;
-  border-top: 1px solid var(--bahia-border);
-  background: var(--bahia-surface);
+  border-top: 4px solid var(--sun);
+  background: var(--brown);
+}
+
+.footer p {
+  color: color-mix(in srgb, var(--cream) 75%, var(--brown));
 }
 
 .footer-content {

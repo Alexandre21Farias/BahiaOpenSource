@@ -21,7 +21,7 @@ export function LikeButton() {
         particleCount: 60,
         spread: 70,
         origin: { x, y },
-        colors: ["#ef4444", "#f87171", "#fca5a5"],
+        colors: ["#a13a1e", "#eebb48", "#fefaf0"],
         disableForReducedMotion: true,
       });
     }
@@ -33,9 +33,7 @@ export function LikeButton() {
       size="icon"
       onClick={handleLike}
       className={
-        liked
-          ? "text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
-          : "text-muted-foreground"
+        liked ? "text-(--clay) hover:text-(--clay)" : "text-(--text-muted)"
       }
       aria-label={liked ? "Descurtir" : "Curtir"}
     >

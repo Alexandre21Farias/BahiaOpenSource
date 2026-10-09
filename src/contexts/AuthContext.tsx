@@ -26,7 +26,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Detect URL error parameters from OAuth callback (hash or search)
-    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const hashParams = new URLSearchParams(
+      window.location.hash.replace(/^#/, ""),
+    );
     const searchParams = new URLSearchParams(window.location.search);
 
     const errorDescription =
@@ -36,7 +38,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       searchParams.get("error");
 
     if (errorDescription) {
-      const decodedError = decodeURIComponent(errorDescription).replace(/\+/g, " ");
+      const decodedError = decodeURIComponent(errorDescription).replace(
+        /\+/g,
+        " ",
+      );
       console.error("OAuth authentication error:", decodedError);
       setAuthError(decodedError);
     }

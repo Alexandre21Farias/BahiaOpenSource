@@ -4,7 +4,7 @@ import "./AuthLayout.css";
 
 export function AuthLayout() {
   return (
-    <div className="auth-layout reveal">
+    <div className="auth-layout">
       <div className="auth-content">
         <div className="auth-header">
           <Link to="/" className="auth-logo gradient-text">
@@ -15,7 +15,7 @@ export function AuthLayout() {
           <Outlet />
         </div>
       </div>
-      <div className="auth-image-panel reveal">
+      <div className="auth-image-panel">
         <div className="auth-image-overlay">
           <h2 className="reveal-delay-1">Bem-vindo à comunidade.</h2>
           <p className="reveal-delay-2">

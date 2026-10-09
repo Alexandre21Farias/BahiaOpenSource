@@ -117,16 +117,8 @@ export function Register() {
       )}
 
       {successInfo && (
-        <div
-          className="auth-error-alert"
-          style={{
-            background: "rgba(34, 197, 94, 0.15)",
-            borderColor: "rgba(34, 197, 94, 0.35)",
-            color: "#86efac",
-          }}
-          role="status"
-        >
-          <Icon icon={CheckCircle} size="md" style={{ color: "#22c55e" }} />
+        <div className="auth-error-alert success" role="status">
+          <Icon icon={CheckCircle} size="md" />
           <span>{successInfo}</span>
         </div>
       )}
@@ -170,7 +162,6 @@ export function Register() {
               className="password-toggle-btn"
               onClick={() => setShowPassword(!showPassword)}
               title={showPassword ? "Ocultar senha" : "Exibir senha"}
-              tabIndex={-1}
             >
               {showPassword ? (
                 <Icon icon={EyeSlash} size="md" />

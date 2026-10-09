@@ -1,0 +1,62 @@
+/* ============================================================
+   LANDING — padrão compartilhado
+   Faixas: Hero (café) · Sobre (areia) · Projetos (creme) · Rodapé (café).
+   Em faixa clara: cards claros, texto café/terra. Em faixa café: texto creme/sol.
+   ============================================================ */
+.landing-title {
+  margin-bottom: 2.5rem;
+  font-size: 2.5rem;
+  text-align: left;
+  color: var(--brown);
+}
+
+.landing-card {
+  position: relative;
+  padding: 2.5rem;
+  border: 1px solid var(--border-strong);
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.landing-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: var(--brown);
+}
+
+.landing-card h3 {
+  margin-bottom: 0.75rem;
+  font-size: 1.5rem;
+  color: var(--brown);
+}
+
+.landing-card p {
+  color: var(--text-mid);
+  line-height: 1.7;
+}
+
+.landing-tag--sky {
+  background: var(--sky);
+  color: var(--navy);
+}
+
+.landing-tag--steel {
+  background: var(--steel);
+  color: var(--navy);
+}
+
+.landing-tag {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 999px;
+  background: var(--brown);
+  color: var(--sun);
+  font-size: 0.8rem;
+  font-weight: 700;
+}

@@ -74,7 +74,7 @@ export function FeedRightSidebar() {
           >
             GitHub
           </a>
-          <Link to="/ui-demo" className="footer-link">
+          <Link to="/design-system" className="footer-link">
             Design System
           </Link>
           <span className="footer-link">Privacidade</span>

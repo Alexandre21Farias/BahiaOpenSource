@@ -1,17 +1,19 @@
 .hero {
-  padding: 8rem 0 6rem;
+  padding: 9rem 0 6rem;
   text-align: center;
+  border-bottom: 4px solid var(--sun);
   background:
     radial-gradient(
-      circle at top right,
-      var(--bahia-accent-glow),
-      transparent 40%
+      ellipse 55% 60% at 85% 0%,
+      color-mix(in srgb, var(--sun) 28%, transparent),
+      transparent 70%
     ),
     radial-gradient(
-      circle at bottom left,
-      var(--bahia-accent-glow),
-      transparent 40%
-    );
+      ellipse 50% 60% at 0% 100%,
+      color-mix(in srgb, var(--clay) 45%, transparent),
+      transparent 70%
+    ),
+    var(--brown);
 }
 
 .hero h1 {
@@ -20,9 +22,14 @@
   letter-spacing: -0.02em;
 }
 
+.hero h1.gradient-text,
+.footer-logo.gradient-text {
+  background-image: linear-gradient(110deg, var(--cream), var(--sun));
+}
+
 .hero-subtitle {
   font-size: 1.25rem;
-  color: var(--bahia-text);
+  color: color-mix(in srgb, var(--cream) 82%, var(--brown));
   max-width: 800px;
   margin: 0 auto 2.5rem;
 }
@@ -31,6 +38,17 @@
   display: flex;
   gap: 1rem;
   justify-content: center;
+}
+
+.hero .btn-secondary {
+  border-color: color-mix(in srgb, var(--cream) 45%, transparent);
+  background: transparent;
+  color: var(--cream);
+}
+
+.hero .btn-secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cream) 14%, transparent);
+  color: var(--sun);
 }
 
 @media (max-width: 768px) {

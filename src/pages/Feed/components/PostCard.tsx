@@ -54,7 +54,7 @@ export function PostCard({
 
   const authorAvatar =
     publication.profiles?.avatar_url ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=eebb48&color=0f3b59`;
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=eebb48&color=3f1d12`;
 
   const isOwner = user && user.id === publication.user_id;
   const commentsCount = publication.comments_count || comments.length || 0;
@@ -87,7 +87,7 @@ export function PostCard({
         particleCount: 35,
         spread: 60,
         origin: { x, y },
-        colors: ["#eebb48", "#c8dafb", "#a13a1e"],
+        colors: ["#eebb48", "#fefaf0", "#a13a1e"],
         disableForReducedMotion: true,
       });
     }

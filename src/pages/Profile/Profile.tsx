@@ -1,26 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { Icon } from "../../components/ui/icon";
+import React, { useCallback, useEffect, useState } from "react";
 import {
-  Gear,
-  MapPin,
-  LinkSimple,
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import {
+  At,
   Calendar,
-  GithubLogo,
-  TwitterLogo,
-  LinkedinLogo,
-  ArrowLeft,
+  Camera,
+  ChatCircle,
+  FloppyDisk,
+  LinkSimple,
+  MapPin,
   PencilSimple,
   SignOut,
-  X,
-  FloppyDisk,
-  Clock,
-  ChatCircle,
+  User,
+  WarningCircle,
+  Article,
 } from "@phosphor-icons/react";
-import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import { supabase } from "../../lib/supabase";
+import { Icon } from "../../components/ui/icon";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { useAuth } from "../../contexts/AuthContext";
+import { supabase } from "../../lib/supabase";
+import { AVATAR_MAX_BYTES, uploadAvatar } from "../../services/avatars";
 import {
   fetchUserPublications,
   Publication,
@@ -29,568 +33,442 @@ import "./Profile.css";
 
 interface ProfileData {
   id: string;
-  full_name: string;
-  username: string;
-  avatar_url: string;
-  bio: string;
-  location: string;
-  website: string;
+  full_name: string | null;
+  username: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  location: string | null;
+  website: string | null;
   created_at: string;
 }
+
+const EMPTY_FORM = {
+  full_name: "",
+  username: "",
+  bio: "",
+  location: "",
+  website: "",
+};
+const BIO_MAX = 280;
+
+const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 
 export function Profile() {
   const { username: paramUsername } = useParams<{ username?: string }>();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+  const [params, setParams] = useSearchParams();
 
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loadingProfile, setLoadingProfile] = useState(true);
-  const [userPublications, setUserPublications] = useState<Publication[]>([]);
-  const [loadingUserPubs, setLoadingUserPubs] = useState(false);
-
-  const [isEditing, setIsEditing] = useState(false);
+  const [posts, setPosts] = useState<Publication[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState<Partial<ProfileData>>({});
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [error, setError] = useState<string | null>(null);
 
-  // Clean username if it comes with `@` prefix
-  const cleanUsername = paramUsername
-    ? paramUsername.replace(/^@/, "").trim()
-    : null;
-
-  const isOwnProfile = Boolean(user && profile && user.id === profile.id);
+  const cleanUsername = paramUsername?.replace(/^@/, "").trim() || null;
+  const isOwn = Boolean(user && profile && user.id === profile.id);
 
   useEffect(() => {
     if (authLoading) return;
-
-    if (cleanUsername) {
-      fetchProfileByUsername(cleanUsername);
-    } else if (user) {
-      fetchOwnProfileAndRedirect();
-    } else {
+    if (!cleanUsername && !user) {
       navigate("/login");
+      return;
     }
-  }, [cleanUsername, user, authLoading]);
+
+    let active = true;
+    const find = (col: string, val: string) =>
+      supabase.from("profiles").select("*").eq(col, val).maybeSingle();
+
+    (async () => {
+      setLoading(true);
+      const data = cleanUsername
+        ? ((await find("username", cleanUsername)).data ??
+          (await find("id", cleanUsername)).data)
+        : (await find("id", user!.id)).data;
+      if (!active) return;
+
+      setProfile(data);
+      setPosts([]);
+      setLoading(false);
+      if (!data) return;
+      if (!cleanUsername && data.username)
+        navigate(`/${data.username}`, { replace: true });
+      fetchUserPublications(data.id)
+        .then((pubs) => active && setPosts(pubs))
+        .catch((err) => console.error("Erro ao carregar publicações:", err));
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [cleanUsername, user, authLoading, navigate]);
+
+  const startEdit = useCallback(() => {
+    if (!profile) return;
+    setForm({
+      full_name: profile.full_name ?? "",
+      username: profile.username ?? "",
+      bio: profile.bio ?? "",
+      location: profile.location ?? "",
+      website: profile.website ?? "",
+    });
+    setError(null);
+    setAvatarFile(null);
+    setAvatarPreview(null);
+    setEditing(true);
+  }, [profile]);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    if (params.get("edit") === "true" && profile && isOwnProfile) {
-      handleEditClick();
+    if (params.get("edit") === "true" && isOwn) {
+      startEdit();
+      setParams({}, { replace: true });
     }
-  }, [location.search, profile, isOwnProfile]);
+  }, [params, isOwn, startEdit, setParams]);
 
-  const fetchProfileByUsername = async (targetUsername: string) => {
-    setLoadingProfile(true);
-    try {
-      // 1. Try search by username
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("username", targetUsername)
-        .single();
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-      if (error || !data) {
-        // 2. Fallback search by ID (if URL was /profile/UUID)
-        const { data: dataById } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", targetUsername)
-          .single();
+  useEffect(
+    () => () => {
+      if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    },
+    [avatarPreview],
+  );
 
-        if (dataById) {
-          setProfile(dataById);
-          loadUserPublications(dataById.id);
-        } else {
-          setProfile(null);
-        }
-      } else {
-        setProfile(data);
-        loadUserPublications(data.id);
-      }
-    } catch (err) {
-      console.error("Error fetching profile by username:", err);
-      setProfile(null);
-    } finally {
-      setLoadingProfile(false);
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/") || file.size > AVATAR_MAX_BYTES) {
+      setError("Escolha uma imagem de até 2 MB.");
+      return;
     }
+    setError(null);
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
   };
 
-  const fetchOwnProfileAndRedirect = async () => {
-    if (!user) return;
-    setLoadingProfile(true);
-    try {
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+  const field =
+    (key: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setForm({ ...form, [key]: e.target.value });
 
-      if (data?.username) {
-        setProfile(data);
-        loadUserPublications(data.id);
-        navigate(`/${data.username}`, { replace: true });
-      } else {
-        setProfile(data || null);
-        if (data) loadUserPublications(data.id);
-      }
-    } catch (err) {
-      console.error("Error fetching own profile:", err);
-    } finally {
-      setLoadingProfile(false);
-    }
-  };
-
-  const loadUserPublications = async (userId: string) => {
-    setLoadingUserPubs(true);
-    try {
-      const pubs = await fetchUserPublications(userId);
-      setUserPublications(pubs);
-    } catch (err) {
-      console.error("Error loading user publications:", err);
-    } finally {
-      setLoadingUserPubs(false);
-    }
-  };
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/login");
-  };
-
-  const handleEditClick = () => {
-    setFormData({
-      full_name: profile?.full_name || "",
-      username: profile?.username || "",
-      bio: profile?.bio || "",
-      location: profile?.location || "",
-      website: profile?.website || "",
-    });
-    setErrorMsg(null);
-    setIsEditing(true);
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setErrorMsg(null);
-  };
-
-  const handleSaveProfile = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !profile) return;
 
-    const newUsername = formData.username?.trim().replace(/^@/, "");
-    if (!newUsername) {
-      setErrorMsg("O nome de usuário não pode ficar em branco.");
+    const username = form.username.trim().replace(/^@/, "");
+    if (!/^[\w.-]{3,30}$/.test(username)) {
+      setError(
+        "O @ deve ter de 3 a 30 caracteres: letras, números, ponto, hífen ou _.",
+      );
       return;
     }
 
     setSaving(true);
-    setErrorMsg(null);
-
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          full_name: formData.full_name,
-          username: newUsername,
-          bio: formData.bio,
-          location: formData.location,
-          website: formData.website,
-        })
-        .eq("id", user.id);
-
-      if (error) throw error;
-
-      const updatedProfile = { ...profile, ...formData, username: newUsername };
-      setProfile(updatedProfile);
-      setIsEditing(false);
-
-      if (newUsername !== profile.username) {
-        navigate(`/${newUsername}`, { replace: true });
+    setError(null);
+    let avatar_url = profile.avatar_url;
+    if (avatarFile) {
+      try {
+        avatar_url = await uploadAvatar(user.id, avatarFile);
+      } catch (err) {
+        console.error("Erro ao enviar avatar:", err);
+        setSaving(false);
+        setError("Não foi possível enviar a foto. Tente novamente.");
+        return;
       }
-    } catch (err: any) {
-      console.error("Error saving profile:", err);
-      if (
-        err?.code === "23505" ||
-        err?.message?.includes("profiles_username_key") ||
-        err?.message?.includes("unique constraint")
-      ) {
-        setErrorMsg(
-          "Este nome de usuário (@) já está em uso por outro membro. Escolha outro!",
-        );
-      } else {
-        setErrorMsg("Ocorreu um erro ao salvar o perfil. Tente novamente.");
-      }
-    } finally {
-      setSaving(false);
     }
+    const changes = {
+      avatar_url,
+      full_name: form.full_name.trim(),
+      username,
+      bio: form.bio.trim(),
+      location: form.location.trim(),
+      website: form.website.trim(),
+    };
+    const { error: saveError } = await supabase
+      .from("profiles")
+      .update(changes)
+      .eq("id", user.id);
+    setSaving(false);
+
+    if (saveError) {
+      console.error("Erro ao salvar perfil:", saveError);
+      setError(
+        saveError.code === "23505"
+          ? "Este @ já está em uso por outro membro. Escolha outro!"
+          : "Não foi possível salvar o perfil. Tente novamente.",
+      );
+      return;
+    }
+
+    setProfile({ ...profile, ...changes });
+    setEditing(false);
+    if (username !== profile.username)
+      navigate(`/${username}`, { replace: true });
   };
 
-  if (authLoading || loadingProfile) {
+  if (authLoading || loading) {
     return (
-      <div
-        className="container"
-        style={{ paddingTop: "100px", textAlign: "center" }}
-      >
-        <div className="spinner"></div>
+      <div className="profile-state">
+        <span className="spinner-sm" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div
-        className="container"
-        style={{ paddingTop: "100px", textAlign: "center" }}
-      >
-        <h2 style={{ color: "var(--red-star)", marginBottom: "1rem" }}>
-          Perfil não encontrado
-        </h2>
-        <p style={{ color: "var(--text-mid)", marginBottom: "2rem" }}>
-          Não foi possível encontrar nenhum membro com o nome de usuário "
-          {cleanUsername || "especificado"}".
-        </p>
+      <div className="profile-state">
+        <h2>Perfil não encontrado</h2>
+        <p>Não existe nenhum membro com o nome “{cleanUsername}”.</p>
         <Button onClick={() => navigate("/feed")}>Voltar para o Fórum</Button>
       </div>
     );
   }
 
-  const displayName =
-    profile.full_name || profile.username || "Membro OpenBahia";
+  const name = profile.full_name || profile.username || "Membro OpenBahia";
+  const avatar =
+    profile.avatar_url ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=eebb48&color=3f1d12&size=256`;
+  const websiteUrl =
+    profile.website &&
+    (profile.website.startsWith("http")
+      ? profile.website
+      : `https://${profile.website}`);
 
   return (
-    <div className="profile-page reveal">
-      <div className="profile-cover"></div>
+    <div className="profile-page">
+      <div className="profile-cover" />
 
-      <div className="profile-header container glass">
-        <div className="profile-avatar">
-          <img
-            src={
-              profile.avatar_url || "https://github.com/identicons/bahia.png"
-            }
-            alt={displayName}
-          />
-        </div>
-
-        <div className="profile-info">
-          {!isEditing ? (
-            // VISUALIZATION MODE
-            <>
-              <div className="profile-title-row">
-                <div>
-                  <h1>{displayName}</h1>
-                  <p className="profile-username">
-                    {profile.username || profile.id.substring(0, 8)}
-                  </p>
-                </div>
-                {isOwnProfile && (
-                  <div style={{ display: "flex", gap: "1rem" }}>
-                    <Button
-                      variant="secondary"
-                      onClick={handleEditClick}
-                      title="Editar Perfil"
-                    >
-                      <PencilSimple
-                        size="md"
-                        style={{ marginRight: "0.5rem" }}
-                      />
-                      Editar
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={handleSignOut}
-                      title="Sair"
-                      style={{ padding: "0.8rem" }}
-                    >
-                      <SignOut size="md" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              <p className="profile-bio">
-                {profile.bio ||
-                  "Este viajante do cosmos ainda não escreveu sua biografia."}
-              </p>
-
-              <div
-                className="profile-meta"
-                style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem" }}
-              >
-                {profile.location && (
-                  <span>
-                    <Icon icon={MapPin} size="sm" /> {profile.location}
-                  </span>
-                )}
-                {profile.website && (
-                  <span>
-                    <Icon icon={LinkSimple} size="sm" />
-                    <a
-                      href={
-                        profile.website.startsWith("http")
-                          ? profile.website
-                          : `https://${profile.website}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: "inherit", textDecoration: "none" }}
-                    >
-                      {profile.website.replace(/^https?:\/\//, "")}
-                    </a>
-                  </span>
-                )}
-                <span>
-                  <Icon icon={Calendar} size="sm" /> Entrou em{" "}
-                  {new Date(profile.created_at).toLocaleDateString("pt-BR")}
+      <div className="profile-shell">
+        {editing ? (
+          <form className="profile-edit" onSubmit={handleSave}>
+            <div className="profile-edit-head">
+              <label className="profile-avatar-edit" title="Trocar foto">
+                <img
+                  src={avatarPreview ?? avatar}
+                  alt=""
+                  className="profile-avatar profile-avatar-sm"
+                />
+                <span className="profile-avatar-badge">
+                  <Icon icon={Camera} size="sm" />
                 </span>
-              </div>
-            </>
-          ) : (
-            // EDIT MODE
-            <form
-              onSubmit={handleSaveProfile}
-              style={{ animation: "fadeInUp 0.3s ease" }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "1.5rem",
-                }}
-              >
-                <h2 style={{ fontSize: "1.5rem", margin: 0 }}>Editar Perfil</h2>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={handleCancelEdit}
-                    disabled={saving}
-                    style={{ padding: "0.5rem" }}
-                  >
-                    <X size="md" />
-                  </Button>
-                </div>
-              </div>
-
-              {errorMsg && (
-                <span className="error-text" style={{ marginBottom: "1rem" }}>
-                  {errorMsg}
-                </span>
-              )}
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "1rem",
-                }}
-              >
-                <Input
-                  label="Nome Completo"
-                  value={formData.full_name || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, full_name: e.target.value })
-                  }
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleAvatarChange}
                   disabled={saving}
                 />
-                <Input
-                  label="Nome de Usuário (@)"
-                  value={formData.username || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                  }
-                  disabled={saving}
-                />
+              </label>
+              <div>
+                <h2>Editar perfil</h2>
+                <p>
+                  {form.username
+                    ? `Seu perfil ficará em /${form.username.replace(/^@/, "")}`
+                    : "Escolha seu @"}
+                </p>
               </div>
+            </div>
 
-              <div style={{ marginBottom: "1rem" }}>
-                <label
-                  className="input-label"
-                  style={{
-                    display: "block",
-                    marginBottom: "0.5rem",
-                    fontSize: "0.82rem",
-                    color: "var(--text-mid)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    fontFamily: "var(--font-display)",
-                  }}
-                >
+            {error && (
+              <div className="auth-error-alert" role="alert">
+                <Icon icon={WarningCircle} size="md" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div className="profile-form-grid">
+              <Input
+                label="Nome completo"
+                icon={<Icon icon={User} />}
+                value={form.full_name}
+                onChange={field("full_name")}
+                disabled={saving}
+                autoComplete="name"
+              />
+              <Input
+                label="Nome de usuário"
+                icon={<Icon icon={At} />}
+                value={form.username}
+                onChange={field("username")}
+                disabled={saving}
+                autoComplete="username"
+                required
+              />
+              <Input
+                label="Localização"
+                icon={<Icon icon={MapPin} />}
+                placeholder="Feira de Santana, BA"
+                value={form.location}
+                onChange={field("location")}
+                disabled={saving}
+              />
+              <Input
+                label="Website"
+                icon={<Icon icon={LinkSimple} />}
+                placeholder="seusite.com"
+                value={form.website}
+                onChange={field("website")}
+                disabled={saving}
+              />
+              <div className="input-wrapper profile-form-full">
+                <label className="input-label" htmlFor="profile-bio">
                   Biografia
                 </label>
                 <textarea
-                  className="input-field"
-                  rows={3}
-                  value={formData.bio || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, bio: e.target.value })
-                  }
-                  placeholder="Conte um pouco sobre sua jornada..."
-                  disabled={saving}
-                  style={{ resize: "vertical" }}
-                ></textarea>
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "1rem",
-                  marginBottom: "1.5rem",
-                }}
-              >
-                <Input
-                  label="Localização"
-                  value={formData.location || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, location: e.target.value })
-                  }
-                  placeholder="Sua galáxia / cidade"
-                  icon={<Icon icon={MapPin} size="sm" />}
+                  id="profile-bio"
+                  rows={4}
+                  maxLength={BIO_MAX}
+                  placeholder="Conte um pouco sobre você e o que gosta de criar..."
+                  value={form.bio}
+                  onChange={field("bio")}
                   disabled={saving}
                 />
-                <Input
-                  label="Website / Link"
-                  value={formData.website || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, website: e.target.value })
-                  }
-                  placeholder="seusite.com"
-                  icon={<Icon icon={LinkSimple} size="sm" />}
-                  disabled={saving}
-                />
+                <span className="hint profile-counter">
+                  {form.bio.length}/{BIO_MAX}
+                </span>
               </div>
+            </div>
 
-              <div style={{ display: "flex", gap: "1rem" }}>
-                <Button type="submit" isLoading={saving}>
-                  <FloppyDisk size="md" style={{ marginRight: "0.5rem" }} />
-                  Salvar Alterações
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleCancelEdit}
-                  disabled={saving}
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </form>
-          )}
-        </div>
-      </div>
-
-      {!isEditing && (
-        <div
-          className="profile-content container"
-          style={{ marginTop: "2rem" }}
-        >
-          <div className="profile-tabs" style={{ marginBottom: "1.5rem" }}>
-            <button className="tab active">
-              {isOwnProfile
-                ? "Minhas Publicações"
-                : `Publicações de ${displayName}`}{" "}
-              ({userPublications.length})
-            </button>
-          </div>
-
-          <div
-            className="profile-feed"
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
-            {loadingUserPubs ? (
-              <div style={{ textAlign: "center", padding: "2rem" }}>
-                <div className="spinner"></div>
-              </div>
-            ) : userPublications.length === 0 ? (
-              <div
-                className="feed-item glass"
-                style={{ padding: "1.5rem", borderRadius: "var(--radius-md)" }}
+            <div className="profile-edit-foot">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setEditing(false)}
+                disabled={saving}
               >
-                <h3>Nenhuma publicação realizada</h3>
-                <p style={{ color: "var(--text-mid)", lineHeight: "1.6" }}>
-                  {isOwnProfile
-                    ? "Você ainda não criou nenhuma publicação no fórum da comunidade."
-                    : `${displayName} ainda não criou nenhuma publicação.`}
+                Cancelar
+              </Button>
+              <Button type="submit" isLoading={saving}>
+                <Icon icon={FloppyDisk} size="sm" />
+                Salvar alterações
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <section className="profile-card">
+              <img src={avatar} alt={name} className="profile-avatar" />
+              <div className="profile-main">
+                <h1>{name}</h1>
+                <p className="profile-handle">
+                  @{profile.username || profile.id.slice(0, 8)}
+                </p>
+                <p className="profile-bio">
+                  {profile.bio || "Ainda sem biografia por aqui."}
                 </p>
               </div>
-            ) : (
-              userPublications.map((pub) => (
-                <div
-                  key={pub.id}
-                  className="feed-item glass"
-                  style={{
-                    padding: "1.5rem",
-                    borderRadius: "var(--radius-md)",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "0.5rem",
-                    }}
+              {isOwn && (
+                <div className="profile-actions">
+                  <Button variant="secondary" onClick={startEdit}>
+                    <Icon icon={PencilSimple} size="sm" />
+                    Editar perfil
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      supabase.auth.signOut().then(() => navigate("/login"))
+                    }
                   >
-                    <h3 style={{ margin: 0, fontSize: "1.1rem" }}>
-                      {pub.title}
-                    </h3>
-                    <span
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "var(--supernova-cyan)",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {pub.category}
-                    </span>
-                  </div>
-                  <p
-                    style={{
-                      color: "var(--text-mid)",
-                      lineHeight: "1.5",
-                      fontSize: "0.92rem",
-                      marginBottom: "0.8rem",
-                    }}
-                  >
-                    {pub.content}
-                  </p>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "1rem",
-                      fontSize: "0.8rem",
-                      color: "rgba(255, 255, 255, 0.4)",
-                    }}
-                  >
-                    <span
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.3rem",
-                      }}
-                    >
-                      <Clock size="sm" />
-                      {new Date(pub.created_at).toLocaleDateString("pt-BR")}
-                    </span>
-                    <span
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.3rem",
-                      }}
-                    >
-                      <ChatCircle size="sm" />
-                      {pub.comments_count || 0} comentários
-                    </span>
-                  </div>
+                    <Icon icon={SignOut} size="sm" />
+                    Sair
+                  </Button>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
+              )}
+            </section>
+
+            <div className="profile-grid">
+              <aside className="profile-about">
+                <h3>Sobre</h3>
+                <ul className="list-reset">
+                  {profile.location && (
+                    <li>
+                      <Icon icon={MapPin} size="sm" /> {profile.location}
+                    </li>
+                  )}
+                  {websiteUrl && (
+                    <li>
+                      <Icon icon={LinkSimple} size="sm" />
+                      <a
+                        href={websiteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {profile.website!.replace(/^https?:\/\//, "")}
+                      </a>
+                    </li>
+                  )}
+                  <li>
+                    <Icon icon={Calendar} size="sm" /> Entrou em{" "}
+                    {new Date(profile.created_at).toLocaleDateString("pt-BR", {
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </li>
+                  <li>
+                    <Icon icon={Article} size="sm" /> {posts.length}{" "}
+                    {posts.length === 1 ? "publicação" : "publicações"}
+                  </li>
+                </ul>
+              </aside>
+
+              <div className="profile-feed">
+                <h3>
+                  {isOwn ? "Minhas publicações" : `Publicações de ${name}`}
+                </h3>
+                {posts.length === 0 ? (
+                  <div className="profile-empty">
+                    <p>
+                      {isOwn
+                        ? "Você ainda não publicou nada."
+                        : `${name} ainda não publicou nada.`}
+                    </p>
+                    {isOwn && (
+                      <Link
+                        to="/feed?action=new"
+                        className="btn btn-primary btn-sm"
+                      >
+                        Criar primeira publicação
+                      </Link>
+                    )}
+                  </div>
+                ) : (
+                  posts.map((pub) => (
+                    <article key={pub.id} className="profile-post">
+                      <div className="profile-post-meta">
+                        <span className="badge badge-sun">{pub.category}</span>
+                        <time dateTime={pub.created_at}>
+                          {formatDate(pub.created_at)}
+                        </time>
+                      </div>
+                      <h4>{pub.title}</h4>
+                      <p>{pub.content}</p>
+                      {pub.image_url && (
+                        <img src={pub.image_url} alt="" loading="lazy" />
+                      )}
+                      <footer>
+                        <Icon icon={ChatCircle} size="sm" />{" "}
+                        {pub.comments_count || 0}{" "}
+                        {pub.comments_count === 1
+                          ? "comentário"
+                          : "comentários"}
+                      </footer>
+                    </article>
+                  ))
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
