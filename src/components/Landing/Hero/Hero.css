@@ -1,58 +1,301 @@
-.hero {
-  padding: 9rem 0 6rem;
+/* ============================================================
+   HERO — xícara que derrama no scroll
+   Variáveis atualizadas pelo Hero.tsx (0 → 1):
+   --tilt  inclinação da xícara      --stream  filete de café
+   --pool  altura da poça marrom     --ink     texto café → creme
+   --steam vapor                     --cup-coffee  café dentro da xícara
+   ============================================================ */
+.hero-pour {
+  --tilt: 0;
+  --stream: 0;
+  --pool: 0;
+  --ink: 0;
+  --steam: 1;
+  --cup-coffee: 1;
+  --hint: 1;
+  --hero-ink: color-mix(
+    in srgb,
+    var(--cream) calc(var(--ink) * 100%),
+    var(--brown)
+  );
+  --cup-line: color-mix(
+    in srgb,
+    var(--sun) calc(var(--ink) * 100%),
+    var(--brown)
+  );
+  --hero-accent: color-mix(
+    in srgb,
+    var(--sun) calc(var(--ink) * 100%),
+    var(--clay)
+  );
+
+  position: relative;
+  height: 240vh;
+  background: var(--brown);
+}
+
+.hero-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--cream);
+}
+
+.hero-grid {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  padding-top: 60px; /* altura da navbar fixa */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 2vh, 1.5rem);
+}
+
+.landing-eyebrow.hero-eyebrow {
+  margin: 0;
   text-align: center;
-  border-bottom: 4px solid var(--sun);
-  background:
-    radial-gradient(
-      ellipse 55% 60% at 85% 0%,
-      color-mix(in srgb, var(--sun) 28%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 50% 60% at 0% 100%,
-      color-mix(in srgb, var(--clay) 45%, transparent),
-      transparent 70%
-    ),
-    var(--brown);
+  color: var(--hero-accent);
 }
 
-.hero h1 {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.02em;
+/* ---------- Título bagunçado, com a xícara entre as palavras ---------- */
+.hero-title {
+  --cup-scale: 0.8;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.12em;
+  font-family: "Titan One", var(--font-heading);
+  font-size: clamp(3.25rem, min(9vw, 15vh), 8.5rem);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--hero-ink);
+  margin-bottom: 0.2em;
 }
 
-.hero h1.gradient-text,
-.footer-logo.gradient-text {
-  background-image: linear-gradient(110deg, var(--cream), var(--sun));
+.hero-word {
+  white-space: nowrap;
+  text-align: center;
+  text-shadow: 0.045em 0.055em 0 var(--hero-accent);
 }
 
+.hero-word:nth-child(1) {
+  flex-basis: 100%;
+  rotate: -4deg;
+}
+
+.hero-word:nth-child(2) {
+  rotate: 5deg;
+  translate: 0 -0.08em;
+}
+
+.hero-word:nth-child(4) {
+  rotate: -3deg;
+  translate: 0 0.1em;
+}
+
+.hero-word > span {
+  display: inline-block;
+  rotate: var(--r);
+  translate: 0 var(--y);
+}
+
+.hero-word > span:nth-child(3n + 1) {
+  --r: -8deg;
+  --y: 0.05em;
+}
+
+.hero-word > span:nth-child(3n + 2) {
+  --r: 6deg;
+  --y: -0.07em;
+}
+
+.hero-word > span:nth-child(3n) {
+  --r: -3deg;
+  --y: 0.03em;
+}
+
+.hero-word > span:nth-child(4n) {
+  --r: 10deg;
+  scale: 1.12;
+}
+
+/* fica embaixo, então vira creme antes do título, quando a poça passa */
+.hero-foot {
+  --hero-ink: color-mix(
+    in srgb,
+    var(--cream) clamp(0%, (var(--pool) * 112 - 18) * 8%, 100%),
+    var(--brown)
+  );
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+/* estreito para o filete de café cair ao lado, sem cruzar o texto */
 .hero-subtitle {
-  font-size: 1.25rem;
-  color: color-mix(in srgb, var(--cream) 82%, var(--brown));
-  max-width: 800px;
-  margin: 0 auto 2.5rem;
+  max-width: min(24rem, 30%);
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--hero-ink);
 }
 
 .hero-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
-  justify-content: center;
 }
 
-.hero .btn-secondary {
-  border-color: color-mix(in srgb, var(--cream) 45%, transparent);
+.hero-pour .btn-secondary {
+  border-color: var(--hero-ink);
   background: transparent;
-  color: var(--cream);
+  color: var(--hero-ink);
 }
 
-.hero .btn-secondary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--cream) 14%, transparent);
-  color: var(--sun);
+.hero-pour .btn-secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--hero-ink) 12%, transparent);
+}
+
+.hero-hint {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  opacity: var(--hint);
+}
+
+/* ---------- Xícara ---------- */
+.hero-cup {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 340px;
+  margin: 0 40px; /* folga para girar sem encostar nas letras */
+  zoom: var(--cup-scale);
+}
+
+/* gira no próprio eixo: o centro do corpo da xícara, em unidades do viewBox */
+.hero-cup-tilt {
+  transform-origin: 150px 170px;
+  transform: rotate(calc(var(--tilt) * -108deg));
+  will-change: transform;
+}
+
+.hero-cup-svg {
+  display: block;
+  overflow: visible;
+}
+
+.hero-cup-steam {
+  opacity: var(--steam);
+}
+
+.hero-cup-coffee {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scaleX(calc(1 - var(--tilt) * 0.35));
+  opacity: var(--cup-coffee);
+}
+
+/* filete sai da borda da xícara já inclinada e cai por trás do texto */
+.hero-stream {
+  position: absolute;
+  z-index: -1;
+  left: 111px;
+  top: 280px;
+  width: 16px;
+  height: 200vh;
+  border-radius: 8px;
+  background: var(--brown);
+  transform-origin: top center;
+  transform: scaleY(var(--stream));
+  opacity: calc(var(--stream) * 40);
+}
+
+.hero-stage .landing-beans {
+  z-index: 1;
+}
+
+/* ---------- Poça que vira a cor da página ---------- */
+.hero-pool {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  height: calc(var(--pool) * 112%);
+  background: var(--brown);
+  /* esconde a onda enquanto a poça ainda não começou a subir */
+  transform: translateY(calc(60px - min(var(--pool) * 1800px, 60px)));
+}
+
+.hero-pool-wave {
+  position: absolute;
+  left: 0;
+  top: -59px;
+  width: 100%;
+  height: 60px;
+  display: block;
+  fill: var(--brown);
 }
 
 @media (max-width: 768px) {
-  .hero h1 {
-    font-size: 2.5rem;
+  .hero-title {
+    --cup-scale: 0.5;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    row-gap: 0.12em;
+    font-size: clamp(3rem, 17vw, 5rem);
+  }
+
+  .hero-word:nth-child(1) {
+    flex-basis: auto;
+  }
+
+  .hero-foot {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .hero-subtitle {
+    max-width: none;
+    font-size: 1rem;
+  }
+
+  .hero-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) and (max-height: 720px) {
+  .hero-subtitle {
+    display: none;
+  }
+}
+
+/* Sem animação: hero estático, sem palco preso nem poça */
+@media (prefers-reduced-motion: reduce) {
+  .hero-pour {
+    height: auto;
+  }
+
+  .hero-stage {
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .hero-stream,
+  .hero-pool {
+    display: none;
   }
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import CoffeeBeans from "../CoffeeBeans";
 import "./Projects.css";
 
 export type Project = {
@@ -36,8 +37,18 @@ const projects: Project[] = [
 
 const Projects: React.FC = () => {
   return (
-    <section id="projects" className="projects-section">
+    <section id="projects" className="projects-section landing-dark">
+      <CoffeeBeans
+        beans={[
+          [92, 6, 30, -40],
+          [2, 48, 26, 20],
+          [96, 78, 22, 70],
+        ]}
+      />
       <div className="container">
+        <span className="landing-eyebrow reveal">
+          {"// o que estamos fermentando"}
+        </span>
         <h2 className="landing-title reveal">Projetos em Destaque</h2>
         <div className="projects-grid">
           {projects.map((p, i) => (

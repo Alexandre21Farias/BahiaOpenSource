@@ -14,6 +14,10 @@
   align-items: center;
 }
 
+.footer-logo.gradient-text {
+  background-image: linear-gradient(110deg, var(--cream), var(--sun));
+}
+
 .footer-logo {
   font-size: 1.5rem;
   font-weight: 800;
