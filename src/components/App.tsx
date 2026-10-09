@@ -9,6 +9,7 @@ import { Profile } from "../pages/Profile/Profile";
 import { Feed } from "../pages/Feed/Feed";
 import Home from "../pages/Home";
 import { UiDemo } from "../pages/UiDemo";
+import { DesignSystem } from "../pages/DesignSystem";
 
 function App(): React.JSX.Element {
   return (
@@ -18,6 +19,7 @@ function App(): React.JSX.Element {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/ui-demo" element={<UiDemo />} />
+            <Route path="/design-system" element={<DesignSystem />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:username" element={<Profile />} />

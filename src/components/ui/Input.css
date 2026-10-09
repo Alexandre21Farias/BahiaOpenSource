@@ -34,13 +34,11 @@
   padding: 0.75rem 1rem 0.75rem 3rem;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: rgba(9, 14, 23, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--surface);
   font-family: var(--font-main);
   font-size: 0.95rem;
   color: var(--text-bright);
-  caret-color: var(--color-accent);
+  caret-color: var(--brown);
   transition-property: border-color, box-shadow, background-color;
   transition-duration: var(--duration-normal);
   transition-timing-function: var(--ease-out);
@@ -60,12 +58,12 @@
 
 .input-field:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.14);
+  border-color: var(--brown);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sun) 50%, transparent);
 }
 
 .input-container:focus-within .input-icon {
-  color: var(--color-primary);
+  color: var(--brown);
 }
 
 .input-right-element {
@@ -90,17 +88,17 @@
 }
 
 .password-toggle-btn:hover {
-  color: var(--color-primary);
+  color: var(--brown);
 }
 
 .input-error .input-field {
-  border-color: var(--color-danger);
-  box-shadow: 0 0 0 3px rgba(255, 100, 124, 0.12);
+  border-color: var(--clay);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--clay) 15%, transparent);
 }
 
 .error-text {
   display: block;
   margin-top: 0.4rem;
   font-size: 0.82rem;
-  color: var(--color-danger);
+  color: var(--clay);
 }
