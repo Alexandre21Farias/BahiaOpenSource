@@ -162,7 +162,6 @@ export function Register() {
               className="password-toggle-btn"
               onClick={() => setShowPassword(!showPassword)}
               title={showPassword ? "Ocultar senha" : "Exibir senha"}
-              tabIndex={-1}
             >
               {showPassword ? (
                 <Icon icon={EyeSlash} size="md" />
