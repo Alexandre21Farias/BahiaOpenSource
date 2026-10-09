@@ -1,16 +1,69 @@
 .about-section {
-  background: var(--sand);
+  padding-top: 7rem;
 }
 
 .about-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: 4rem;
+  align-items: center;
 }
 
-@media (max-width: 768px) {
+.about-photo {
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 4px solid var(--sun);
+  box-shadow: var(--shadow-lg);
+  transform: rotate(-2deg);
+}
+
+.about-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-copy > p {
+  max-width: 38rem;
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--cream) 85%, var(--brown));
+}
+
+.about-heading {
+  margin-bottom: 1rem;
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+}
+
+.about-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.about-cards .landing-card {
+  padding: 2rem;
+}
+
+@media (max-width: 900px) {
   .about-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  .about-photo {
+    max-width: 280px;
+  }
+
+  .about-cards {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

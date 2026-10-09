@@ -1,7 +1,7 @@
 /* ============================================================
    LANDING — padrão compartilhado
-   Faixas: Hero (café) · Sobre (areia) · Projetos (creme) · Rodapé (café).
-   Em faixa clara: cards claros, texto café/terra. Em faixa café: texto creme/sol.
+   Faixas: Hero (creme → café no scroll) · Sobre, Projetos, Participe e Rodapé (café).
+   Cards continuam claros; títulos e texto soltos na faixa café ficam creme/sol.
    ============================================================ */
 .landing-title {
   margin-bottom: 2.5rem;
@@ -59,4 +59,23 @@
   color: var(--sun);
   font-size: 0.8rem;
   font-weight: 700;
+}
+
+/* Depois que o café derrama, a landing inteira fica na faixa café */
+.landing-dark {
+  background: var(--brown);
+  color: var(--cream);
+}
+
+.landing-dark .landing-title {
+  color: var(--cream);
+}
+
+.landing-eyebrow {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--sun);
 }

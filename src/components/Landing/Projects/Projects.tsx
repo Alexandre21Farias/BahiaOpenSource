@@ -36,8 +36,11 @@ const projects: Project[] = [
 
 const Projects: React.FC = () => {
   return (
-    <section id="projects" className="projects-section">
+    <section id="projects" className="projects-section landing-dark">
       <div className="container">
+        <span className="landing-eyebrow reveal">
+          {"// o que estamos fermentando"}
+        </span>
         <h2 className="landing-title reveal">Projetos em Destaque</h2>
         <div className="projects-grid">
           {projects.map((p, i) => (

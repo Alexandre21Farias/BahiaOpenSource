@@ -1,0 +1,36 @@
+.join-section {
+  padding-bottom: 7rem;
+}
+
+.join-title {
+  margin-bottom: 1.25rem;
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.join-text {
+  max-width: 34rem;
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+  color: color-mix(in srgb, var(--cream) 85%, var(--brown));
+}
+
+.join-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.join-section .join-secondary {
+  border-color: color-mix(in srgb, var(--cream) 45%, transparent);
+  background: transparent;
+  color: var(--cream);
+}
+
+.join-section .join-secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cream) 14%, transparent);
+  color: var(--sun);
+}
