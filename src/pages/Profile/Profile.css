@@ -80,6 +80,30 @@
   outline-width: 2px;
 }
 
+.profile-avatar-edit {
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.profile-avatar-badge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brown);
+  color: var(--sun);
+  border: 2px solid var(--surface);
+}
+
+.profile-avatar-edit:hover .profile-avatar-badge {
+  background: var(--clay);
+}
+
 .profile-main h1 {
   font-size: 1.9rem;
 }

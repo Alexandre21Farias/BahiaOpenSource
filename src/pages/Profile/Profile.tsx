@@ -8,6 +8,7 @@ import {
 import {
   At,
   Calendar,
+  Camera,
   ChatCircle,
   FloppyDisk,
   LinkSimple,
@@ -23,6 +24,7 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
+import { AVATAR_MAX_BYTES, uploadAvatar } from "../../services/avatars";
 import {
   fetchUserPublications,
   Publication,
@@ -118,6 +120,8 @@ export function Profile() {
       website: profile.website ?? "",
     });
     setError(null);
+    setAvatarFile(null);
+    setAvatarPreview(null);
     setEditing(true);
   }, [profile]);
 
@@ -127,6 +131,29 @@ export function Profile() {
       setParams({}, { replace: true });
     }
   }, [params, isOwn, startEdit, setParams]);
+
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  useEffect(
+    () => () => {
+      if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    },
+    [avatarPreview],
+  );
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/") || file.size > AVATAR_MAX_BYTES) {
+      setError("Escolha uma imagem de até 2 MB.");
+      return;
+    }
+    setError(null);
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
 
   const field =
     (key: keyof typeof form) =>
@@ -147,7 +174,19 @@ export function Profile() {
 
     setSaving(true);
     setError(null);
+    let avatar_url = profile.avatar_url;
+    if (avatarFile) {
+      try {
+        avatar_url = await uploadAvatar(user.id, avatarFile);
+      } catch (err) {
+        console.error("Erro ao enviar avatar:", err);
+        setSaving(false);
+        setError("Não foi possível enviar a foto. Tente novamente.");
+        return;
+      }
+    }
     const changes = {
+      avatar_url,
       full_name: form.full_name.trim(),
       username,
       bio: form.bio.trim(),
@@ -212,11 +251,23 @@ export function Profile() {
         {editing ? (
           <form className="profile-edit" onSubmit={handleSave}>
             <div className="profile-edit-head">
-              <img
-                src={avatar}
-                alt=""
-                className="profile-avatar profile-avatar-sm"
-              />
+              <label className="profile-avatar-edit" title="Trocar foto">
+                <img
+                  src={avatarPreview ?? avatar}
+                  alt=""
+                  className="profile-avatar profile-avatar-sm"
+                />
+                <span className="profile-avatar-badge">
+                  <Icon icon={Camera} size="sm" />
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleAvatarChange}
+                  disabled={saving}
+                />
+              </label>
               <div>
                 <h2>Editar perfil</h2>
                 <p>
