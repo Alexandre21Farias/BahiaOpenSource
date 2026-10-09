@@ -1,4 +1,5 @@
 import React from "react";
+import "../components/Landing/Landing.css";
 import Hero from "../components/Landing/Hero/Hero";
 import About from "../components/Landing/About/About";
 import Projects from "../components/Landing/Projects/Projects";

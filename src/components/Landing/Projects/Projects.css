@@ -1,9 +1,3 @@
-.section-title {
-  font-size: 2.5rem;
-  margin-bottom: 3rem;
-  text-align: center;
-}
-
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -11,72 +5,37 @@
 }
 
 .project-card {
-  padding: 2.5rem;
-  border-radius: 32px;
-  position: relative;
   overflow: hidden;
-  transition: var(--transition);
-  border: 1px solid var(--bahia-border);
-  background: white;
 }
 
 .project-card:hover {
-  transform: translateY(-10px);
-  border-color: var(--bahia-accent);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-}
-
-.project-tag {
-  display: inline-block;
-  padding: 0.2rem 0.8rem;
-  background: var(--bahia-accent-glow);
-  color: var(--bahia-accent);
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-}
-
-.project-card h3 {
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  color: var(--bahia-blue);
-}
-
-.project-description {
-  margin: 0.5rem 0 1.5rem;
-  font-size: 1rem;
-  color: var(--bahia-text);
-  line-height: 1.7;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  transform: translateY(-6px);
+  border-color: var(--brown);
+  box-shadow: var(--shadow-lg);
 }
 
 .status-badge-dev {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
-  background: #fefce8;
-  color: #854d0e;
+  background: color-mix(in srgb, var(--sun) 22%, var(--cream));
+  color: var(--brown);
   padding: 0.4rem 0.8rem;
-  border-radius: 50px;
+  border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid #fef08a;
-  box-shadow: 0 2px 10px rgba(250, 204, 21, 0.1);
+  border: 1px solid var(--sun);
+  box-shadow: var(--shadow-sm);
   animation: float 3s ease-in-out infinite;
 }
 
 .status-badge-dev .dot {
   width: 6px;
   height: 6px;
-  background: #eab308;
+  background: var(--clay);
   border-radius: 50%;
   animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -105,9 +64,22 @@
   }
 }
 
+.project-description {
+  margin: 0.5rem 0 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .project-link {
   display: inline-block;
-  margin-top: 1.5rem;
   font-weight: 600;
-  color: var(--bahia-accent);
+  color: var(--navy);
+  border-bottom: 2px solid var(--sun);
+}
+
+.project-link:hover {
+  color: var(--clay);
 }
