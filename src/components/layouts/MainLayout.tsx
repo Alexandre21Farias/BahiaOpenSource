@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { Icon } from "../ui/icon";
 import {
-  MagnifyingGlass,
-  Code,
   ChatCircle,
   ListBullets,
   Gear,
@@ -96,14 +94,6 @@ export function MainLayout() {
         <div className="navbar-left">
           <Link to="/" className="logo-terminal">
             OpenBahia
-          </Link>
-
-          <Link to="/code" className="nav-icon-btn" title="Código / Exercícios">
-            <Icon icon={Code} size="sm" />
-          </Link>
-
-          <Link to="/search" className="nav-icon-btn" title="Buscar">
-            <Icon icon={MagnifyingGlass} size="sm" />
           </Link>
 
           <Link to="/feed" className="nav-forum-btn">

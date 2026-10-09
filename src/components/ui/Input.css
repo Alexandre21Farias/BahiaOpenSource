@@ -32,12 +32,12 @@
   width: 100%;
   min-height: 46px;
   padding: 0.75rem 1rem 0.75rem 3rem;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--surface);
   font-family: var(--font-main);
   font-size: 0.95rem;
-  color: var(--text-bright);
+  color: var(--text);
   caret-color: var(--brown);
   transition-property: border-color, box-shadow, background-color;
   transition-duration: var(--duration-normal);
@@ -45,7 +45,7 @@
 }
 
 .input-field:hover:not(:focus) {
-  border-color: var(--border-hover);
+  border-color: var(--mocha);
 }
 
 .input-field::placeholder {

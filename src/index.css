@@ -136,36 +136,13 @@
   --sidebar-ring: var(--brown);
 }
 
-/* Ponte: nomes antigos (tema escuro) -> paleta Sol da Bahia */
+/* Utilitários de transição e tons derivados */
 :root {
-  --border-subtle: var(--border);
-  --border-hover: var(--mocha);
-  --border-glow: var(--sun);
-  --text-bright: var(--text);
-  --surface-1: var(--surface);
-  --font-display: var(--font-main);
   --transition-props:
     color, background-color, border-color, box-shadow, transform, opacity;
   --transition: all var(--duration-normal) var(--ease-out);
-  --color-danger: var(--clay);
   --danger-soft: color-mix(in srgb, var(--clay) 10%, var(--surface));
-  --color-on-primary: var(--on-primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-sun-hover: var(--primary-hover);
-  --color-bg: var(--bg);
-  --color-bg-secondary: var(--bg-soft);
-  --color-bg-tertiary: var(--bg-sky);
   --primary-glow: color-mix(in srgb, var(--sun) 45%, transparent);
-  --primary-soft: color-mix(in srgb, var(--sun) 20%, transparent);
-  --sun-glow: var(--primary-glow);
-  --red-star: var(--clay);
-  --supernova-cyan: var(--steel);
-  --bahia-accent: var(--clay);
-  --bahia-accent-glow: color-mix(in srgb, var(--sun) 22%, transparent);
-  --bahia-blue: var(--brown);
-  --bahia-text: var(--text-mid);
-  --bahia-surface: var(--surface);
-  --bahia-border: var(--border);
 }
 
 /* ============================================================
@@ -657,7 +634,7 @@ dt {
 }
 
 .btn-outline {
-  background: var(--surface-1);
+  background: var(--surface);
   border-color: var(--border);
   color: var(--brown);
 }

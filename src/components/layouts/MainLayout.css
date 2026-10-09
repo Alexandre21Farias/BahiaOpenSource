@@ -35,14 +35,13 @@
   align-items: center;
   gap: 0.4rem;
   margin-right: 0.5rem;
-  font-family: var(--font-display);
+  font-family: var(--font-main);
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--cream);
 }
 
-.nav-icon-btn,
 .user-menu-trigger {
   display: flex;
   align-items: center;
@@ -56,18 +55,12 @@
   transition-timing-function: var(--ease-out);
 }
 
-.nav-icon-btn {
-  padding: 0.4rem 0.6rem;
-  border-radius: var(--radius-sm);
-}
-
 .user-menu-trigger {
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
   border-radius: var(--radius-sm);
 }
 
-.nav-icon-btn:hover,
 .user-menu-trigger:hover {
   background: color-mix(in srgb, var(--cream) 18%, transparent);
   border-color: var(--sun);
