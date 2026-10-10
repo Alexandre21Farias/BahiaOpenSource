@@ -4,7 +4,7 @@ import "./Join.css";
 
 const Join: React.FC = () => {
   return (
-    <section id="join" className="join-section landing-dark">
+    <section id="join" className="join-section landing-dark landing-blue">
       <CoffeeBeans
         beans={[
           [70, 14, 38, 25],

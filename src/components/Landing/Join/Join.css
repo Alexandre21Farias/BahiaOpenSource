@@ -8,14 +8,14 @@
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: -0.03em;
-  color: var(--cream);
+  color: var(--brown);
 }
 
 .join-text {
   max-width: 34rem;
   margin-bottom: 2rem;
   font-size: 1.125rem;
-  color: color-mix(in srgb, var(--cream) 85%, var(--brown));
+  color: color-mix(in srgb, var(--brown) 90%, var(--steel));
 }
 
 .join-actions {
@@ -25,12 +25,12 @@
 }
 
 .join-section .join-secondary {
-  border-color: color-mix(in srgb, var(--cream) 45%, transparent);
+  border-color: var(--brown);
   background: transparent;
-  color: var(--cream);
+  color: var(--brown);
 }
 
 .join-section .join-secondary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--cream) 14%, transparent);
-  color: var(--sun);
+  background: color-mix(in srgb, var(--brown) 12%, transparent);
+  color: var(--brown);
 }

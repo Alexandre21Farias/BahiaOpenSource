@@ -1,5 +1,6 @@
 import React from "react";
 import CoffeeBeans from "../CoffeeBeans";
+import Drip from "../Drip";
 import "./Projects.css";
 
 export type Project = {
@@ -37,10 +38,14 @@ const projects: Project[] = [
 
 const Projects: React.FC = () => {
   return (
-    <section id="projects" className="projects-section landing-dark">
+    <section
+      id="projects"
+      className="projects-section landing-dark landing-blue"
+    >
+      <Drip />
       <CoffeeBeans
         beans={[
-          [92, 6, 30, -40],
+          [92, 42, 30, -40],
           [2, 48, 26, 20],
           [96, 78, 22, 70],
         ]}

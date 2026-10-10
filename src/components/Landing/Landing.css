@@ -73,6 +73,28 @@
   z-index: 1;
 }
 
+/* Faixa azul (depois do Sobre): o café escorre para o azul */
+.landing-blue {
+  background: var(--steel);
+  color: var(--brown);
+}
+
+.landing-dark.landing-blue .landing-title,
+.landing-dark.landing-blue .landing-eyebrow {
+  color: var(--brown);
+}
+
+.landing-drip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: clamp(130px, 18vw, 230px);
+  display: block;
+  fill: var(--brown);
+  pointer-events: none;
+}
+
 /* Grãos de café soltos no fundo (CoffeeBeans.tsx) */
 .landing-beans {
   --bean-crease: var(--brown);
