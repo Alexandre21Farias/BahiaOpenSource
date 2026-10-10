@@ -59,25 +59,35 @@ export function MainLayout() {
 
   // Hide header on scroll down, show on scroll up
   const [showNavbar, setShowNavbar] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const update = () => {
+      ticking = false;
       const currentScrollY = window.scrollY;
 
-      // Hide if scrolling down more than 10px from top, show if scrolling up
+      // setState só quando o valor muda (evita re-render a cada pixel rolado)
       if (currentScrollY > lastScrollY && currentScrollY > 75) {
         setShowNavbar(false);
       } else if (currentScrollY < lastScrollY) {
         setShowNavbar(true);
       }
 
-      setLastScrollY(currentScrollY);
+      lastScrollY = currentScrollY;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   const handleSignOut = async () => {
     setDropdownOpen(false);
