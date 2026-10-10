@@ -26,6 +26,18 @@ import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
 import { AVATAR_MAX_BYTES, uploadAvatar } from "../../services/avatars";
 import {
+  EMPTY_CAREER,
+  normalizeGithub,
+  normalizeLinkedin,
+  parseSkills,
+  removeResume,
+  RESUME_MAX_BYTES,
+  uploadResume,
+  type CareerForm,
+} from "../../services/career";
+import type { JobLevel, WorkMode } from "../../services/jobs";
+import { ProfileCareerFields, ProfileCareerView } from "./ProfileCareer";
+import {
   fetchUserPublications,
   Publication,
 } from "../../services/publications";
@@ -40,6 +52,15 @@ interface ProfileData {
   location: string | null;
   website: string | null;
   created_at: string;
+  headline: string | null;
+  experience_level: JobLevel | null;
+  skills: string[];
+  work_modes: string[];
+  open_to_work: boolean;
+  github_url: string | null;
+  linkedin_url: string | null;
+  resume_path: string | null;
+  resume_public: boolean;
 }
 
 const EMPTY_FORM = {
@@ -71,6 +92,9 @@ export function Profile() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
+  const [career, setCareer] = useState<CareerForm>(EMPTY_CAREER);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [resumeRemoved, setResumeRemoved] = useState(false);
 
   const cleanUsername = paramUsername?.replace(/^@/, "").trim() || null;
   const isOwn = Boolean(user && profile && user.id === profile.id);
@@ -119,6 +143,18 @@ export function Profile() {
       location: profile.location ?? "",
       website: profile.website ?? "",
     });
+    setCareer({
+      headline: profile.headline ?? "",
+      experience_level: profile.experience_level ?? "",
+      skills: profile.skills.join(", "),
+      work_modes: profile.work_modes as WorkMode[],
+      open_to_work: profile.open_to_work,
+      github: profile.github_url?.replace("https://github.com/", "") ?? "",
+      linkedin: profile.linkedin_url?.replace(/^https:\/\//, "") ?? "",
+      resume_public: profile.resume_public,
+    });
+    setResumeFile(null);
+    setResumeRemoved(false);
     setError(null);
     setAvatarFile(null);
     setAvatarPreview(null);
@@ -172,6 +208,17 @@ export function Profile() {
       return;
     }
 
+    const github_url = normalizeGithub(career.github);
+    if (github_url === undefined) {
+      setError("Informe só o usuário do GitHub (ex.: octocat).");
+      return;
+    }
+    const linkedin_url = normalizeLinkedin(career.linkedin);
+    if (linkedin_url === undefined) {
+      setError("Use o endereço do seu perfil, como linkedin.com/in/usuario.");
+      return;
+    }
+
     setSaving(true);
     setError(null);
     let avatar_url = profile.avatar_url;
@@ -185,8 +232,28 @@ export function Profile() {
         return;
       }
     }
+    let resume_path = resumeRemoved ? null : profile.resume_path;
+    try {
+      if (resumeFile) resume_path = await uploadResume(user.id, resumeFile);
+      else if (resumeRemoved && profile.resume_path)
+        await removeResume(profile.resume_path);
+    } catch (err) {
+      console.error("Erro ao enviar currículo:", err);
+      setSaving(false);
+      setError("Não foi possível salvar o currículo. Tente novamente.");
+      return;
+    }
     const changes = {
       avatar_url,
+      headline: career.headline.trim() || null,
+      experience_level: career.experience_level || null,
+      skills: parseSkills(career.skills),
+      work_modes: career.work_modes,
+      open_to_work: career.open_to_work,
+      github_url,
+      linkedin_url,
+      resume_path,
+      resume_public: resume_path ? career.resume_public : false,
       full_name: form.full_name.trim(),
       username,
       bio: form.bio.trim(),
@@ -338,6 +405,35 @@ export function Profile() {
               </div>
             </div>
 
+            <ProfileCareerFields
+              value={career}
+              onChange={setCareer}
+              disabled={saving}
+              resumeName={
+                resumeFile
+                  ? resumeFile.name
+                  : profile.resume_path && !resumeRemoved
+                    ? "curriculo.pdf"
+                    : null
+              }
+              onPickResume={(file) => {
+                if (
+                  file.type !== "application/pdf" ||
+                  file.size > RESUME_MAX_BYTES
+                ) {
+                  setError("Envie um PDF de até 5 MB.");
+                  return;
+                }
+                setError(null);
+                setResumeFile(file);
+                setResumeRemoved(false);
+              }}
+              onRemoveResume={() => {
+                setResumeFile(null);
+                setResumeRemoved(true);
+              }}
+            />
+
             <div className="profile-edit-foot">
               <Button
                 type="button"
@@ -362,6 +458,9 @@ export function Profile() {
                 <p className="profile-handle">
                   @{profile.username || profile.id.slice(0, 8)}
                 </p>
+                {profile.headline && (
+                  <p className="profile-headline">{profile.headline}</p>
+                )}
                 <p className="profile-bio">
                   {profile.bio || "Ainda sem biografia por aqui."}
                 </p>
@@ -418,6 +517,11 @@ export function Profile() {
                     {posts.length === 1 ? "publicação" : "publicações"}
                   </li>
                 </ul>
+                <ProfileCareerView
+                  profile={profile}
+                  isOwn={isOwn}
+                  loggedIn={Boolean(user)}
+                />
               </aside>
 
               <div className="profile-feed">
