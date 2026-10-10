@@ -252,8 +252,7 @@ export async function uploadPublicationImage(
   file: File,
 ): Promise<string> {
   const fileExt = file.name.split(".").pop();
-  const fileName = `${userId}_${Math.random()}.${fileExt}`;
-  const filePath = `${fileName}`;
+  const filePath = `${userId}/${crypto.randomUUID()}.${fileExt}`;
 
   const { error: uploadError } = await supabase.storage
     .from("publications")
