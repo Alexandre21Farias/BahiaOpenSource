@@ -1,7 +1,14 @@
 import { supabase } from "../lib/supabase";
 
 export type WorkMode = "remote" | "hybrid" | "onsite";
-export type JobType = "clt" | "pj" | "estagio" | "freelance" | "voluntario";
+export type JobType =
+  | "clt"
+  | "pj"
+  | "estagio"
+  | "freelance"
+  | "voluntario"
+  | "outro";
+export type JobSource = "remotive" | "remoteok" | "jobicy";
 export type JobLevel = "estagio" | "junior" | "pleno" | "senior";
 
 export const WORK_MODE_LABELS: Record<WorkMode, string> = {
@@ -16,6 +23,14 @@ export const JOB_TYPE_LABELS: Record<JobType, string> = {
   estagio: "Estágio",
   freelance: "Freelance",
   voluntario: "Voluntário",
+  outro: "Outro",
+};
+
+/** Fontes de vagas importadas (exigem citar o nome e linkar a vaga original). */
+export const SOURCE_LABELS: Record<JobSource, string> = {
+  remotive: "Remotive",
+  remoteok: "Remote OK",
+  jobicy: "Jobicy",
 };
 
 export const JOB_LEVEL_LABELS: Record<JobLevel, string> = {
@@ -27,7 +42,8 @@ export const JOB_LEVEL_LABELS: Record<JobLevel, string> = {
 
 export interface Job {
   id: string;
-  user_id: string;
+  /** null em vagas importadas */
+  user_id: string | null;
   title: string;
   company: string;
   description: string;
@@ -39,6 +55,8 @@ export interface Job {
   tags: string[];
   apply_url: string | null;
   apply_email: string | null;
+  source: JobSource | null;
+  source_url: string | null;
   is_open: boolean;
   expires_at: string;
   created_at: string;

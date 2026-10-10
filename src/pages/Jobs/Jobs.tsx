@@ -9,6 +9,7 @@ import {
   fetchJobs,
   JOB_LEVEL_LABELS,
   JOB_TYPE_LABELS,
+  SOURCE_LABELS,
   WORK_MODE_LABELS,
   type Job,
   type JobType,
@@ -139,6 +140,7 @@ export function Jobs() {
                 <p className="job-card-company">
                   {job.company}
                   {job.location ? ` · ${job.location}` : ""}
+                  {job.source ? ` · via ${SOURCE_LABELS[job.source]}` : ""}
                 </p>
                 <div className="job-badges">
                   <span className="job-badge">
