@@ -1,9 +1,10 @@
 -- Importacao de vagas de tecnologia (Remotive, RemoteOK, Jobicy).
 -- Ja aplicado em producao via execute_sql; nao reexecutar.
 -- Pre-requisito (ja habilitado): extensao pg_net.
--- NAO ha agendamento automatico aqui: as funcoes so rodam quando chamadas
+-- As funcoes podem ser chamadas manualmente:
 --   select private.fetch_job_feeds();   -- dispara as consultas HTTP
 --   select private.process_job_feeds(); -- importa as respostas recebidas
+-- O agendamento (pg_cron) esta no fim do arquivo.
 -- As tres fontes exigem atribuicao (nome da fonte + link para a vaga original).
 
 -- Vagas importadas nao tem autor humano
@@ -196,9 +197,7 @@ declare
 begin
   for u in
     select * from (values
-      ('remotive', 'https://remotive.com/api/remote-jobs?category=software-dev'),
-      ('remotive', 'https://remotive.com/api/remote-jobs?category=devops'),
-      ('remotive', 'https://remotive.com/api/remote-jobs?category=data'),
+      ('remotive', 'https://remotive.com/api/remote-jobs'),
       ('remoteok', 'https://remoteok.com/api'),
       ('jobicy',   'https://jobicy.com/api/v2/remote-jobs?count=50&geo=brazil'),
       ('jobicy',   'https://jobicy.com/api/v2/remote-jobs?count=50&geo=latam')
@@ -245,3 +244,10 @@ alter policy jobs_insert on public.jobs
   with check (user_id = (select auth.uid()) and source is null and external_id is null and source_url is null);
 alter policy jobs_update on public.jobs
   with check (user_id = (select auth.uid()) and source is null and external_id is null and source_url is null);
+
+-- Agendamento automatico (aplicado em producao via execute_sql)
+--  * busca 2x/dia: 09:17 e 21:17 UTC (Remotive aceita ~4 consultas/dia; Jobicy 1/hora)
+--  * processa as respostas a cada 5 min (so trabalha se houver requisicao pendente)
+-- Para pausar:  select cron.alter_job((select jobid from cron.job where jobname = 'jobs-fetch-feeds'), active := false);
+select cron.schedule('jobs-fetch-feeds', '17 9,21 * * *', 'select private.fetch_job_feeds()');
+select cron.schedule('jobs-process-feeds', '*/5 * * * *', 'select private.process_job_feeds()');
