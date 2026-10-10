@@ -1,5 +1,6 @@
 import React from "react";
 import CoffeeBeans from "../CoffeeBeans";
+import { links } from "../content";
 import "./Join.css";
 
 const Join: React.FC = () => {
@@ -26,7 +27,7 @@ const Join: React.FC = () => {
         </p>
         <div className="join-actions reveal reveal-delay-2">
           <a
-            href="https://discord.gg/4f5Up8sk"
+            href={links.discord}
             className="btn btn-primary"
             target="_blank"
             rel="noreferrer"
@@ -34,7 +35,7 @@ const Join: React.FC = () => {
             Entrar no Discord
           </a>
           <a
-            href="https://github.com/Alexandre21Farias/BahiaOpenSource"
+            href={links.github}
             className="btn btn-secondary join-secondary"
             target="_blank"
             rel="noreferrer"

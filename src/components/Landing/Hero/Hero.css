@@ -250,9 +250,7 @@
   /* sobe só com transform (composição na GPU, sem recalcular layout);
      esconde a onda enquanto a poça ainda não começou a subir */
   transform: translateY(
-    calc(
-      (1 - var(--pool)) * 100% + 60px - min(var(--pool) * 1800px, 60px)
-    )
+    calc((1 - var(--pool)) * 100% + 60px - min(var(--pool) * 1800px, 60px))
   );
   will-change: transform;
 }
