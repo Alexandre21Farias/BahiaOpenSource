@@ -163,7 +163,7 @@ begin
         v_level := private.level_from_title(v_title, e->>'jobLevel');
       end if;
 
-      v_title := private.fix_text(v_title); v_company := private.fix_text(v_company); v_loc := private.fix_text(v_loc);
+      v_title := private.fix_text(v_title); v_company := private.fix_text(v_company); v_loc := regexp_replace(btrim(private.fix_text(v_loc)), '\s{2,}', ' ', 'g');
       if not private.accepts_brazil(v_loc) or v_url !~* '^https?://' or v_id is null then
         n_skip := n_skip + 1; continue;
       end if;
