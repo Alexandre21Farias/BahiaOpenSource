@@ -1,0 +1,268 @@
+/* ============================================================
+   VAGAS
+   ============================================================ */
+
+.jobs-page {
+  min-height: calc(100vh - 75px);
+  background-color: var(--bg);
+  padding: 85px var(--space-4) var(--space-12);
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.jobs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+
+.jobs-header h1 {
+  margin: 0 0 var(--space-1);
+  font-size: 1.75rem;
+  color: var(--heading);
+}
+
+.jobs-header p,
+.jobs-muted {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.jobs-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-mid);
+  font-size: 0.85rem;
+  margin-bottom: var(--space-4);
+}
+
+/* ---------- Formulário ---------- */
+.job-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.jobs-textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--space-3);
+  font: inherit;
+}
+
+.job-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+}
+
+.job-form-row label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+  color: var(--text-mid);
+}
+
+.job-form-row select,
+.jobs-filters select {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+}
+
+.jobs-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* ---------- Filtros ---------- */
+.jobs-filters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+
+.jobs-search {
+  flex: 1 1 240px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-muted);
+  padding: 0 var(--space-3);
+}
+
+.jobs-search input {
+  flex: 1;
+  border: none;
+  background: none;
+  color: var(--text);
+  padding: var(--space-2) 0;
+  font: inherit;
+  outline: none;
+}
+
+/* ---------- Lista ---------- */
+.jobs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.job-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  color: var(--text);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.job-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.job-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: baseline;
+}
+
+.job-card h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--heading);
+}
+
+.job-card-date {
+  color: var(--text-ghost);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.job-card-company {
+  margin: var(--space-1) 0 var(--space-3);
+  color: var(--text-mid);
+  font-size: 0.92rem;
+}
+
+.job-badges {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.job-badge {
+  background: var(--sand);
+  color: var(--text-mid);
+  border-radius: 999px;
+  padding: 2px var(--space-3);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.job-badge-salary {
+  background: color-mix(in srgb, var(--sun) 28%, var(--cream));
+  color: var(--brown);
+}
+
+.job-tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+  color: var(--info);
+  font-size: 0.82rem;
+}
+
+.jobs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-12) var(--space-4);
+}
+
+/* ---------- Detalhe ---------- */
+.job-detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+}
+
+.job-detail h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--heading);
+}
+
+.job-closed {
+  background: color-mix(in srgb, var(--clay) 12%, var(--cream));
+  color: var(--danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-4);
+  font-size: 0.9rem;
+}
+
+.job-description {
+  margin-top: var(--space-5);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.job-apply,
+.job-owner-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-5);
+}
+
+.job-owner-actions {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+}
+
+.job-disclaimer {
+  margin: var(--space-5) 0 0;
+  color: var(--text-ghost);
+  font-size: 0.8rem;
+}

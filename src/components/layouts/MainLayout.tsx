@@ -115,6 +115,10 @@ export function MainLayout() {
             Projetos
           </Link>
 
+          <Link to="/vagas" className="nav-forum-btn">
+            Vagas
+          </Link>
+
           {pathname === "/" && (
             <nav className="navbar-sections" aria-label="Seções da página">
               <a href="#about">Sobre</a>
