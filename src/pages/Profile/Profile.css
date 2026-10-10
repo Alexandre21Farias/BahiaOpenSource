@@ -319,3 +319,187 @@
     width: 100%;
   }
 }
+
+/* ============================================================
+   CARREIRA (currículo, habilidades, links)
+   ============================================================ */
+.profile-headline {
+  margin: 0.15rem 0 0.5rem;
+  font-weight: 600;
+  color: var(--text-mid);
+}
+
+.career-fields {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin: var(--space-4) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.career-fields legend {
+  padding: 0 var(--space-2);
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.career-toggle {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.career-toggle span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.career-toggle small,
+.career-note {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.career-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+}
+
+.career-select {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+  color: var(--text-mid);
+}
+
+.career-select select,
+.career-fields textarea {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  width: 100%;
+}
+
+.career-checks {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.career-checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.career-resume {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.career-resume-file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--bg-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+}
+
+.career-icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-ghost);
+  cursor: pointer;
+  padding: var(--space-1);
+}
+
+.career-icon-btn:hover {
+  color: var(--danger);
+}
+
+.career-upload {
+  cursor: pointer;
+}
+
+.career-card {
+  margin-top: var(--space-5);
+}
+
+.career-card h3 {
+  margin-bottom: var(--space-3);
+}
+
+.career-open {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  padding: 2px var(--space-3);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--success) 14%, var(--cream));
+  color: var(--success);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.career-open span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+.career-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--text-mid);
+  font-size: 0.9rem;
+}
+
+.career-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.career-skills span {
+  background: var(--sand);
+  color: var(--text-mid);
+  border-radius: 999px;
+  padding: 2px var(--space-3);
+  font-size: 0.8rem;
+}
+
+.career-links {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.career-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--info);
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.career-resume-link {
+  margin-top: var(--space-3);
+}
