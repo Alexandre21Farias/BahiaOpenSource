@@ -15,6 +15,7 @@ import {
   JOB_LEVEL_LABELS,
   JOB_TYPE_LABELS,
   setJobOpen,
+  SOURCE_LABELS,
   WORK_MODE_LABELS,
   type Job,
 } from "../../services/jobs";
@@ -128,6 +129,17 @@ export function JobDetail() {
 
         <div className="job-description">{job.description}</div>
 
+        {job.source && job.source_url && (
+          <p className="job-source">
+            Fonte:{" "}
+            <a href={job.source_url} target="_blank" rel="noopener noreferrer">
+              {SOURCE_LABELS[job.source]}
+            </a>
+            . Vaga importada automaticamente; a candidatura é feita no site
+            original.
+          </p>
+        )}
+
         {!closed && (
           <div className="job-apply">
             {job.apply_url && (
@@ -135,9 +147,17 @@ export function JobDetail() {
                 className="btn btn-primary"
                 href={job.apply_url}
                 target="_blank"
-                rel="noopener noreferrer nofollow ugc"
+                // Vagas importadas: link de volta com "follow", exigido pelas fontes
+                rel={
+                  job.source
+                    ? "noopener noreferrer"
+                    : "noopener noreferrer nofollow ugc"
+                }
               >
-                <Icon icon={ArrowSquareOut} size="sm" /> Candidatar-se
+                <Icon icon={ArrowSquareOut} size="sm" />{" "}
+                {job.source
+                  ? `Ver vaga no ${SOURCE_LABELS[job.source]}`
+                  : "Candidatar-se"}
               </a>
             )}
             {job.apply_email && (

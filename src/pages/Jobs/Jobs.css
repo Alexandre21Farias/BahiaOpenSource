@@ -266,3 +266,15 @@
   color: var(--text-ghost);
   font-size: 0.8rem;
 }
+
+.job-source {
+  margin: var(--space-4) 0 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.job-source a {
+  color: var(--info);
+  font-weight: 600;
+  text-decoration: underline;
+}
