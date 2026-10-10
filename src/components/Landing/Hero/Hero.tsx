@@ -55,7 +55,7 @@ const Hero: React.FC = () => {
       const tilt = smoothstep(clamp(p / 0.4));
       const pour = clamp((p - 0.3) / 0.12) * (1 - clamp((p - 0.86) / 0.1));
       const pool = Math.pow(clamp((p - 0.34) / 0.56), 1.3);
-      const ink = clamp((pool * 112 - 45) / 30);
+      const ink = clamp((pool * 112 - 22) / 26);
 
       el.style.setProperty("--tilt", tilt.toFixed(4));
       el.style.setProperty("--stream", pour.toFixed(4));
@@ -96,8 +96,10 @@ const Hero: React.FC = () => {
             <Word text="Bahia" />
             <Word text="Open" />
             <span className="hero-cup" aria-hidden="true">
-              <span className="hero-stream" />
-              <CoffeeCup />
+              <span className="hero-cup-inner">
+                <span className="hero-stream" />
+                <CoffeeCup />
+              </span>
             </span>
             <Word text="Source" />
           </h1>

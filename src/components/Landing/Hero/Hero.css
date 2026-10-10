@@ -129,7 +129,7 @@
 .hero-foot {
   --hero-ink: color-mix(
     in srgb,
-    var(--cream) clamp(0%, (var(--pool) * 112 - 18) * 8%, 100%),
+    var(--cream) clamp(0%, (var(--pool) * 112 - 4) * 8%, 100%),
     var(--brown)
   );
   width: 100%;
@@ -178,15 +178,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: calc(300px * var(--cup-scale));
+  height: calc(340px * var(--cup-scale));
+  margin: 0 calc(40px * var(--cup-scale)); /* folga para girar sem encostar nas letras */
+}
+
+/* caixa fixa 300x340 escalada pelo centro (transform em vez de zoom, que
+   desloca o conteúdo no Safari/iOS) */
+.hero-cup-inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
   width: 300px;
   height: 340px;
-  margin: 0 40px; /* folga para girar sem encostar nas letras */
-  zoom: var(--cup-scale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%) scale(var(--cup-scale));
 }
 
 /* gira no próprio eixo: o centro do corpo da xícara, em unidades do viewBox */
 .hero-cup-tilt {
-  transform-origin: 150px 170px;
+  transform-origin: 170px 167px;
   transform: rotate(calc(var(--tilt) * -108deg));
   will-change: transform;
 }
@@ -211,10 +224,10 @@
 .hero-stream {
   position: absolute;
   z-index: -1;
-  left: 111px;
-  top: 280px;
+  left: 140px;
+  top: 292px;
   width: 16px;
-  height: 200vh;
+  height: 400vh;
   border-radius: 8px;
   background: var(--brown);
   transform-origin: top center;
