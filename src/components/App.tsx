@@ -19,6 +19,12 @@ const ProjectBoard = lazy(() =>
     default: m.ProjectBoard,
   })),
 );
+const Jobs = lazy(() =>
+  import("../pages/Jobs/Jobs").then((m) => ({ default: m.Jobs })),
+);
+const JobDetail = lazy(() =>
+  import("../pages/Jobs/JobDetail").then((m) => ({ default: m.JobDetail })),
+);
 import Home from "../pages/Home";
 const UiDemo = lazy(() =>
   import("../pages/UiDemo").then((m) => ({ default: m.UiDemo })),
@@ -44,6 +50,8 @@ function App(): React.JSX.Element {
                 </>
               )}
               <Route path="/feed" element={<Feed />} />
+              <Route path="/vagas" element={<Jobs />} />
+              <Route path="/vagas/:jobId" element={<JobDetail />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/:projectId" element={<ProjectBoard />} />
               <Route path="/profile" element={<Profile />} />
