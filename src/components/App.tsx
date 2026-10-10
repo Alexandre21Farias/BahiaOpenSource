@@ -11,6 +11,14 @@ const Profile = lazy(() =>
 const Feed = lazy(() =>
   import("../pages/Feed/Feed").then((m) => ({ default: m.Feed })),
 );
+const Projects = lazy(() =>
+  import("../pages/Projects/Projects").then((m) => ({ default: m.Projects })),
+);
+const ProjectBoard = lazy(() =>
+  import("../pages/Projects/ProjectBoard").then((m) => ({
+    default: m.ProjectBoard,
+  })),
+);
 import Home from "../pages/Home";
 const UiDemo = lazy(() =>
   import("../pages/UiDemo").then((m) => ({ default: m.UiDemo })),
@@ -36,6 +44,8 @@ function App(): React.JSX.Element {
                 </>
               )}
               <Route path="/feed" element={<Feed />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:projectId" element={<ProjectBoard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile/:username" element={<Profile />} />
               <Route path="/:username" element={<Profile />} />

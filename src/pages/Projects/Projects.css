@@ -1,0 +1,296 @@
+/* ============================================================
+   PROJETOS & QUADRO DE TAREFAS
+   ============================================================ */
+
+.projects-page {
+  min-height: calc(100vh - 75px);
+  background-color: var(--bg);
+  padding: 85px var(--space-4) var(--space-12);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.projects-page-wide {
+  max-width: 1400px;
+}
+
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.projects-header h1 {
+  color: var(--heading);
+  font-size: 1.75rem;
+  margin: 0 0 var(--space-1);
+}
+
+.projects-header p,
+.projects-muted {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.projects-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-mid);
+  font-size: 0.85rem;
+  margin-bottom: var(--space-2);
+}
+
+.projects-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.projects-textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--space-3);
+  font: inherit;
+}
+
+.projects-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.projects-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  height: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  color: var(--text);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.project-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.project-card h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--heading);
+}
+
+.project-card p {
+  margin: 0;
+  color: var(--text-mid);
+  font-size: 0.9rem;
+}
+
+.project-card-meta {
+  margin-top: auto;
+  color: var(--text-ghost);
+  font-size: 0.8rem;
+}
+
+.projects-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-12) var(--space-4);
+}
+
+/* ---------- Quadro ---------- */
+.board {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(260px, 1fr);
+  gap: var(--space-4);
+  overflow-x: auto;
+  padding-bottom: var(--space-4);
+}
+
+.board-column {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 160px;
+}
+
+.board-column.is-over {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--sun) 12%, var(--bg-soft));
+}
+
+.board-column-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--heading);
+}
+
+.board-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.board-count {
+  margin-left: auto;
+  color: var(--text-ghost);
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.board-tasks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.task-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3);
+  cursor: grab;
+}
+
+.task-card.is-dragging {
+  opacity: 0.45;
+}
+
+.task-title {
+  margin: 0 0 var(--space-2);
+  color: var(--text);
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+
+.task-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.task-controls select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-mid);
+  font-size: 0.78rem;
+  padding: 2px var(--space-1);
+  max-width: 100%;
+}
+
+.task-controls .priority-urgent,
+.task-controls .priority-high {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.task-controls .priority-medium {
+  color: var(--warning);
+}
+
+.task-delete {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-ghost);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+}
+
+.task-delete:hover {
+  color: var(--danger);
+  background: var(--surface-hover);
+}
+
+.board-add {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: none;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-mid);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.board-add:hover {
+  background: var(--surface-hover);
+}
+
+.board-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.board-add-form input {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+}
+
+@media (max-width: 640px) {
+  .board {
+    grid-auto-columns: 82%;
+    scroll-snap-type: x mandatory;
+  }
+
+  .board-column {
+    scroll-snap-align: start;
+  }
+}
