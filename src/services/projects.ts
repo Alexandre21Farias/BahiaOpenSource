@@ -169,3 +169,112 @@ export async function deleteTask(id: string) {
   const { error } = await supabase.from("tasks").delete().eq("id", id);
   if (error) throw error;
 }
+
+export type ProjectRole = "owner" | "admin" | "member" | "viewer";
+
+export const ROLE_LABELS: Record<ProjectRole, string> = {
+  owner: "Dono",
+  admin: "Admin",
+  member: "Membro",
+  viewer: "Leitor",
+};
+
+export interface ProjectMember {
+  id: string;
+  project_id: string;
+  user_id: string;
+  role: ProjectRole;
+  profile: {
+    username: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+}
+
+/** Participantes do projeto com os dados públicos do perfil. */
+export async function fetchMembers(projectId: string) {
+  const { data, error } = await supabase
+    .from("project_participants")
+    .select("id, project_id, user_id, role")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+
+  const rows = data ?? [];
+  if (rows.length === 0) return [] as ProjectMember[];
+
+  // project_participants referencia auth.users, então os perfis vêm numa segunda consulta
+  const { data: profiles, error: profilesError } = await supabase
+    .from("profiles")
+    .select("id, username, full_name, avatar_url")
+    .in(
+      "id",
+      rows.map((r) => r.user_id),
+    );
+  if (profilesError) throw profilesError;
+
+  const byId = new Map((profiles ?? []).map((p) => [p.id, p]));
+  return rows.map((r) => {
+    const p = byId.get(r.user_id);
+    return {
+      ...r,
+      profile: p
+        ? {
+            username: p.username,
+            full_name: p.full_name,
+            avatar_url: p.avatar_url,
+          }
+        : null,
+    };
+  }) as ProjectMember[];
+}
+
+export class MemberError extends Error {}
+
+/** Convida por username (sem "@"). A pessoa entra direto no projeto. */
+export async function addMemberByUsername(params: {
+  projectId: string;
+  username: string;
+  role: Exclude<ProjectRole, "owner">;
+}) {
+  const username = params.username.trim().replace(/^@/, "");
+
+  const { data: profile, error: findError } = await supabase
+    .from("profiles")
+    .select("id")
+    .ilike("username", username.replace(/[\\%_]/g, "\\$&"))
+    .limit(1)
+    .maybeSingle();
+  if (findError) throw findError;
+  if (!profile) throw new MemberError(`Usuário @${username} não encontrado.`);
+
+  const { error } = await supabase.from("project_participants").insert({
+    project_id: params.projectId,
+    user_id: profile.id,
+    role: params.role,
+  });
+  if (error) {
+    if (error.code === "23505")
+      throw new MemberError(`@${username} já participa deste projeto.`);
+    throw error;
+  }
+}
+
+export async function updateMemberRole(
+  id: string,
+  role: Exclude<ProjectRole, "owner">,
+) {
+  const { error } = await supabase
+    .from("project_participants")
+    .update({ role })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+export async function removeMember(id: string) {
+  const { error } = await supabase
+    .from("project_participants")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
+}
