@@ -1,5 +1,6 @@
 import React from "react";
 import CoffeeBeans from "../CoffeeBeans";
+import { collaborators } from "../content";
 import "./About.css";
 
 const About: React.FC = () => {
@@ -43,7 +44,7 @@ const About: React.FC = () => {
                 </p>
               </div>
               <div className="landing-card">
-                <h3>30+ Colaboradores</h3>
+                <h3>{collaborators} Colaboradores</h3>
                 <p>
                   Trabalhando em projetos que impactam a comunidade local. Faça
                   parte dessa equipe também!

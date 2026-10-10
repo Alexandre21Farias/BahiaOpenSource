@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { Icon } from "../ui/icon";
 import {
   ChatCircle,
@@ -19,6 +19,7 @@ import "./MainLayout.css";
 export function MainLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileUsername, setProfileUsername] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -109,6 +110,14 @@ export function MainLayout() {
           <Link to="/feed" className="nav-forum-btn">
             Fórum
           </Link>
+
+          {pathname === "/" && (
+            <nav className="navbar-sections" aria-label="Seções da página">
+              <a href="#about">Sobre</a>
+              <a href="#projects">Projetos</a>
+              <a href="#join">Participe</a>
+            </nav>
+          )}
         </div>
 
         <div className="navbar-right" ref={dropdownRef}>

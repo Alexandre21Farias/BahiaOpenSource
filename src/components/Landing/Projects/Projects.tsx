@@ -1,40 +1,8 @@
 import React from "react";
 import CoffeeBeans from "../CoffeeBeans";
 import Drip from "../Drip";
+import { projects } from "../content";
 import "./Projects.css";
-
-export type Project = {
-  title: string;
-  description: string;
-  tag: string;
-  tone: "sky" | "steel";
-  status?: "development" | "stable";
-};
-
-const projects: Project[] = [
-  /**{
-    title: "Bahia UI Kit",
-    description: "Componentes React: leves, coloridos e acessíveis.",
-    tag: "UI/UX",
-    status: "development",
-  }, */
-  {
-    title: "Docs Bahia",
-    description:
-      "Plataforma centralizada para documentação de projetos open-source locais.",
-    tag: "Docs",
-    tone: "sky",
-    status: "development",
-  },
-  {
-    title: "Comunidade Discord",
-    description:
-      "Nosso ponto de encontro para trocar ideias, tirar dúvidas e marcar eventos.",
-    tag: "Community",
-    tone: "steel",
-    status: "stable",
-  },
-];
 
 const Projects: React.FC = () => {
   return (
@@ -72,13 +40,16 @@ const Projects: React.FC = () => {
               </span>
               <h3>{p.title}</h3>
               <p className="project-description">{p.description}</p>
-              <a
-                href="https://discord.gg/4f5Up8sk"
-                className="project-link"
-                target="_blank"
-              >
-                Saber mais →
-              </a>
+              {p.href && (
+                <a
+                  href={p.href}
+                  className="project-link"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Saber mais →
+                </a>
+              )}
             </div>
           ))}
         </div>

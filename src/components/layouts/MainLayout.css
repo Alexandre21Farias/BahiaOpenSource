@@ -30,6 +30,29 @@
   gap: 0.8rem;
 }
 
+.navbar-sections {
+  display: flex;
+  gap: 1rem;
+  margin-left: 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.navbar-sections a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.navbar-sections a:hover {
+  color: var(--clay);
+}
+
+@media (max-width: 768px) {
+  .navbar-sections {
+    display: none;
+  }
+}
+
 .logo-terminal {
   display: flex;
   align-items: center;
