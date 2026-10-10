@@ -18,12 +18,14 @@ import {
   deleteComment,
 } from "../../services/publications";
 import { Publication, PublicationComment } from "./types";
+import { useRecentJobs } from "./useRecentJobs";
 import {
   FeedProfileSidebar,
   CreatePostTrigger,
   CreatePostModal,
   PostCard,
   FeedRightSidebar,
+  RecentJobs,
 } from "./components";
 import "./Feed.css";
 
@@ -36,6 +38,7 @@ const CATEGORIES = [
 
 export function Feed() {
   const { user } = useAuth();
+  const recentJobs = useRecentJobs();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -235,6 +238,9 @@ export function Feed() {
             })}
           </div>
 
+          {/* Vagas recentes (só em telas sem a barra lateral direita) */}
+          <RecentJobs jobs={recentJobs} variant="inline" />
+
           {/* Posts Feed List */}
           {loading ? (
             <div className="feed-loading-state">
@@ -284,7 +290,7 @@ export function Feed() {
         </main>
 
         {/* Right Column: Trending News & Topics */}
-        <FeedRightSidebar />
+        <FeedRightSidebar jobs={recentJobs} />
       </div>
 
       {/* Floating Create Post Modal (Doesn't push page content down!) */}

@@ -2,8 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "../../../components/ui/icon";
 import { Info, TrendUp, ArrowUpRight, Hash } from "@phosphor-icons/react";
+import type { Job } from "../../../services/jobs";
+import { RecentJobs } from "./RecentJobs";
 
-export function FeedRightSidebar() {
+export function FeedRightSidebar({ jobs }: { jobs: Job[] | null }) {
   const newsItems = [
     {
       id: "1",
@@ -22,6 +24,8 @@ export function FeedRightSidebar() {
 
   return (
     <aside className="feed-sidebar-right">
+      <RecentJobs jobs={jobs} />
+
       {/* News Card */}
       <div className="feed-card news-card">
         <div className="news-header">
