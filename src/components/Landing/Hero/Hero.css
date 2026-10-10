@@ -227,11 +227,12 @@
   left: 140px;
   top: 292px;
   width: 16px;
-  height: 400vh;
+  height: calc(120vh / var(--cup-scale));
   border-radius: 8px;
   background: var(--brown);
   transform-origin: top center;
   transform: scaleY(var(--stream));
+  will-change: transform, opacity;
   opacity: calc(var(--stream) * 40);
 }
 
@@ -244,10 +245,16 @@
   position: absolute;
   inset: auto 0 0;
   z-index: 1;
-  height: calc(var(--pool) * 112%);
+  height: 112%;
   background: var(--brown);
-  /* esconde a onda enquanto a poça ainda não começou a subir */
-  transform: translateY(calc(60px - min(var(--pool) * 1800px, 60px)));
+  /* sobe só com transform (composição na GPU, sem recalcular layout);
+     esconde a onda enquanto a poça ainda não começou a subir */
+  transform: translateY(
+    calc(
+      (1 - var(--pool)) * 100% + 60px - min(var(--pool) * 1800px, 60px)
+    )
+  );
+  will-change: transform;
 }
 
 .hero-pool-wave {
@@ -286,6 +293,11 @@
 
   .hero-hint {
     display: none;
+  }
+
+  /* menos trabalho contínuo no celular */
+  .landing-beans svg {
+    animation: none;
   }
 }
 

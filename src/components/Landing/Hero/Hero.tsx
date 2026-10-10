@@ -44,6 +44,7 @@ const Hero: React.FC = () => {
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
+    let last = -1;
 
     const update = (): void => {
       frame = 0;
@@ -51,6 +52,8 @@ const Hero: React.FC = () => {
       const range = rect.height - window.innerHeight;
       const p =
         reduceMotion.matches || range <= 0 ? 0 : clamp(-rect.top / range);
+      if (p === last) return; // fora da faixa animada: nada a recalcular
+      last = p;
 
       const tilt = smoothstep(clamp(p / 0.4));
       const pour = clamp((p - 0.3) / 0.12) * (1 - clamp((p - 0.86) / 0.1));
