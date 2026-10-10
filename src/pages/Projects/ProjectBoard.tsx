@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, Trash } from "@phosphor-icons/react";
+import { ArrowLeft, Plus, Trash, Users } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button } from "../../components/ui/Button";
 import { Icon } from "../../components/ui/icon";
@@ -19,6 +19,7 @@ import {
   type Task,
   type TaskPriority,
 } from "../../services/projects";
+import { ProjectMembers } from "./ProjectMembers";
 import "./Projects.css";
 
 export function ProjectBoard() {
@@ -32,6 +33,7 @@ export function ProjectBoard() {
   const [loading, setLoading] = useState(true);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overStatus, setOverStatus] = useState<string | null>(null);
+  const [showMembers, setShowMembers] = useState(false);
 
   useEffect(() => {
     if (authLoading || !projectId) return;
@@ -175,13 +177,27 @@ export function ProjectBoard() {
           <h1>{project.name}</h1>
           {project.description && <p>{project.description}</p>}
         </div>
-        {isOwner && (
-          <Button variant="destructive" onClick={handleDeleteProject}>
-            <Icon icon={Trash} size="sm" />
-            Excluir projeto
+        <div className="projects-header-actions">
+          <Button variant="outline" onClick={() => setShowMembers((v) => !v)}>
+            <Icon icon={Users} size="sm" />
+            Participantes
           </Button>
-        )}
+          {isOwner && (
+            <Button variant="destructive" onClick={handleDeleteProject}>
+              <Icon icon={Trash} size="sm" />
+              Excluir projeto
+            </Button>
+          )}
+        </div>
       </header>
+
+      {showMembers && user && (
+        <ProjectMembers
+          projectId={project.id}
+          ownerId={project.owner_id}
+          currentUserId={user.id}
+        />
+      )}
 
       <div className="board">
         {statuses.map((status) => {
