@@ -1299,3 +1299,94 @@
     max-height: 95vh;
   }
 }
+
+/* ============================================================
+   VAGAS RECENTES
+   ============================================================ */
+.recent-jobs-card {
+  padding: 1rem;
+}
+
+.recent-jobs-inline {
+  display: none;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 1060px) {
+  .recent-jobs-inline {
+    display: block;
+  }
+}
+
+.recent-jobs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.recent-jobs-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.recent-jobs-all {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--info);
+}
+
+.recent-jobs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.recent-job {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+
+.recent-job:hover {
+  background: var(--surface-hover);
+}
+
+.recent-job-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-job-meta {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-jobs-empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.recent-jobs-empty a {
+  color: var(--info);
+  font-weight: 600;
+}

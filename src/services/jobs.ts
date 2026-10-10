@@ -62,6 +62,7 @@ export interface NewJob {
 export async function fetchJobs(filters?: {
   workMode?: WorkMode;
   jobType?: JobType;
+  limit?: number;
 }) {
   let query = supabase
     .from("jobs")
@@ -69,7 +70,7 @@ export async function fetchJobs(filters?: {
     .eq("is_open", true)
     .gt("expires_at", new Date().toISOString())
     .order("created_at", { ascending: false })
-    .limit(100);
+    .limit(filters?.limit ?? 100);
 
   if (filters?.workMode) query = query.eq("work_mode", filters.workMode);
   if (filters?.jobType) query = query.eq("job_type", filters.jobType);
