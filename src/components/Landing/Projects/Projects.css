@@ -1,3 +1,8 @@
+/* espaço para o gotejado do topo */
+.projects-section {
+  padding-top: clamp(9rem, 20vw, 14rem);
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

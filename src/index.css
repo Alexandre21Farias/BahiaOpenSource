@@ -1231,7 +1231,7 @@ dialog form {
   h1 {
     font-size: 1.9rem;
   }
-  section {
+  :where(.home-page) section {
     padding: 3.5rem 0;
   }
 }
