@@ -1,12 +1,11 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
-@tailwind base;
-
 @custom-variant dark (&:is(.dark *));
-@tailwind components;
-@tailwind utilities;
 
 /* ============================================================
    BAHIA OPEN SOURCE — Design System "Sol da Bahia"
@@ -148,11 +147,14 @@
 /* ============================================================
    RESET E BASE
    ============================================================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 }
+
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
@@ -256,41 +258,44 @@ a {
 /* ============================================================
    TIPOGRAFIA
    ============================================================ */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  color: var(--heading);
-}
-h1 {
-  font-size: 2.25rem;
-}
-h2 {
-  font-size: 1.75rem;
-}
-h3 {
-  font-size: 1.375rem;
-}
-h4 {
-  font-size: 1.125rem;
-}
-h5 {
-  font-size: 1rem;
-}
-h6 {
-  font-size: 0.875rem;
-  color: var(--text-mid);
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--heading);
+  }
+  h1 {
+    font-size: 2.25rem;
+  }
+  h2 {
+    font-size: 1.75rem;
+  }
+  h3 {
+    font-size: 1.375rem;
+  }
+  h4 {
+    font-size: 1.125rem;
+  }
+  h5 {
+    font-size: 1rem;
+  }
+  h6 {
+    font-size: 0.875rem;
+    color: var(--text-mid);
+  }
+
+  :where(p, li, dd, figcaption) {
+    color: var(--text-mid);
+  }
 }
 
-:where(p, li, dd, figcaption) {
-  color: var(--text-mid);
-}
 small {
   font-size: 0.85rem;
   color: var(--text-muted);
@@ -512,11 +517,14 @@ cite {
 /* ============================================================
    LISTAS
    ============================================================ */
-:where(ul, ol) {
-  padding-left: 1.5rem;
-  display: grid;
-  gap: var(--space-2);
+@layer base {
+  :where(ul, ol) {
+    padding-left: 1.5rem;
+    display: grid;
+    gap: var(--space-2);
+  }
 }
+
 li::marker {
   color: var(--clay);
 }
@@ -705,50 +713,52 @@ dt {
 /* ============================================================
    FORMULARIOS
    ============================================================ */
-:where(
-  input:not(
-    [type="checkbox"],
-    [type="radio"],
-    [type="range"],
-    [type="file"],
-    [type="color"],
-    [type="submit"],
-    [type="reset"],
-    [type="button"]
-  ),
-  select,
-  textarea
-) {
-  width: 100%;
-  min-height: 44px;
-  padding: 0.6rem 0.85rem;
-  color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-md);
-  transition:
-    border-color var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out);
-  &:hover:not(:disabled) {
-    border-color: var(--mocha);
-  }
-  &:focus {
-    outline: none;
-    border-color: var(--brown);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--sun) 50%, transparent);
-  }
-  &:user-invalid {
-    border-color: var(--clay);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--clay) 15%, transparent);
-  }
-  &:disabled,
-  &:read-only {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background: var(--bg-soft);
-  }
-  &::placeholder {
-    color: var(--text-ghost);
+@layer base {
+  :where(
+    input:not(
+      [type="checkbox"],
+      [type="radio"],
+      [type="range"],
+      [type="file"],
+      [type="color"],
+      [type="submit"],
+      [type="reset"],
+      [type="button"]
+    ),
+    select,
+    textarea
+  ) {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.6rem 0.85rem;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    transition:
+      border-color var(--duration-normal) var(--ease-out),
+      box-shadow var(--duration-normal) var(--ease-out);
+    &:hover:not(:disabled) {
+      border-color: var(--mocha);
+    }
+    &:focus {
+      outline: none;
+      border-color: var(--brown);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--sun) 50%, transparent);
+    }
+    &:user-invalid {
+      border-color: var(--clay);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--clay) 15%, transparent);
+    }
+    &:disabled,
+    &:read-only {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: var(--bg-soft);
+    }
+    &::placeholder {
+      color: var(--text-ghost);
+    }
   }
 }
 textarea {

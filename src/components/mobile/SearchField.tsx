@@ -23,7 +23,7 @@ export function SearchField({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-transparent text-base text-brown outline-none placeholder:text-mocha"
+        className="min-h-0 w-full border-0 bg-transparent p-0 text-base focus:shadow-none text-brown outline-none placeholder:text-mocha"
       />
     </label>
   );

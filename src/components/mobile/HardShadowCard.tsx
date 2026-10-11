@@ -26,7 +26,7 @@ export function HardShadowCard({
 }: HardShadowCardProps) {
   return (
     <Tag
-      className={`block rounded-[1.25rem] border-2 border-brown p-4 shadow-hard ${
+      className={`block no-underline! hover:text-brown! rounded-[1.25rem] border-2 border-brown p-4 shadow-hard ${
         dashed ? "border-dashed" : "border-solid"
       } ${TONES[tone]} ${className}`}
       {...rest}

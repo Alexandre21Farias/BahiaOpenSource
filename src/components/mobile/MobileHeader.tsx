@@ -36,7 +36,13 @@ export function MobileHeader({
         </h1>
         {action}
       </div>
-      {subtitle && <p className="mt-2 text-[0.95rem]">{subtitle}</p>}
+      {subtitle && (
+        <p
+          className={`mt-2 text-[0.95rem] ${isBrown ? "text-cream/90" : "text-brown"}`}
+        >
+          {subtitle}
+        </p>
+      )}
       {children}
     </header>
   );
