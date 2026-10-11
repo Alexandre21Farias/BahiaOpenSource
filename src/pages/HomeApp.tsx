@@ -20,9 +20,7 @@ import {
   type Project,
 } from "../services/projects";
 
-const DISCORD_URL = import.meta.env.VITE_DISCORD_INVITE_URL as
-  | string
-  | undefined;
+const DISCORD_URL = "https://discord.gg/6FxRWXryCS";
 
 interface HomeProfile {
   full_name: string | null;
@@ -159,10 +157,7 @@ export function HomeApp() {
     {
       label: "Discord",
       icon: ChatCircle,
-      onClick: () =>
-        DISCORD_URL
-          ? window.open(DISCORD_URL, "_blank", "noopener")
-          : toast("O convite do Discord chega em breve!"),
+      onClick: () => window.open(DISCORD_URL, "_blank", "noopener"),
     },
     { label: "Convidar", icon: UserPlus, onClick: invite },
   ];
