@@ -18,6 +18,8 @@ import {
   deleteComment,
 } from "../../services/publications";
 import { Publication, PublicationComment } from "./types";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { FeedMobile } from "./FeedMobile";
 import { useRecentJobs } from "./useRecentJobs";
 import {
   FeedProfileSidebar,
@@ -40,6 +42,7 @@ export function Feed() {
   const { user } = useAuth();
   const recentJobs = useRecentJobs();
   const location = useLocation();
+  const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -203,6 +206,35 @@ export function Feed() {
     user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Você";
 
   const userAvatarUrl = user?.user_metadata?.avatar_url;
+
+  if (isMobile) {
+    return (
+      <>
+        <FeedMobile
+          publications={publications}
+          loading={loading}
+          activeCategory={activeCategory}
+          onCategoryChange={setActiveCategory}
+          onOpenModal={() => handleOpenModal("general")}
+          userName={userDisplayName}
+          userAvatarUrl={userAvatarUrl}
+          commentsMap={commentsMap}
+          loadingComments={loadingComments}
+          expandedComments={expandedComments}
+          onToggleComments={handleToggleComments}
+          onAddComment={handleAddComment}
+          onDeleteComment={handleDeleteComment}
+          onDeletePublication={handleDeletePublication}
+        />
+        <CreatePostModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onPostCreated={handlePostCreated}
+          defaultFocusPhoto={defaultFocusPhoto}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="feed-page-wrapper">
