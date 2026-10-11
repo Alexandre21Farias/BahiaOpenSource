@@ -11,10 +11,13 @@ import {
   fetchProjects,
   type Project,
 } from "../../services/projects";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { ProjectsMobile } from "./ProjectsMobile";
 import "./Projects.css";
 
 export function Projects() {
   const { user, loading: authLoading } = useAuth();
+  const isMobile = useIsMobile();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -34,26 +37,43 @@ export function Projects() {
       .finally(() => setLoading(false));
   }, [user, authLoading]);
 
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    if (!user || !name.trim()) return;
+  async function createFrom(projectName: string, projectDescription: string) {
+    if (!user || !projectName.trim()) return false;
     setCreating(true);
     try {
       const project = await createProject({
         ownerId: user.id,
-        name: name.trim(),
-        description: description.trim(),
+        name: projectName.trim(),
+        description: projectDescription.trim(),
       });
       setProjects((prev) => [project, ...prev]);
       setName("");
       setDescription("");
       setShowForm(false);
       toast.success("Projeto criado!");
+      return true;
     } catch {
       toast.error("Não foi possível criar o projeto.");
+      return false;
     } finally {
       setCreating(false);
     }
+  }
+
+  function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    void createFrom(name, description);
+  }
+
+  if (isMobile && user) {
+    return (
+      <ProjectsMobile
+        projects={projects}
+        loading={loading}
+        creating={creating}
+        onCreate={createFrom}
+      />
+    );
   }
 
   if (!authLoading && !user) {
