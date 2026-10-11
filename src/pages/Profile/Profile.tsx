@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { ProfileMobile } from "./ProfileMobile";
 import {
   Link,
   useNavigate,
@@ -83,6 +85,7 @@ export function Profile() {
   const { username: paramUsername } = useParams<{ username?: string }>();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [params, setParams] = useSearchParams();
 
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -309,6 +312,21 @@ export function Profile() {
     (profile.website.startsWith("http")
       ? profile.website
       : `https://${profile.website}`);
+
+  if (isMobile && !editing) {
+    return (
+      <ProfileMobile
+        profile={profile}
+        name={name}
+        avatar={avatar}
+        isOwn={isOwn}
+        loggedIn={Boolean(user)}
+        posts={posts}
+        onEdit={startEdit}
+        onSignOut={() => supabase.auth.signOut().then(() => navigate("/login"))}
+      />
+    );
+  }
 
   return (
     <div className="profile-page">

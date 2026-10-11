@@ -153,3 +153,30 @@ export function parseTags(raw: string) {
   }
   return [...seen].slice(0, 10);
 }
+
+/** IDs das vagas salvas pelo usuário. */
+export async function fetchBookmarkedJobIds(userId: string) {
+  const { data, error } = await supabase
+    .from("job_bookmarks")
+    .select("job_id")
+    .eq("user_id", userId);
+  if (error) throw error;
+  return new Set((data ?? []).map((r) => r.job_id as string));
+}
+
+export async function setJobBookmark(
+  userId: string,
+  jobId: string,
+  saved: boolean,
+) {
+  const { error } = saved
+    ? await supabase
+        .from("job_bookmarks")
+        .upsert({ user_id: userId, job_id: jobId })
+    : await supabase
+        .from("job_bookmarks")
+        .delete()
+        .eq("user_id", userId)
+        .eq("job_id", jobId);
+  if (error) throw error;
+}

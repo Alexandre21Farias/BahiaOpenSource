@@ -152,7 +152,15 @@ export async function createTask(params: {
 export async function updateTask(
   id: string,
   patch: Partial<
-    Pick<Task, "title" | "description" | "priority" | "status_id" | "due_date">
+    Pick<
+      Task,
+      | "title"
+      | "description"
+      | "priority"
+      | "status_id"
+      | "due_date"
+      | "assignee_id"
+    >
   >,
 ) {
   const { data, error } = await supabase
@@ -277,4 +285,43 @@ export async function removeMember(id: string) {
     .delete()
     .eq("id", id);
   if (error) throw error;
+}
+
+/** Contadores do perfil: projetos que participa e tarefas concluídas atribuídas a ela. */
+export async function fetchProfileCounts(userId: string) {
+  const [projects, done] = await Promise.all([
+    supabase
+      .from("project_participants")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId),
+    supabase
+      .from("tasks")
+      .select("id, project_statuses!inner(category)", {
+        count: "exact",
+        head: true,
+      })
+      .eq("assignee_id", userId)
+      .eq("project_statuses.category", "completed"),
+  ]);
+  return {
+    projects: projects.count ?? 0,
+    tasksDone: done.count ?? 0,
+  };
+}
+
+/** Quantidade de tarefas abertas (não concluídas nem canceladas) por projeto. */
+export async function fetchOpenTaskCounts(projectIds: string[]) {
+  const counts = new Map<string, number>();
+  if (projectIds.length === 0) return counts;
+  const { data, error } = await supabase
+    .from("tasks")
+    .select("project_id, project_statuses!inner(category)")
+    .in("project_id", projectIds)
+    .not("project_statuses.category", "in", "(completed,canceled)");
+  if (error) throw error;
+  for (const row of data ?? []) {
+    const id = row.project_id as string;
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  return counts;
 }

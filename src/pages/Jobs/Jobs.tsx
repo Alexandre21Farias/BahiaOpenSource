@@ -15,11 +15,13 @@ import {
   type JobType,
   type WorkMode,
 } from "../../services/jobs";
+import { useIsMobile } from "../../hooks/useIsMobile";
 import { JobForm } from "./JobForm";
+import { JobsMobile } from "./JobsMobile";
 import { timeAgo } from "./timeAgo";
 import "./Jobs.css";
 
-export function Jobs() {
+function JobsDesktop() {
   const { user } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -174,4 +176,8 @@ export function Jobs() {
       )}
     </div>
   );
+}
+
+export function Jobs() {
+  return useIsMobile() ? <JobsMobile /> : <JobsDesktop />;
 }

@@ -19,6 +19,8 @@ import {
   type Task,
   type TaskPriority,
 } from "../../services/projects";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { ProjectBoardMobile } from "./ProjectBoardMobile";
 import { ProjectMembers } from "./ProjectMembers";
 import "./Projects.css";
 
@@ -26,6 +28,7 @@ export function ProjectBoard() {
   const { projectId } = useParams<{ projectId: string }>();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const [project, setProject] = useState<Project | null>(null);
   const [statuses, setStatuses] = useState<ProjectStatus[]>([]);
@@ -104,6 +107,20 @@ export function ProjectBoard() {
     }
   }
 
+  async function handleAssign(task: Task, assigneeId: string | null) {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === task.id ? { ...t, assignee_id: assigneeId } : t,
+      ),
+    );
+    try {
+      await updateTask(task.id, { assignee_id: assigneeId });
+    } catch {
+      setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)));
+      toast.error("Não foi possível alterar o responsável.");
+    }
+  }
+
   async function handleDeleteTask(task: Task) {
     if (!window.confirm(`Excluir a tarefa "${task.title}"?`)) return;
     try {
@@ -166,6 +183,21 @@ export function ProjectBoard() {
   }
 
   const isOwner = user?.id === project.owner_id;
+
+  if (isMobile && user) {
+    return (
+      <ProjectBoardMobile
+        project={project}
+        statuses={statuses}
+        tasks={tasks}
+        userId={user.id}
+        onMove={moveTask}
+        onAdd={handleAddTask}
+        onAssign={handleAssign}
+        onDelete={handleDeleteTask}
+      />
+    );
+  }
 
   return (
     <div className="projects-page projects-page-wide">

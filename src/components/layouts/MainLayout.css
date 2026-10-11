@@ -191,3 +191,20 @@
   background: var(--clay);
   color: var(--cream);
 }
+
+/* ---------- Modo app (celular): sem navbar de topo, com tab bar ---------- */
+.main-content-layout.has-tab-bar {
+  /* espaço para a tab bar fixa (~64px) + safe-area do iOS */
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+}
+
+/* As páginas reservam 60px+ para o navbar fixo; no modo app ele não existe. */
+.main-content-layout.has-tab-bar .feed-page-wrapper,
+.main-content-layout.has-tab-bar .jobs-page,
+.main-content-layout.has-tab-bar .projects-page {
+  padding-top: 1rem;
+}
+
+.main-content-layout.has-tab-bar .profile-page {
+  padding-top: 0;
+}
