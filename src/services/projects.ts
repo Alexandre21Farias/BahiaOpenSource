@@ -152,7 +152,15 @@ export async function createTask(params: {
 export async function updateTask(
   id: string,
   patch: Partial<
-    Pick<Task, "title" | "description" | "priority" | "status_id" | "due_date">
+    Pick<
+      Task,
+      | "title"
+      | "description"
+      | "priority"
+      | "status_id"
+      | "due_date"
+      | "assignee_id"
+    >
   >,
 ) {
   const { data, error } = await supabase

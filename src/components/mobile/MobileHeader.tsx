@@ -6,6 +6,8 @@ interface MobileHeaderProps {
   /** brown = Início/Vagas · sun = Projetos */
   tone?: "brown" | "sun";
   action?: ReactNode;
+  /** linha acima do título (ex.: botão voltar) */
+  leading?: ReactNode;
   children?: ReactNode;
 }
 
@@ -15,6 +17,7 @@ export function MobileHeader({
   subtitle,
   tone = "brown",
   action,
+  leading,
   children,
 }: MobileHeaderProps) {
   const isBrown = tone === "brown";
@@ -24,6 +27,7 @@ export function MobileHeader({
         isBrown ? "bg-brown text-cream" : "bg-sun text-brown"
       }`}
     >
+      {leading && <div className="mb-4">{leading}</div>}
       <div className="flex items-start justify-between gap-3">
         <h1
           className={`font-display text-[2.4rem] leading-none ${
