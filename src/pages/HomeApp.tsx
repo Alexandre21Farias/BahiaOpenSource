@@ -9,8 +9,8 @@ import {
   UserPlus,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { HardShadowCard } from "../components/mobile/HardShadowCard";
-import { StickerBadge } from "../components/mobile/StickerBadge";
+import { HardShadowCard } from "../components/shared/HardShadowCard";
+import { StickerBadge } from "../components/shared/StickerBadge";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
 import { fetchJobs, type Job } from "../services/jobs";

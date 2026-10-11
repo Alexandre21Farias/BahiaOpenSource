@@ -19,10 +19,13 @@ import {
   WORK_MODE_LABELS,
   type Job,
 } from "../../services/jobs";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { JobsDesktop } from "./JobsDesktop";
 import { timeAgo } from "./timeAgo";
 import "./Jobs.css";
 
-export function JobDetail() {
+function JobDetailPage() {
   const { jobId } = useParams<{ jobId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -189,4 +192,11 @@ export function JobDetail() {
       </article>
     </div>
   );
+}
+
+/** Celular e telas estreitas: página da vaga. Desktop: lista + painel, com a vaga já selecionada. */
+export function JobDetail() {
+  const isMobile = useIsMobile();
+  const narrow = useMediaQuery("(max-width: 999px)");
+  return isMobile || narrow ? <JobDetailPage /> : <JobsDesktop />;
 }

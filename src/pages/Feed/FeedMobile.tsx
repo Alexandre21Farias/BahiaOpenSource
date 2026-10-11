@@ -9,10 +9,10 @@ import {
   Trash,
 } from "@phosphor-icons/react";
 import confetti from "canvas-confetti";
-import { Chip, ChipRow } from "../../components/mobile/Chip";
-import { HardShadowCard } from "../../components/mobile/HardShadowCard";
+import { Chip, ChipRow } from "../../components/shared/Chip";
+import { HardShadowCard } from "../../components/shared/HardShadowCard";
 import { SearchField } from "../../components/mobile/SearchField";
-import { StickerBadge } from "../../components/mobile/StickerBadge";
+import { StickerBadge } from "../../components/shared/StickerBadge";
 import { useAuth } from "../../contexts/AuthContext";
 import { PostComments } from "./components";
 import type { Publication, PublicationComment } from "./types";

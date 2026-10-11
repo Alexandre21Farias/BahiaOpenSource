@@ -1,13 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { Icon } from "../../components/ui/icon";
-import {
-  Sparkle,
-  ChatCircle,
-  Compass,
-  Code,
-  Question,
-} from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -20,23 +12,13 @@ import {
 import { Publication, PublicationComment } from "./types";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { FeedMobile } from "./FeedMobile";
+import { FeedDesktop } from "./FeedDesktop";
 import { useRecentJobs } from "./useRecentJobs";
-import {
-  FeedProfileSidebar,
-  CreatePostTrigger,
-  CreatePostModal,
-  PostCard,
-  FeedRightSidebar,
-  RecentJobs,
-} from "./components";
+import { CreatePostModal } from "./components";
 import "./Feed.css";
 
-const CATEGORIES = [
-  { id: "all", label: "Tudo", icon: Compass },
-  { id: "discussao", label: "Discussão", icon: ChatCircle },
-  { id: "projetos", label: "Projetos", icon: Code },
-  { id: "duvidas", label: "Dúvidas", icon: Question },
-];
+/** Posts por página no scroll infinito do desktop. */
+const PAGE_SIZE = 10;
 
 export function Feed() {
   const { user } = useAuth();
@@ -47,6 +29,10 @@ export function Feed() {
 
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  // Descarta respostas de buscas antigas (troca de categoria no meio do carregamento).
+  const requestId = useRef(0);
   const [activeCategory, setActiveCategory] = useState("all");
 
   // Modal State (replaces inline form that pushed content down!)
@@ -64,22 +50,58 @@ export function Feed() {
     [pubId: string]: boolean;
   }>({});
 
-  // Fetch publications
-  const loadPosts = useCallback(async (cat: string) => {
-    setLoading(true);
-    try {
-      const data = await fetchPublications(cat);
-      setPublications(data);
-    } catch (err) {
-      console.error("Erro ao carregar publicações do feed:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // No celular traz tudo de uma vez; no desktop, paginado (scroll infinito).
+  const loadPosts = useCallback(
+    async (cat: string) => {
+      const id = ++requestId.current;
+      setLoading(true);
+      setLoadingMore(false);
+      try {
+        const data = await fetchPublications(
+          cat,
+          isMobile ? undefined : { from: 0, to: PAGE_SIZE - 1 },
+        );
+        if (id !== requestId.current) return;
+        setPublications(data);
+        setHasMore(!isMobile && data.length === PAGE_SIZE);
+      } catch (err) {
+        console.error("Erro ao carregar publicações do feed:", err);
+      } finally {
+        if (id === requestId.current) setLoading(false);
+      }
+    },
+    [isMobile],
+  );
 
   useEffect(() => {
     loadPosts(activeCategory);
   }, [activeCategory, loadPosts]);
+
+  const loadMore = useCallback(async () => {
+    if (loading || loadingMore || !hasMore) return;
+    const id = requestId.current;
+    setLoadingMore(true);
+    try {
+      // Posts criados/excluídos aqui deslocam o servidor na mesma medida,
+      // então o tamanho da lista local é o offset certo.
+      const from = publications.length;
+      const data = await fetchPublications(activeCategory, {
+        from,
+        to: from + PAGE_SIZE - 1,
+      });
+      if (id !== requestId.current) return;
+      setPublications((prev) => {
+        const seen = new Set(prev.map((p) => p.id));
+        return [...prev, ...data.filter((p) => !seen.has(p.id))];
+      });
+      setHasMore(data.length === PAGE_SIZE);
+    } catch (err) {
+      console.error("Erro ao carregar mais publicações:", err);
+      setHasMore(false);
+    } finally {
+      if (id === requestId.current) setLoadingMore(false);
+    }
+  }, [loading, loadingMore, hasMore, publications.length, activeCategory]);
 
   // Open modal if URL has ?action=new
   useEffect(() => {
@@ -197,11 +219,6 @@ export function Feed() {
     }
   };
 
-  // Count publications of logged in user
-  const userPubsCount = user
-    ? publications.filter((p) => p.user_id === user.id).length
-    : 0;
-
   const userDisplayName =
     user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Você";
 
@@ -237,101 +254,32 @@ export function Feed() {
   }
 
   return (
-    <div className="feed-page-wrapper">
-      <div className="feed-layout-container">
-        {/* Left Column: User Profile Card */}
-        <FeedProfileSidebar publicationsCount={userPubsCount} />
-
-        {/* Center Column: Feed Stream */}
-        <main className="feed-center-column">
-          {/* Top Post Creator Trigger (Popup opener) */}
-          <CreatePostTrigger
-            onOpenModal={handleOpenModal}
-            userAvatarUrl={userAvatarUrl}
-            userName={userDisplayName}
-          />
-
-          {/* Feed Category Filter Chips */}
-          <div className="feed-category-filter-row">
-            {CATEGORIES.map((cat) => {
-              const CatIcon = cat.icon;
-              const isActive = activeCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  className={`category-chip ${isActive ? "active" : ""}`}
-                  onClick={() => setActiveCategory(cat.id)}
-                >
-                  <CatIcon size={16} />
-                  <span>{cat.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Vagas recentes (só em telas sem a barra lateral direita) */}
-          <RecentJobs jobs={recentJobs} variant="inline" />
-
-          {/* Posts Feed List */}
-          {loading ? (
-            <div className="feed-loading-state">
-              <div className="spinner-feed" />
-              <p>Carregando publicações da comunidade...</p>
-            </div>
-          ) : publications.length === 0 ? (
-            <div className="feed-card feed-empty-state">
-              <Icon
-                icon={Sparkle}
-                size="lg"
-                weight="duotone"
-                className="text-sun mb-3"
-              />
-              <h3>Nenhuma publicação encontrada</h3>
-              <p>
-                {activeCategory === "all"
-                  ? "Seja o primeiro a compartilhar um projeto, dúvida ou novidade com a comunidade!"
-                  : `Nenhuma publicação na categoria "${activeCategory}". Que tal criar uma?`}
-              </p>
-              <button
-                type="button"
-                className="btn btn-primary btn-sm mt-4"
-                onClick={() => handleOpenModal("general")}
-              >
-                Começar publicação
-              </button>
-            </div>
-          ) : (
-            <div className="feed-posts-list">
-              {publications.map((pub, index) => (
-                <PostCard
-                  key={pub.id}
-                  publication={pub}
-                  index={index}
-                  comments={commentsMap[pub.id] || []}
-                  loadingComments={!!loadingComments[pub.id]}
-                  onDeletePublication={handleDeletePublication}
-                  onToggleComments={handleToggleComments}
-                  isCommentsOpen={!!expandedComments[pub.id]}
-                  onAddComment={handleAddComment}
-                  onDeleteComment={handleDeleteComment}
-                />
-              ))}
-            </div>
-          )}
-        </main>
-
-        {/* Right Column: Trending News & Topics */}
-        <FeedRightSidebar jobs={recentJobs} />
-      </div>
-
-      {/* Floating Create Post Modal (Doesn't push page content down!) */}
+    <>
+      <FeedDesktop
+        publications={publications}
+        loading={loading}
+        loadingMore={loadingMore}
+        hasMore={hasMore}
+        onLoadMore={loadMore}
+        activeCategory={activeCategory}
+        onCategoryChange={setActiveCategory}
+        onOpenModal={() => handleOpenModal("general")}
+        userName={userDisplayName}
+        jobs={recentJobs}
+        commentsMap={commentsMap}
+        loadingComments={loadingComments}
+        expandedComments={expandedComments}
+        onToggleComments={handleToggleComments}
+        onAddComment={handleAddComment}
+        onDeleteComment={handleDeleteComment}
+        onDeletePublication={handleDeletePublication}
+      />
       <CreatePostModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onPostCreated={handlePostCreated}
         defaultFocusPhoto={defaultFocusPhoto}
       />
-    </div>
+    </>
   );
 }

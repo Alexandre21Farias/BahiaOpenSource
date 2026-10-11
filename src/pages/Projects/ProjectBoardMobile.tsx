@@ -7,9 +7,9 @@ import {
   Question,
   Trash,
 } from "@phosphor-icons/react";
-import { HardShadowCard } from "../../components/mobile/HardShadowCard";
+import { HardShadowCard } from "../../components/shared/HardShadowCard";
 import { MobileHeader } from "../../components/mobile/MobileHeader";
-import { StickerBadge } from "../../components/mobile/StickerBadge";
+import { StickerBadge } from "../../components/shared/StickerBadge";
 import {
   fetchMembers,
   PRIORITY_LABELS,

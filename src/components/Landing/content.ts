@@ -1,5 +1,7 @@
+import { DISCORD_URL } from "../../lib/links";
+
 export const links = {
-  discord: "https://discord.gg/4f5Up8sk",
+  discord: DISCORD_URL,
   github: "https://github.com/Alexandre21Farias/BahiaOpenSource",
 } as const;
 

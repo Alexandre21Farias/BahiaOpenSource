@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { CaretRight, Plus } from "@phosphor-icons/react";
-import { HardShadowCard } from "../../components/mobile/HardShadowCard";
+import { HardShadowCard } from "../../components/shared/HardShadowCard";
 import { MobileHeader } from "../../components/mobile/MobileHeader";
 import type { Project } from "../../services/projects";
 

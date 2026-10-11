@@ -1,20 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
-import { Icon } from "../ui/icon";
-import {
-  ChatCircle,
-  ListBullets,
-  Gear,
-  Gift,
-  SignOut,
-  User,
-  List,
-  CaretDown,
-} from "@phosphor-icons/react";
-import { toast } from "sonner";
 import { useAuth } from "../../contexts/AuthContext";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { BottomTabBar } from "../mobile/BottomTabBar";
+import { DesktopNavbar } from "./DesktopNavbar";
 import { supabase } from "../../lib/supabase";
 import "./MainLayout.css";
 
@@ -25,19 +14,23 @@ export function MainLayout() {
   const isMobile = useIsMobile();
   // No celular, o app usa a barra de abas; a landing de visitantes mantém o topo.
   const showTabBar = isMobile && !(pathname === "/" && !user);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  // Logado no desktop: navbar nova; visitantes mantêm o topo da landing.
+  const showDesktopNav = !isMobile && !!user;
   const [profileUsername, setProfileUsername] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
       // Fetch profile username if available
       supabase
         .from("profiles")
-        .select("username, full_name")
+        .select("username, full_name, avatar_url")
         .eq("id", user.id)
         .single()
         .then(({ data }) => {
+          setFullName(data?.full_name ?? null);
+          setAvatarUrl(data?.avatar_url ?? null);
           if (data?.username) {
             setProfileUsername(data.username);
           } else if (data?.full_name) {
@@ -48,20 +41,6 @@ export function MainLayout() {
         });
     }
   }, [user]);
-
-  // Close dropdown on click outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   // Hide header on scroll down, show on scroll up
   const [showNavbar, setShowNavbar] = useState(true);
@@ -96,7 +75,6 @@ export function MainLayout() {
   }, []);
 
   const handleSignOut = async () => {
-    setDropdownOpen(false);
     await supabase.auth.signOut();
     navigate("/login");
   };
@@ -105,8 +83,18 @@ export function MainLayout() {
 
   return (
     <div className="app-container">
-      {/* curso.dev Top Header Navbar */}
-      {!showTabBar && (
+      {showDesktopNav && (
+        <DesktopNavbar
+          displayName={displayName}
+          fullName={fullName}
+          avatarUrl={avatarUrl}
+          profileUsername={profileUsername}
+          onSignOut={handleSignOut}
+        />
+      )}
+
+      {/* Topo da landing (visitantes) */}
+      {!showTabBar && !showDesktopNav && (
         <header className={`top-navbar ${showNavbar ? "" : "navbar-hidden"}`}>
           <div className="navbar-left">
             <Link to="/" className="logo-terminal">
@@ -134,94 +122,21 @@ export function MainLayout() {
             )}
           </div>
 
-          <div className="navbar-right" ref={dropdownRef}>
-            {user ? (
-              <button
-                className="user-menu-trigger"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                <Icon icon={User} size="md" />
-                <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-                  {displayName}
-                </span>
-                <Icon icon={List} size="md" style={{ marginLeft: "0.2rem" }} />
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                className="nav-forum-btn"
-                style={{ fontSize: "0.85rem", padding: "0.4rem 0.9rem" }}
-              >
-                Entrar
-              </Link>
-            )}
-
-            {/* Floating Dropdown Menu (curso.dev style) */}
-            {dropdownOpen && (
-              <div className="user-dropdown-menu">
-                <div className="dropdown-user-header">
-                  <Icon icon={User} size="sm" style={{ color: "var(--sun)" }} />
-                  <span>{displayName}</span>
-                </div>
-
-                <Link
-                  to="/feed?action=new"
-                  className="dropdown-item"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <Icon icon={ChatCircle} size="sm" />
-                  <span>Publicar no fórum</span>
-                </Link>
-
-                <Link
-                  to={profileUsername ? `/${profileUsername}` : "/profile"}
-                  className="dropdown-item"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <Icon icon={ListBullets} size="sm" />
-                  <span>Meus conteúdos</span>
-                </Link>
-
-                <Link
-                  to={
-                    profileUsername
-                      ? `/${profileUsername}?edit=true`
-                      : "/profile?edit=true"
-                  }
-                  className="dropdown-item"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <Icon icon={Gear} size="sm" />
-                  <span>Editar perfil</span>
-                </Link>
-
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    setDropdownOpen(false);
-                    toast("Código promocional / cupom de convite em breve!");
-                  }}
-                >
-                  <Icon icon={Gift} size="sm" />
-                  <span>Resgatar código</span>
-                </button>
-
-                <button
-                  className="dropdown-item logout"
-                  onClick={handleSignOut}
-                >
-                  <Icon icon={SignOut} size="sm" />
-                  <span>Deslogar</span>
-                </button>
-              </div>
-            )}
+          <div className="navbar-right">
+            <Link
+              to="/login"
+              className="nav-forum-btn"
+              style={{ fontSize: "0.85rem", padding: "0.4rem 0.9rem" }}
+            >
+              Entrar
+            </Link>
           </div>
         </header>
       )}
 
       {/* Main Content Viewport */}
       <main
-        className={`main-content-layout ${showTabBar ? "has-tab-bar" : ""}`}
+        className={`main-content-layout ${showTabBar ? "has-tab-bar" : ""} ${showDesktopNav ? "has-desktop-nav" : ""}`}
       >
         <Outlet />
       </main>
