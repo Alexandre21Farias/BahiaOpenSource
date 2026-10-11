@@ -183,11 +183,13 @@ body {
   background-attachment: fixed;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
+@layer base {
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
 }
 a {
   color: inherit;

@@ -308,3 +308,20 @@ export async function fetchProfileCounts(userId: string) {
     tasksDone: done.count ?? 0,
   };
 }
+
+/** Quantidade de tarefas abertas (não concluídas nem canceladas) por projeto. */
+export async function fetchOpenTaskCounts(projectIds: string[]) {
+  const counts = new Map<string, number>();
+  if (projectIds.length === 0) return counts;
+  const { data, error } = await supabase
+    .from("tasks")
+    .select("project_id, project_statuses!inner(category)")
+    .in("project_id", projectIds)
+    .not("project_statuses.category", "in", "(completed,canceled)");
+  if (error) throw error;
+  for (const row of data ?? []) {
+    const id = row.project_id as string;
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  return counts;
+}
