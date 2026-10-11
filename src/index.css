@@ -1257,6 +1257,19 @@ dialog form {
    TAILWIND / SHADCN BRIDGE
    ============================================================ */
 @theme inline {
+  /* Tokens do app mobile (Sol da Bahia) */
+  --color-cream: var(--cream);
+  --color-brown: var(--brown);
+  --color-sun: var(--sun);
+  --color-clay: var(--clay);
+  --color-navy: var(--navy);
+  --color-steel: var(--steel);
+  --color-sand: var(--sand);
+  --color-mocha: var(--mocha);
+  --color-surface: var(--surface);
+  --color-border-strong: var(--border-strong);
+  --font-display: "Titan One", var(--font-main);
+  --shadow-hard: 4px 4px 0 var(--brown);
   --font-heading: var(--font-main);
   --font-sans: "Geist Variable", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);

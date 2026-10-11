@@ -13,6 +13,8 @@ import {
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useAuth } from "../../contexts/AuthContext";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { BottomTabBar } from "../mobile/BottomTabBar";
 import { supabase } from "../../lib/supabase";
 import "./MainLayout.css";
 
@@ -20,6 +22,9 @@ export function MainLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const isMobile = useIsMobile();
+  // No celular, o app usa a barra de abas; a landing de visitantes mantém o topo.
+  const showTabBar = isMobile && !(pathname === "/" && !user);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileUsername, setProfileUsername] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -101,118 +106,127 @@ export function MainLayout() {
   return (
     <div className="app-container">
       {/* curso.dev Top Header Navbar */}
-      <header className={`top-navbar ${showNavbar ? "" : "navbar-hidden"}`}>
-        <div className="navbar-left">
-          <Link to="/" className="logo-terminal">
-            OpenBahia
-          </Link>
-
-          <Link to="/feed" className="nav-forum-btn">
-            Fórum
-          </Link>
-
-          <Link to="/projects" className="nav-forum-btn">
-            Projetos
-          </Link>
-
-          <Link to="/vagas" className="nav-forum-btn">
-            Vagas
-          </Link>
-
-          {pathname === "/" && (
-            <nav className="navbar-sections" aria-label="Seções da página">
-              <a href="#about">Sobre</a>
-              <a href="#projects">Projetos</a>
-              <a href="#join">Participe</a>
-            </nav>
-          )}
-        </div>
-
-        <div className="navbar-right" ref={dropdownRef}>
-          {user ? (
-            <button
-              className="user-menu-trigger"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
-              <Icon icon={User} size="md" />
-              <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-                {displayName}
-              </span>
-              <Icon icon={List} size="md" style={{ marginLeft: "0.2rem" }} />
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              className="nav-forum-btn"
-              style={{ fontSize: "0.85rem", padding: "0.4rem 0.9rem" }}
-            >
-              Entrar
+      {!showTabBar && (
+        <header className={`top-navbar ${showNavbar ? "" : "navbar-hidden"}`}>
+          <div className="navbar-left">
+            <Link to="/" className="logo-terminal">
+              OpenBahia
             </Link>
-          )}
 
-          {/* Floating Dropdown Menu (curso.dev style) */}
-          {dropdownOpen && (
-            <div className="user-dropdown-menu">
-              <div className="dropdown-user-header">
-                <Icon icon={User} size="sm" style={{ color: "var(--sun)" }} />
-                <span>{displayName}</span>
-              </div>
+            <Link to="/feed" className="nav-forum-btn">
+              Fórum
+            </Link>
 
-              <Link
-                to="/feed?action=new"
-                className="dropdown-item"
-                onClick={() => setDropdownOpen(false)}
-              >
-                <Icon icon={ChatCircle} size="sm" />
-                <span>Publicar no fórum</span>
-              </Link>
+            <Link to="/projects" className="nav-forum-btn">
+              Projetos
+            </Link>
 
-              <Link
-                to={profileUsername ? `/${profileUsername}` : "/profile"}
-                className="dropdown-item"
-                onClick={() => setDropdownOpen(false)}
-              >
-                <Icon icon={ListBullets} size="sm" />
-                <span>Meus conteúdos</span>
-              </Link>
+            <Link to="/vagas" className="nav-forum-btn">
+              Vagas
+            </Link>
 
-              <Link
-                to={
-                  profileUsername
-                    ? `/${profileUsername}?edit=true`
-                    : "/profile?edit=true"
-                }
-                className="dropdown-item"
-                onClick={() => setDropdownOpen(false)}
-              >
-                <Icon icon={Gear} size="sm" />
-                <span>Editar perfil</span>
-              </Link>
+            {pathname === "/" && (
+              <nav className="navbar-sections" aria-label="Seções da página">
+                <a href="#about">Sobre</a>
+                <a href="#projects">Projetos</a>
+                <a href="#join">Participe</a>
+              </nav>
+            )}
+          </div>
 
+          <div className="navbar-right" ref={dropdownRef}>
+            {user ? (
               <button
-                className="dropdown-item"
-                onClick={() => {
-                  setDropdownOpen(false);
-                  toast("Código promocional / cupom de convite em breve!");
-                }}
+                className="user-menu-trigger"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
               >
-                <Icon icon={Gift} size="sm" />
-                <span>Resgatar código</span>
+                <Icon icon={User} size="md" />
+                <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                  {displayName}
+                </span>
+                <Icon icon={List} size="md" style={{ marginLeft: "0.2rem" }} />
               </button>
+            ) : (
+              <Link
+                to="/login"
+                className="nav-forum-btn"
+                style={{ fontSize: "0.85rem", padding: "0.4rem 0.9rem" }}
+              >
+                Entrar
+              </Link>
+            )}
 
-              <button className="dropdown-item logout" onClick={handleSignOut}>
-                <Icon icon={SignOut} size="sm" />
-                <span>Deslogar</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </header>
+            {/* Floating Dropdown Menu (curso.dev style) */}
+            {dropdownOpen && (
+              <div className="user-dropdown-menu">
+                <div className="dropdown-user-header">
+                  <Icon icon={User} size="sm" style={{ color: "var(--sun)" }} />
+                  <span>{displayName}</span>
+                </div>
+
+                <Link
+                  to="/feed?action=new"
+                  className="dropdown-item"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  <Icon icon={ChatCircle} size="sm" />
+                  <span>Publicar no fórum</span>
+                </Link>
+
+                <Link
+                  to={profileUsername ? `/${profileUsername}` : "/profile"}
+                  className="dropdown-item"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  <Icon icon={ListBullets} size="sm" />
+                  <span>Meus conteúdos</span>
+                </Link>
+
+                <Link
+                  to={
+                    profileUsername
+                      ? `/${profileUsername}?edit=true`
+                      : "/profile?edit=true"
+                  }
+                  className="dropdown-item"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  <Icon icon={Gear} size="sm" />
+                  <span>Editar perfil</span>
+                </Link>
+
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    toast("Código promocional / cupom de convite em breve!");
+                  }}
+                >
+                  <Icon icon={Gift} size="sm" />
+                  <span>Resgatar código</span>
+                </button>
+
+                <button
+                  className="dropdown-item logout"
+                  onClick={handleSignOut}
+                >
+                  <Icon icon={SignOut} size="sm" />
+                  <span>Deslogar</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </header>
+      )}
 
       {/* Main Content Viewport */}
-      <main className="main-content-layout">
+      <main
+        className={`main-content-layout ${showTabBar ? "has-tab-bar" : ""}`}
+      >
         <Outlet />
       </main>
+
+      {showTabBar && <BottomTabBar />}
     </div>
   );
 }
