@@ -33,6 +33,11 @@ import {
   type JobLevel,
   type WorkMode,
 } from "../../services/jobs";
+import {
+  claimGoodFirstTask,
+  suggestPracticeTasks,
+  type PracticeTask,
+} from "../../services/projects";
 import { JobForm } from "./JobForm";
 import { isNewJob, logoColor, logoLetter, matchJob, techLabel } from "./jobUi";
 import { timeAgo } from "./timeAgo";
@@ -618,6 +623,48 @@ function MatchPanel({
   match: ReturnType<typeof matchJob>;
   hasSkills: boolean;
 }) {
+  const navigate = useNavigate();
+  const [practice, setPractice] = useState<PracticeTask | null>(null);
+  const [claiming, setClaiming] = useState(false);
+  const missingKey = hasSkills ? match.missing.join("|") : "";
+
+  // Tarefa "boa 1ª" livre que usa alguma tecnologia que ainda falta no perfil.
+  useEffect(() => {
+    setPractice(null);
+    if (!missingKey) return;
+    let active = true;
+    suggestPracticeTasks(missingKey.split("|"), 1)
+      .then((list) => active && setPractice(list[0] ?? null))
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [missingKey]);
+
+  const claim = async (task: PracticeTask) => {
+    setClaiming(true);
+    try {
+      const projectId = await claimGoodFirstTask(task.task_id);
+      toast.success("Tarefa é sua! Você entrou no projeto.");
+      navigate(`/projects/${projectId}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "";
+      toast.error(
+        message.includes("não está mais disponível")
+          ? "Alguém pegou essa tarefa antes. Tente outra!"
+          : "Não foi possível pegar a tarefa.",
+      );
+      setPractice(null);
+      setClaiming(false);
+    }
+  };
+
+  const practiceSkill =
+    practice &&
+    match.missing.find((m) =>
+      practice.labels.some((l) => l.toLowerCase() === m.toLowerCase()),
+    );
+
   const box =
     "mt-7 rounded-[1.25rem] border-2 border-brown bg-[color-mix(in_srgb,var(--sun)_16%,var(--cream))] p-6 shadow-[4px_4px_0_var(--sun)]";
 
@@ -679,6 +726,34 @@ function MatchPanel({
           </li>
         ))}
       </ul>
+      {practice && (
+        <div className="mt-5 flex flex-wrap items-center gap-4 rounded-2xl border-2 border-brown bg-surface p-4">
+          <div className="min-w-0 flex-1">
+            <p className="m-0 text-[0.7rem] font-extrabold tracking-wider text-clay uppercase">
+              Pratique o que falta
+            </p>
+            <p className="m-0 mt-1 font-bold text-brown">
+              {practice.project_name} · {practice.title}
+            </p>
+            <p className="m-0 mt-1 flex flex-wrap items-center gap-2 text-sm text-text-mid">
+              Tarefa aberta que usa{" "}
+              {practiceSkill ? techLabel(practiceSkill) : "essa tecnologia"} e
+              PR de verdade.
+              <StickerBadge tone="success" tilt={-2} className="text-[0.7rem]">
+                Boa 1ª tarefa
+              </StickerBadge>
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={claiming}
+            onClick={() => void claim(practice)}
+            className="rounded-full border-0 bg-brown px-6 py-3 font-bold text-cream disabled:opacity-60"
+          >
+            {claiming ? "Pegando…" : "Pegar tarefa"}
+          </button>
+        </div>
+      )}
       {match.missing.length > 0 && (
         <p className="mt-4 text-sm text-text-mid">
           Já sabe {techLabel(match.missing[0])}?{" "}

@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ChatCircle,
+  Check,
+  Columns,
   DownloadSimple,
+  Flag,
+  GitPullRequest,
+  Lock,
+  Medal,
   GithubLogo,
   LinkedinLogo,
   LinkSimple,
@@ -21,7 +27,11 @@ import {
   type JobLevel,
   type WorkMode,
 } from "../../services/jobs";
-import { fetchProfileCounts } from "../../services/projects";
+import {
+  fetchContributions,
+  type Contributions,
+} from "../../services/projects";
+import { timeAgo } from "../Jobs/timeAgo";
 import type { Publication } from "../../services/publications";
 import { CATEGORY_LABELS, initialsOf } from "../Feed/postFormat";
 
@@ -76,7 +86,8 @@ export function ProfileDesktop({
   onEdit,
 }: Props) {
   const [tab, setTab] = useState<Tab>("contrib");
-  const [counts, setCounts] = useState({ projects: 0, tasksDone: 0 });
+  const [contrib, setContrib] = useState<Contributions | null>(null);
+  const [showAllActivity, setShowAllActivity] = useState(false);
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
 
   const canSeeResume =
@@ -85,8 +96,9 @@ export function ProfileDesktop({
 
   useEffect(() => {
     let active = true;
-    fetchProfileCounts(profile.id)
-      .then((c) => active && setCounts(c))
+    setContrib(null);
+    fetchContributions(profile.id)
+      .then((c) => active && setContrib(c))
       .catch(() => undefined);
     return () => {
       active = false;
@@ -121,18 +133,90 @@ export function ProfileDesktop({
     profile.github_url || profile.linkedin_url || websiteUrl,
   );
 
+  const tasksDone = contrib?.tasks_done ?? 0;
+  const helpful = contrib?.helpful_answers ?? 0;
   const stats = [
-    { value: counts.tasksDone, label: "tarefas concluídas" },
     {
-      value: posts.length,
-      label:
-        posts.length === 1 ? "publicação no fórum" : "publicações no fórum",
+      value: tasksDone,
+      label: tasksDone === 1 ? "tarefa concluída" : "tarefas concluídas",
     },
     {
-      value: counts.projects,
-      label: counts.projects === 1 ? "projeto" : "projetos",
+      value: helpful,
+      label: helpful === 1 ? "resposta que ajudou" : "respostas que ajudaram",
+    },
+    {
+      value: contrib?.projects ?? 0,
+      label:
+        contrib?.projects === 1
+          ? "projeto contribuído"
+          : "projetos contribuídos",
     },
   ];
+
+  const badges = [
+    {
+      label: "Primeira contribuição",
+      icon: Flag,
+      tone: "bg-sun text-brown",
+      earned: tasksDone >= 1,
+      goal: "1ª tarefa",
+    },
+    {
+      label: "Resposta que ajudou",
+      icon: Check,
+      tone: "bg-success text-cream",
+      earned: helpful >= 1,
+      goal: "1 resposta útil",
+    },
+    {
+      label: "Primeiro PR aceito",
+      icon: GitPullRequest,
+      tone: "bg-clay text-cream",
+      earned: (contrib?.prs_merged ?? 0) >= 1,
+      goal: "1 PR aceito",
+    },
+    {
+      label: "Puxou conversa",
+      icon: ChatCircle,
+      tone: "bg-sky text-navy",
+      earned: posts.length >= 1,
+      goal: "1ª publicação",
+    },
+    {
+      label: "10 tarefas",
+      icon: Columns,
+      tone: "bg-sun text-brown",
+      earned: tasksDone >= 10,
+      goal: `10 tarefas · faltam ${Math.max(10 - tasksDone, 0)}`,
+    },
+    {
+      label: "Mentor · 10 respostas",
+      icon: Medal,
+      tone: "bg-success text-cream",
+      earned: helpful >= 10,
+      goal: `Mentor · faltam ${Math.max(10 - helpful, 0)}`,
+    },
+  ];
+  const earnedCount = badges.filter((b) => b.earned).length;
+
+  // Linha do tempo: contribuições (RPC) + publicações no fórum.
+  const activity = [
+    ...(contrib?.timeline ?? []).map((item) => ({
+      ...item,
+      key: `${item.kind}-${item.at}-${item.title}`,
+    })),
+    ...posts.map((pub) => ({
+      kind: "post" as const,
+      title: pub.title,
+      context: CATEGORY_LABELS[pub.category] ?? "Fórum",
+      pr_url: null,
+      pr_state: null,
+      publication_id: pub.id,
+      at: pub.created_at,
+      key: `post-${pub.id}`,
+    })),
+  ].sort((x, y) => +new Date(y.at) - +new Date(x.at));
+  const shownActivity = showAllActivity ? activity : activity.slice(0, 5);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -335,51 +419,136 @@ export function ProfileDesktop({
                   </div>
                   <HardShadowCard className="p-6">
                     <div className="flex items-baseline justify-between">
-                      <h2 className={CARD_TITLE}>Atividade recente</h2>
-                      {posts.length > 0 && (
+                      <h2 className={CARD_TITLE}>Selos</h2>
+                      <span className="text-sm text-text-muted">
+                        {earnedCount} de {badges.length}
+                      </span>
+                    </div>
+                    <ul className="m-0 mt-5 grid list-none grid-cols-3 gap-y-6 pl-0 min-[1150px]:grid-cols-6">
+                      {badges.map(
+                        ({ label, icon: BadgeIcon, tone, earned, goal }) => (
+                          <li
+                            key={label}
+                            className="flex flex-col items-center gap-2 text-center"
+                          >
+                            <span
+                              className={`flex size-[76px] items-center justify-center rounded-full ${
+                                earned
+                                  ? `border-2 border-brown shadow-[3px_3px_0_var(--brown)] ${tone}`
+                                  : "border-2 border-dashed border-border-strong bg-bg-soft text-text-ghost"
+                              }`}
+                            >
+                              {earned ? (
+                                <BadgeIcon
+                                  size={32}
+                                  weight="bold"
+                                  aria-hidden
+                                />
+                              ) : (
+                                <Lock size={28} aria-hidden />
+                              )}
+                            </span>
+                            <span
+                              className={`max-w-[110px] text-[0.8rem] leading-tight font-bold ${
+                                earned ? "text-brown" : "text-text-muted"
+                              }`}
+                            >
+                              {earned ? label : goal}
+                            </span>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </HardShadowCard>
+
+                  <HardShadowCard className="p-6">
+                    <div className="flex items-baseline justify-between">
+                      <h2 className={CARD_TITLE}>Linha do tempo</h2>
+                      {activity.length > 5 && (
                         <button
                           type="button"
-                          onClick={() => setTab("posts")}
+                          onClick={() => setShowAllActivity((v) => !v)}
                           className="border-0 bg-transparent p-0 text-sm font-bold text-navy underline"
                         >
-                          Ver tudo
+                          {showAllActivity ? "Ver menos" : "Ver tudo"}
                         </button>
                       )}
                     </div>
-                    {posts.length === 0 ? (
+                    {activity.length === 0 ? (
                       <p className="mt-3 text-text-mid">
                         Nenhuma atividade por aqui ainda.
                       </p>
                     ) : (
                       <ul className="m-0 mt-4 list-none pl-0">
-                        {posts.slice(0, 4).map((pub) => (
-                          <li
-                            key={pub.id}
-                            className="flex items-start gap-4 border-b border-border py-4 last:border-b-0"
-                          >
-                            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border-2 border-brown bg-sun text-brown">
-                              <ChatCircle size={20} aria-hidden />
-                            </span>
-                            <span className="min-w-0 flex-1">
-                              <span className="block font-bold text-brown">
-                                Publicou no fórum: {pub.title}
-                              </span>
-                              <span className="block text-sm text-text-muted">
-                                {CATEGORY_LABELS[pub.category] ?? "Fórum"} ·{" "}
-                                {pub.comments_count ?? 0}{" "}
-                                {pub.comments_count === 1
-                                  ? "resposta"
-                                  : "respostas"}
-                              </span>
-                            </span>
-                            <time
-                              dateTime={pub.created_at}
-                              className="shrink-0 text-sm text-text-muted"
+                        {shownActivity.map((item) => {
+                          const merged =
+                            item.kind === "task" && item.pr_state === "merged";
+                          const Icon =
+                            item.kind === "answer"
+                              ? Check
+                              : item.kind === "post"
+                                ? ChatCircle
+                                : merged
+                                  ? GitPullRequest
+                                  : Columns;
+                          const tone =
+                            item.kind === "answer"
+                              ? "bg-sun text-brown"
+                              : item.kind === "post"
+                                ? "bg-surface text-brown"
+                                : merged
+                                  ? "bg-success text-cream"
+                                  : "bg-sky text-navy";
+                          const heading =
+                            item.kind === "answer"
+                              ? "Resposta marcada como útil"
+                              : item.kind === "post"
+                                ? `Publicou no fórum: ${item.title}`
+                                : merged
+                                  ? `PR aceito: ${item.title}`
+                                  : `Tarefa concluída: ${item.title}`;
+                          return (
+                            <li
+                              key={item.key}
+                              className="flex items-start gap-4 border-b border-border py-4 last:border-b-0"
                             >
-                              {formatDate(pub.created_at)}
-                            </time>
-                          </li>
-                        ))}
+                              <span
+                                className={`flex size-11 shrink-0 items-center justify-center rounded-xl border-2 border-brown ${tone}`}
+                              >
+                                <Icon size={20} aria-hidden />
+                              </span>
+                              <span className="min-w-0 flex-1">
+                                <span className="block font-bold text-brown">
+                                  {heading}
+                                </span>
+                                <span className="block text-sm text-text-muted">
+                                  {item.kind === "answer"
+                                    ? `Fórum · “${item.title}”`
+                                    : item.context}
+                                  {item.pr_url && (
+                                    <>
+                                      {" · "}
+                                      <a
+                                        href={item.pr_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-navy! underline"
+                                      >
+                                        ver no GitHub
+                                      </a>
+                                    </>
+                                  )}
+                                </span>
+                              </span>
+                              <time
+                                dateTime={item.at}
+                                className="shrink-0 text-sm text-text-muted"
+                              >
+                                {timeAgo(item.at)}
+                              </time>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </HardShadowCard>

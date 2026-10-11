@@ -1,12 +1,20 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { CaretLeft, Plus, Trash } from "@phosphor-icons/react";
+import {
+  CaretLeft,
+  GitPullRequest,
+  PencilSimple,
+  Plus,
+  Trash,
+} from "@phosphor-icons/react";
 import { Chip } from "../../components/shared/Chip";
 import { HardShadowCard } from "../../components/shared/HardShadowCard";
 import { StickerBadge } from "../../components/shared/StickerBadge";
 import {
   fetchMembers,
+  PR_STATE_LABELS,
   PRIORITY_LABELS,
+  type PrState,
   type Project,
   type ProjectMember,
   type ProjectStatus,
@@ -16,7 +24,7 @@ import {
 import { initialsOf } from "../Feed/postFormat";
 import { ProjectMembers } from "./ProjectMembers";
 
-type Filter = "all" | "mine" | "unassigned";
+type Filter = "all" | "mine" | "unassigned" | "good";
 
 const FILTERS: { id: Filter; label: string }[] = [
   { id: "all", label: "Todas" },
@@ -39,6 +47,41 @@ interface Props {
   onAssign: (task: Task, assigneeId: string | null) => Promise<void>;
   onDelete: (task: Task) => Promise<void>;
   onDeleteProject: () => Promise<void>;
+  onUpdate: (task: Task, patch: TaskPatch) => Promise<void>;
+}
+
+type TaskPatch = Partial<
+  Pick<
+    Task,
+    | "title"
+    | "description"
+    | "labels"
+    | "good_first_task"
+    | "pr_url"
+    | "pr_state"
+  >
+>;
+
+const PR_URL = /^https:\/\/github\.com\/[^/\s]+\/[^/\s]+\/pull\/[0-9]+$/;
+
+const PR_TONES: Record<PrState, string> = {
+  draft: "bg-sand text-brown",
+  open: "bg-sky text-navy",
+  merged:
+    "bg-[color-mix(in_srgb,var(--success)_18%,var(--surface))] text-success",
+  closed: "bg-sand text-text-muted line-through",
+};
+
+/** Etiqueta → cor do adesivo (Bug em argila, Docs em céu, o resto em sol). */
+function labelTone(label: string): "sun" | "clay" | "sky" {
+  const l = label.toLowerCase();
+  if (l === "bug") return "clay";
+  if (l === "docs" || l === "doc") return "sky";
+  return "sun";
+}
+
+function prNumber(url: string) {
+  return url.match(/\/pull\/(\d+)/)?.[1] ?? "";
 }
 
 function Avatar({
@@ -82,6 +125,7 @@ export function ProjectBoardDesktop({
   onAssign,
   onDelete,
   onDeleteProject,
+  onUpdate,
 }: Props) {
   const [members, setMembers] = useState<ProjectMember[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
@@ -90,6 +134,33 @@ export function ProjectBoardDesktop({
   const [showMembers, setShowMembers] = useState(false);
   const [addingIn, setAddingIn] = useState<string | null>(null);
   const [expandedDone, setExpandedDone] = useState<Set<string>>(new Set());
+  const [editing, setEditing] = useState<Task | null>(null);
+  const [showCanceled, setShowCanceled] = useState(false);
+
+  const doneStatusIds = useMemo(
+    () =>
+      new Set(
+        statuses
+          .filter(
+            (s) => s.category === "completed" || s.category === "canceled",
+          )
+          .map((s) => s.id),
+      ),
+    [statuses],
+  );
+  const goodFirstOpen = tasks.filter(
+    (t) => t.good_first_task && !doneStatusIds.has(t.status_id),
+  ).length;
+  const canceledIds = new Set(
+    statuses.filter((s) => s.category === "canceled").map((s) => s.id),
+  );
+  const canceledCount = tasks.filter((t) =>
+    canceledIds.has(t.status_id),
+  ).length;
+  // Cancelado fica escondido por padrão: o quadro mostra as 4 colunas de trabalho.
+  const columns = statuses.filter(
+    (s) => showCanceled || s.category !== "canceled",
+  );
 
   useEffect(() => {
     let active = true;
@@ -112,6 +183,7 @@ export function ProjectBoardDesktop({
     for (const t of tasks) {
       if (filter === "mine" && t.assignee_id !== userId) continue;
       if (filter === "unassigned" && t.assignee_id) continue;
+      if (filter === "good" && !t.good_first_task) continue;
       map.get(t.status_id)?.push(t);
     }
     return map;
@@ -199,7 +271,24 @@ export function ProjectBoardDesktop({
               onClick={() => setFilter(f.id)}
             />
           ))}
-          <span className="ml-auto text-sm text-text-muted">
+          <Chip
+            label={`Boa 1ª tarefa · ${goodFirstOpen}`}
+            active={filter === "good"}
+            onClick={() => setFilter(filter === "good" ? "all" : "good")}
+            className={filter === "good" ? "" : "border-success! text-success!"}
+          />
+          <span className="ml-auto flex items-center gap-4 text-sm text-text-muted">
+            {canceledCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowCanceled((v) => !v)}
+                className="border-0 bg-transparent p-0 font-bold text-text-mid underline"
+              >
+                {showCanceled
+                  ? "Esconder canceladas"
+                  : `Ver canceladas (${canceledCount})`}
+              </button>
+            )}
             Arraste os cards entre as colunas
           </span>
         </div>
@@ -208,10 +297,10 @@ export function ProjectBoardDesktop({
           <div
             className="grid gap-x-[44px]"
             style={{
-              gridTemplateColumns: `repeat(${Math.max(statuses.length, 1)}, minmax(260px, 1fr))`,
+              gridTemplateColumns: `repeat(${Math.max(columns.length, 1)}, minmax(260px, 1fr))`,
             }}
           >
-            {statuses.map((status) => {
+            {columns.map((status) => {
               const done = status.category === "completed";
               const all = tasksByStatus.get(status.id) ?? [];
               const expanded = expandedDone.has(status.id);
@@ -273,29 +362,69 @@ export function ProjectBoardDesktop({
                               done ? "border-border-strong shadow-none" : ""
                             }`}
                           >
-                            {task.priority !== "none" && !done && (
-                              <StickerBadge
-                                tone={
-                                  task.priority === "high" ||
-                                  task.priority === "urgent"
-                                    ? "clay"
-                                    : "sun"
-                                }
-                                tilt={-3}
-                                className="mb-2 text-xs"
-                              >
-                                {PRIORITY_LABELS[task.priority]}
-                              </StickerBadge>
-                            )}
-                            <p
-                              className={`m-0 text-[1.05rem] leading-snug font-bold ${
+                            {!done &&
+                              (task.labels.length > 0 ||
+                                task.good_first_task ||
+                                task.priority !== "none") && (
+                                <div className="mb-2 flex flex-wrap gap-2">
+                                  {task.labels.map((l) => (
+                                    <StickerBadge
+                                      key={l}
+                                      tone={labelTone(l)}
+                                      tilt={-3}
+                                      className="text-xs"
+                                    >
+                                      {l}
+                                    </StickerBadge>
+                                  ))}
+                                  {task.good_first_task && (
+                                    <StickerBadge
+                                      tone="success"
+                                      tilt={-2}
+                                      className="text-xs"
+                                    >
+                                      Boa 1ª tarefa
+                                    </StickerBadge>
+                                  )}
+                                  {task.priority !== "none" && (
+                                    <StickerBadge
+                                      tone={
+                                        task.priority === "high" ||
+                                        task.priority === "urgent"
+                                          ? "clay"
+                                          : "sun"
+                                      }
+                                      tilt={2}
+                                      className="text-xs"
+                                    >
+                                      {PRIORITY_LABELS[task.priority]}
+                                    </StickerBadge>
+                                  )}
+                                </div>
+                              )}
+                            <button
+                              type="button"
+                              onClick={() => setEditing(task)}
+                              className={`block w-full border-0 bg-transparent p-0 text-left text-[1.05rem] leading-snug font-bold ${
                                 done
                                   ? "text-text-muted line-through"
                                   : "text-brown"
                               }`}
                             >
                               {task.title}
-                            </p>
+                            </button>
+                            {task.pr_url && task.pr_state && (
+                              <a
+                                href={task.pr_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold no-underline! ${PR_TONES[task.pr_state]}`}
+                              >
+                                <GitPullRequest size={14} aria-hidden />
+                                PR #{prNumber(task.pr_url)} ·{" "}
+                                {PR_STATE_LABELS[task.pr_state]}
+                              </a>
+                            )}
                             <div className="mt-3 flex items-center gap-2 text-sm text-text-muted">
                               {task.assignee_id ? (
                                 <Avatar
@@ -344,6 +473,14 @@ export function ProjectBoardDesktop({
                               </select>
                               <button
                                 type="button"
+                                aria-label={`Editar ${task.title}`}
+                                onClick={() => setEditing(task)}
+                                className="rounded-full border-0 bg-transparent p-1 text-text-muted hover:text-brown"
+                              >
+                                <PencilSimple size={16} aria-hidden />
+                              </button>
+                              <button
+                                type="button"
                                 onClick={() =>
                                   void onAssign(task, mine ? null : userId)
                                 }
@@ -389,6 +526,17 @@ export function ProjectBoardDesktop({
             })}
           </div>
         </div>
+
+        {editing && (
+          <TaskEditor
+            task={editing}
+            onClose={() => setEditing(null)}
+            onSave={async (patch) => {
+              await onUpdate(editing, patch);
+              setEditing(null);
+            }}
+          />
+        )}
 
         {isOwner && (
           <button
@@ -465,5 +613,180 @@ function AddTask({
         </button>
       </div>
     </form>
+  );
+}
+
+const FIELD =
+  "mt-1 w-full rounded-xl border border-border-strong bg-cream px-3 py-2 text-brown focus:shadow-none";
+
+/** Editor da tarefa: título, descrição, etiquetas, boa 1ª tarefa e PR. */
+function TaskEditor({
+  task,
+  onClose,
+  onSave,
+}: {
+  task: Task;
+  onClose: () => void;
+  onSave: (patch: TaskPatch) => Promise<void>;
+}) {
+  const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(task.description ?? "");
+  const [labels, setLabels] = useState(task.labels.join(", "));
+  const [goodFirst, setGoodFirst] = useState(task.good_first_task);
+  const [prUrl, setPrUrl] = useState(task.pr_url ?? "");
+  const [prState, setPrState] = useState<PrState>(task.pr_state ?? "open");
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    const url = prUrl.trim();
+    if (url && !PR_URL.test(url)) {
+      setError(
+        "Use o link do PR no GitHub: https://github.com/dono/repo/pull/123",
+      );
+      return;
+    }
+    const cleanLabels = [
+      ...new Set(
+        labels
+          .split(",")
+          .map((l) => l.trim().slice(0, 24))
+          .filter(Boolean),
+      ),
+    ].slice(0, 6);
+    setSaving(true);
+    setError(null);
+    try {
+      await onSave({
+        title: title.trim() || task.title,
+        description: description.trim() || null,
+        labels: cleanLabels,
+        good_first_task: goodFirst,
+        pr_url: url || null,
+        pr_state: url ? prState : null,
+      });
+    } catch {
+      setError("Não foi possível salvar a tarefa.");
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Editar tarefa"
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-brown/50 p-6"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <HardShadowCard
+        as="form"
+        onSubmit={submit}
+        className="max-h-[90vh] w-full max-w-[560px] space-y-4 overflow-y-auto p-6"
+      >
+        <h2 className="font-display text-[1.5rem] text-brown">Editar tarefa</h2>
+        {error && (
+          <p
+            role="alert"
+            className="m-0 rounded-lg bg-sand px-3 py-2 text-sm font-bold text-clay"
+          >
+            {error}
+          </p>
+        )}
+        <label className="block text-sm font-bold text-brown">
+          Título
+          <input
+            autoFocus
+            required
+            maxLength={200}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className={FIELD}
+          />
+        </label>
+        <label className="block text-sm font-bold text-brown">
+          Descrição (opcional)
+          <textarea
+            rows={3}
+            maxLength={2000}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className={FIELD}
+          />
+        </label>
+        <label className="block text-sm font-bold text-brown">
+          Etiquetas (separadas por vírgula, até 6)
+          <input
+            value={labels}
+            placeholder="Front, Git, React"
+            onChange={(e) => setLabels(e.target.value)}
+            className={FIELD}
+          />
+          <span className="mt-1 block text-xs font-normal text-text-muted">
+            Use as tecnologias da tarefa: elas aparecem como sugestão em vagas
+            que pedem a mesma tecnologia.
+          </span>
+        </label>
+        <label className="flex items-center gap-3 text-sm font-bold text-brown">
+          <input
+            type="checkbox"
+            checked={goodFirst}
+            onChange={(e) => setGoodFirst(e.target.checked)}
+            className="size-5 accent-[var(--success)]"
+          />
+          Boa primeira tarefa (qualquer pessoa da comunidade pode pegar)
+        </label>
+        <div className="grid grid-cols-[1fr_160px] gap-3">
+          <label className="block text-sm font-bold text-brown">
+            Link do PR
+            <input
+              type="url"
+              value={prUrl}
+              placeholder="https://github.com/dono/repo/pull/42"
+              onChange={(e) => setPrUrl(e.target.value)}
+              className={FIELD}
+            />
+          </label>
+          <label className="block text-sm font-bold text-brown">
+            Estado
+            <select
+              value={prState}
+              disabled={!prUrl.trim()}
+              onChange={(e) => setPrState(e.target.value as PrState)}
+              className={`${FIELD} cursor-pointer opacity-100 disabled:cursor-not-allowed disabled:opacity-50`}
+            >
+              {(Object.keys(PR_STATE_LABELS) as PrState[]).map((s) => (
+                <option key={s} value={s}>
+                  {PR_STATE_LABELS[s]}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <div className="flex justify-end gap-3 pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border-[1.5px] border-brown bg-surface px-6 py-2.5 font-bold text-brown"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="rounded-full border-0 bg-sun px-6 py-2.5 font-bold text-brown disabled:opacity-50"
+          >
+            {saving ? "Salvando…" : "Salvar"}
+          </button>
+        </div>
+      </HardShadowCard>
+    </div>
   );
 }

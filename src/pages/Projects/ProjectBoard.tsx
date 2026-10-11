@@ -107,6 +107,15 @@ export function ProjectBoard() {
     }
   }
 
+  /** Edição do desktop (título, etiquetas, boa 1ª tarefa, PR). Lança em erro. */
+  async function handleUpdate(
+    task: Task,
+    patch: Parameters<typeof updateTask>[1],
+  ) {
+    const saved = await updateTask(task.id, patch);
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? saved : t)));
+  }
+
   async function handleDeleteTask(task: Task) {
     if (!window.confirm(`Excluir a tarefa "${task.title}"?`)) return;
     try {
@@ -198,6 +207,7 @@ export function ProjectBoard() {
       onAdd={handleAddTask}
       onPriority={handlePriority}
       onAssign={handleAssign}
+      onUpdate={handleUpdate}
       onDelete={handleDeleteTask}
       onDeleteProject={handleDeleteProject}
     />
