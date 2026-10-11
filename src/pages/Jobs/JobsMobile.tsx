@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BookmarkSimple, Clock } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { Chip, ChipRow } from "../../components/mobile/Chip";
-import { HardShadowCard } from "../../components/mobile/HardShadowCard";
+import { Chip, ChipRow } from "../../components/shared/Chip";
+import { HardShadowCard } from "../../components/shared/HardShadowCard";
 import { MobileHeader } from "../../components/mobile/MobileHeader";
 import { SearchField } from "../../components/mobile/SearchField";
-import { StickerBadge } from "../../components/mobile/StickerBadge";
+import { StickerBadge } from "../../components/shared/StickerBadge";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   fetchBookmarkedJobIds,
