@@ -40,7 +40,21 @@ export interface Task {
   due_date: string | null;
   created_at: string;
   updated_at: string;
+  labels: string[];
+  good_first_task: boolean;
+  pr_url: string | null;
+  pr_state: PrState | null;
+  completed_at: string | null;
 }
+
+export type PrState = "draft" | "open" | "merged" | "closed";
+
+export const PR_STATE_LABELS: Record<PrState, string> = {
+  draft: "rascunho",
+  open: "aberto",
+  merged: "aceito",
+  closed: "fechado",
+};
 
 export const PRIORITY_LABELS: Record<TaskPriority, string> = {
   none: "Sem prioridade",
@@ -160,6 +174,10 @@ export async function updateTask(
       | "status_id"
       | "due_date"
       | "assignee_id"
+      | "labels"
+      | "good_first_task"
+      | "pr_url"
+      | "pr_state"
     >
   >,
 ) {
@@ -324,4 +342,59 @@ export async function fetchOpenTaskCounts(projectIds: string[]) {
     counts.set(id, (counts.get(id) ?? 0) + 1);
   }
   return counts;
+}
+
+export interface PracticeTask {
+  task_id: string;
+  title: string;
+  labels: string[];
+  project_id: string;
+  project_name: string;
+}
+
+/** "Boa 1ª tarefa" livres que usam alguma das tecnologias (RPC; vê fora dos seus projetos). */
+export async function suggestPracticeTasks(skills: string[], limit = 3) {
+  if (skills.length === 0) return [] as PracticeTask[];
+  const { data, error } = await supabase.rpc("suggest_practice_tasks", {
+    _skills: skills,
+    _limit: limit,
+  });
+  if (error) throw error;
+  return (data ?? []) as PracticeTask[];
+}
+
+/** Pega a tarefa: entra no projeto como membro e vira responsável. Retorna o projeto. */
+export async function claimGoodFirstTask(taskId: string) {
+  const { data, error } = await supabase.rpc("claim_good_first_task", {
+    _task_id: taskId,
+  });
+  if (error) throw error;
+  return data as string;
+}
+
+export interface ContributionItem {
+  kind: "task" | "answer";
+  title: string;
+  context: string;
+  pr_url: string | null;
+  pr_state: PrState | null;
+  publication_id: string | null;
+  at: string;
+}
+
+export interface Contributions {
+  tasks_done: number;
+  helpful_answers: number;
+  projects: number;
+  prs_merged: number;
+  timeline: ContributionItem[];
+}
+
+/** Contadores e linha do tempo do perfil (públicos, via RPC). */
+export async function fetchContributions(userId: string) {
+  const { data, error } = await supabase.rpc("profile_contributions", {
+    _user_id: userId,
+  });
+  if (error) throw error;
+  return data as Contributions;
 }

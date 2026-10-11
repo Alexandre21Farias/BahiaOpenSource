@@ -11,6 +11,9 @@ interface PostCommentsProps {
   loading: boolean;
   onAddComment: (content: string) => Promise<void>;
   onDeleteComment: (commentId: string) => Promise<void>;
+  /** Só o desktop passa: autor da dúvida marca a resposta que resolveu. */
+  resolvedCommentId?: string | null;
+  onMarkResolved?: (commentId: string | null) => void;
 }
 
 export function PostComments({
@@ -19,6 +22,8 @@ export function PostComments({
   loading,
   onAddComment,
   onDeleteComment,
+  resolvedCommentId,
+  onMarkResolved,
 }: PostCommentsProps) {
   const { user } = useAuth();
   const [commentText, setCommentText] = useState("");
@@ -150,6 +155,21 @@ export function PostComments({
                     </div>
                   </div>
                   <p className="comment-content-text">{comm.content}</p>
+                  {onMarkResolved && !isOwner && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onMarkResolved(
+                          resolvedCommentId === comm.id ? null : comm.id,
+                        )
+                      }
+                      className="mt-1 border-0 bg-transparent p-0 text-xs font-bold text-success underline"
+                    >
+                      {resolvedCommentId === comm.id
+                        ? "✓ Resolveu · desmarcar"
+                        : "Marcar como a resposta que resolveu"}
+                    </button>
+                  )}
                 </div>
               </div>
             );

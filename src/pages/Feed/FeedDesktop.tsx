@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import { Chip } from "../../components/shared/Chip";
 import { HardShadowCard } from "../../components/shared/HardShadowCard";
@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { DISCORD_URL } from "../../lib/links";
 import { supabase } from "../../lib/supabase";
 import { WORK_MODE_LABELS, type Job } from "../../services/jobs";
+import { fetchCommentsByIds } from "../../services/publications";
 import { timeAgo } from "../Jobs/timeAgo";
 import { DesktopPostCard } from "./DesktopPostCard";
 import { initialsOf } from "./postFormat";
@@ -46,6 +47,7 @@ export interface FeedDesktopProps {
   onAddComment: (pubId: string, content: string) => Promise<void>;
   onDeleteComment: (pubId: string, commentId: string) => Promise<void>;
   onDeletePublication: (id: string, e: MouseEvent) => void;
+  onResolve: (pubId: string, commentId: string | null) => void;
 }
 
 interface ProfileSummary {
@@ -196,9 +198,45 @@ export function FeedDesktop({
   onAddComment,
   onDeleteComment,
   onDeletePublication,
+  onResolve,
 }: FeedDesktopProps) {
   const { user } = useAuth();
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const [resolvedFetched, setResolvedFetched] = useState<
+    Record<string, PublicationComment>
+  >({});
+
+  // Respostas que resolveram dúvidas: usa as já carregadas e busca as que faltam.
+  const loadedComments = useMemo(() => {
+    const byId: Record<string, PublicationComment> = { ...resolvedFetched };
+    Object.values(commentsMap)
+      .flat()
+      .forEach((c) => (byId[c.id] = c));
+    return byId;
+  }, [commentsMap, resolvedFetched]);
+
+  const missingResolved = publications
+    .map((p) => p.resolved_comment_id)
+    .filter((id): id is string => Boolean(id) && !loadedComments[id!])
+    .join(",");
+
+  useEffect(() => {
+    if (!missingResolved) return;
+    let active = true;
+    fetchCommentsByIds(missingResolved.split(","))
+      .then((list) => {
+        if (!active) return;
+        setResolvedFetched((prev) => {
+          const next = { ...prev };
+          list.forEach((c) => (next[c.id] = c));
+          return next;
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [missingResolved]);
 
   // Scroll infinito: ao chegar perto do fim da lista, pede a próxima página.
   useEffect(() => {
@@ -302,6 +340,12 @@ export function FeedDesktop({
                 onAddComment={onAddComment}
                 onDeleteComment={onDeleteComment}
                 onDeletePublication={onDeletePublication}
+                resolvedComment={
+                  pub.resolved_comment_id
+                    ? loadedComments[pub.resolved_comment_id]
+                    : undefined
+                }
+                onResolve={onResolve}
               />
             ))
           )}

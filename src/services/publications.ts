@@ -9,6 +9,9 @@ export interface Publication {
   image_url?: string;
   created_at: string;
   updated_at: string;
+  /** resposta marcada pelo autor como a que resolveu a dúvida */
+  resolved_comment_id?: string | null;
+  resolved_at?: string | null;
   profiles?: {
     id: string;
     full_name: string;
@@ -271,4 +274,37 @@ export async function uploadPublicationImage(
 
   const { data } = supabase.storage.from("publications").getPublicUrl(filePath);
   return data.publicUrl;
+}
+
+/** Marca (ou desmarca, com null) a resposta que resolveu a dúvida. Só o autor consegue. */
+export async function setResolvedComment(
+  publicationId: string,
+  commentId: string | null,
+) {
+  const { error } = await supabase
+    .from("publications")
+    .update({ resolved_comment_id: commentId })
+    .eq("id", publicationId);
+  if (error) throw error;
+}
+
+/** Respostas marcadas como "resolveu", com o autor (para o card do fórum). */
+export async function fetchCommentsByIds(ids: string[]) {
+  if (ids.length === 0) return [] as PublicationComment[];
+  const { data, error } = await supabase
+    .from("publication_comments")
+    .select(
+      `
+      *,
+      profiles!user_id (
+        id,
+        full_name,
+        username,
+        avatar_url
+      )
+    `,
+    )
+    .in("id", ids);
+  if (error) throw error;
+  return (data ?? []) as PublicationComment[];
 }

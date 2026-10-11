@@ -29,6 +29,8 @@ interface DesktopPostCardProps {
   onAddComment: (pubId: string, content: string) => Promise<void>;
   onDeleteComment: (pubId: string, commentId: string) => Promise<void>;
   onDeletePublication: (id: string, e: MouseEvent) => void;
+  resolvedComment?: PublicationComment;
+  onResolve: (pubId: string, commentId: string | null) => void;
 }
 
 const ACTION =
@@ -44,6 +46,8 @@ export function DesktopPostCard({
   onAddComment,
   onDeleteComment,
   onDeletePublication,
+  resolvedComment,
+  onResolve,
 }: DesktopPostCardProps) {
   const { user } = useAuth();
   const [liked, setLiked] = useState(false);
@@ -54,6 +58,12 @@ export function DesktopPostCard({
   const profilePath = author?.username ? `/${author.username}` : undefined;
   const commentsCount = publication.comments_count || comments.length || 0;
   const categoryLabel = CATEGORY_LABELS[publication.category];
+  const isAuthor = user?.id === publication.user_id;
+  const isResolved = Boolean(publication.resolved_comment_id);
+  const helperName =
+    resolvedComment?.profiles?.full_name ||
+    resolvedComment?.profiles?.username ||
+    "Membro";
 
   const handleLike = (e: MouseEvent<HTMLButtonElement>) => {
     const next = !liked;
@@ -120,7 +130,12 @@ export function DesktopPostCard({
             {categoryLabel}
           </StickerBadge>
         )}
-        {user?.id === publication.user_id && (
+        {isResolved && (
+          <StickerBadge tone="success" tilt={-2} className="text-[0.7rem]">
+            ✓ Resolvida
+          </StickerBadge>
+        )}
+        {isAuthor && (
           <button
             type="button"
             aria-label="Excluir publicação"
@@ -197,6 +212,31 @@ export function DesktopPostCard({
         </button>
       </footer>
 
+      {isResolved && resolvedComment && (
+        <section aria-label="Resposta que ajudou" className="mt-4">
+          <p className="mb-2 text-[0.7rem] font-extrabold tracking-wider text-success uppercase">
+            Resposta que ajudou
+          </p>
+          <div className="flex gap-3 rounded-xl border-2 border-success bg-[color-mix(in_srgb,var(--success)_10%,var(--surface))] p-3">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-brown bg-sky text-[0.65rem] font-bold text-brown">
+              {initialsOf(helperName)}
+            </span>
+            <div className="min-w-0 text-sm">
+              <p className="m-0 font-bold text-brown">
+                {helperName}
+                <span className="font-normal text-text-muted">
+                  {" "}
+                  · {relativeTime(resolvedComment.created_at)}
+                </span>
+              </p>
+              <p className="m-0 mt-0.5 whitespace-pre-wrap text-text-mid">
+                {resolvedComment.content}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {isCommentsOpen && (
         <PostComments
           publicationId={publication.id}
@@ -205,6 +245,13 @@ export function DesktopPostCard({
           onAddComment={(content) => onAddComment(publication.id, content)}
           onDeleteComment={(commentId) =>
             onDeleteComment(publication.id, commentId)
+          }
+          // Só quem perguntou marca a resposta que resolveu a dúvida.
+          resolvedCommentId={publication.resolved_comment_id}
+          onMarkResolved={
+            isAuthor && publication.category === "duvidas"
+              ? (commentId) => onResolve(publication.id, commentId)
+              : undefined
           }
         />
       )}

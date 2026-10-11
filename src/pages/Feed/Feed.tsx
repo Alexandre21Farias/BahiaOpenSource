@@ -8,6 +8,7 @@ import {
   fetchComments,
   addComment,
   deleteComment,
+  setResolvedComment,
 } from "../../services/publications";
 import { Publication, PublicationComment } from "./types";
 import { useIsMobile } from "../../hooks/useIsMobile";
@@ -210,12 +211,42 @@ export function Feed() {
             ? {
                 ...pub,
                 comments_count: Math.max(0, (pub.comments_count || 1) - 1),
+                // O banco desfaz o "resolvida" quando a resposta é apagada.
+                ...(pub.resolved_comment_id === commentId && {
+                  resolved_comment_id: null,
+                  resolved_at: null,
+                }),
               }
             : pub,
         ),
       );
     } catch (err) {
       console.error("Erro ao excluir comentário:", err);
+    }
+  };
+
+  // Autor da dúvida marca (ou desmarca) a resposta que resolveu.
+  const handleResolve = async (
+    publicationId: string,
+    commentId: string | null,
+  ) => {
+    const previous = publications.find((p) => p.id === publicationId);
+    if (!previous) return;
+    const apply = (id: string | null, at: string | null) =>
+      setPublications((prev) =>
+        prev.map((pub) =>
+          pub.id === publicationId
+            ? { ...pub, resolved_comment_id: id, resolved_at: at }
+            : pub,
+        ),
+      );
+    apply(commentId, commentId ? new Date().toISOString() : null);
+    try {
+      await setResolvedComment(publicationId, commentId);
+    } catch (err) {
+      console.error("Erro ao marcar resposta:", err);
+      apply(previous.resolved_comment_id ?? null, previous.resolved_at ?? null);
+      toast.error("Não foi possível marcar a resposta.");
     }
   };
 
@@ -273,6 +304,7 @@ export function Feed() {
         onAddComment={handleAddComment}
         onDeleteComment={handleDeleteComment}
         onDeletePublication={handleDeletePublication}
+        onResolve={handleResolve}
       />
       <CreatePostModal
         isOpen={isModalOpen}

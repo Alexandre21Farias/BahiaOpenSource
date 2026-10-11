@@ -1,6 +1,13 @@
+const TONES = {
+  sun: "bg-sun text-brown",
+  clay: "bg-clay text-cream",
+  sky: "bg-sky text-brown",
+  success: "bg-success text-cream",
+};
+
 interface StickerBadgeProps {
   children: React.ReactNode;
-  tone?: "sun" | "clay";
+  tone?: "sun" | "clay" | "sky" | "success";
   tilt?: number;
   className?: string;
 }
@@ -15,9 +22,7 @@ export function StickerBadge({
   return (
     <span
       style={{ transform: `rotate(${tilt}deg)` }}
-      className={`inline-block rounded-md border-2 border-brown px-2.5 py-0.5 font-display text-[0.8rem] shadow-[2px_2px_0_var(--brown)] ${
-        tone === "sun" ? "bg-sun text-brown" : "bg-clay text-cream"
-      } ${className}`}
+      className={`inline-block rounded-md border-2 border-brown px-2.5 py-0.5 font-display text-[0.8rem] shadow-[2px_2px_0_var(--brown)] ${TONES[tone]} ${className}`}
     >
       {children}
     </span>
