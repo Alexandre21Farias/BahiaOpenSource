@@ -2,10 +2,16 @@ interface ChipProps {
   label: string;
   active?: boolean;
   onClick?: () => void;
+  className?: string;
 }
 
 /** Filtro em pílula. Ativo = marrom cheio. */
-export function Chip({ label, active = false, onClick }: ChipProps) {
+export function Chip({
+  label,
+  active = false,
+  onClick,
+  className = "",
+}: ChipProps) {
   return (
     <button
       type="button"
@@ -15,7 +21,7 @@ export function Chip({ label, active = false, onClick }: ChipProps) {
         active
           ? "border-brown bg-brown text-cream"
           : "border-border-strong bg-surface text-brown"
-      }`}
+      } ${className}`}
     >
       {label}
     </button>

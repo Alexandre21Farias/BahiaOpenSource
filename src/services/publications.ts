@@ -33,10 +33,12 @@ export interface PublicationComment {
 }
 
 /**
- * Busca todas as publicações com suporte a join de perfil do autor e contagem de comentários.
+ * Busca publicações com join de perfil do autor e contagem de comentários.
+ * Sem `range`, traz todas; com `range`, só a página pedida (índices inclusivos).
  */
 export async function fetchPublications(
   categoryFilter?: string,
+  range?: { from: number; to: number },
 ): Promise<Publication[]> {
   let query = supabase
     .from("publications")
@@ -56,6 +58,10 @@ export async function fetchPublications(
 
   if (categoryFilter && categoryFilter !== "all") {
     query = query.eq("category", categoryFilter);
+  }
+
+  if (range) {
+    query = query.range(range.from, range.to);
   }
 
   const { data, error } = await query;

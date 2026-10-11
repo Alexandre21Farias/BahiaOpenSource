@@ -26,8 +26,9 @@ const TABS = [
   { to: "/projects", label: "Projetos" },
 ];
 
+const MENU_BROWN = "text-brown! hover:text-brown!";
 const MENU_ITEM =
-  "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-brown no-underline! hover:bg-sand";
+  "flex w-full items-center gap-2 rounded-lg border-0 bg-transparent px-3 py-2 text-left text-sm font-semibold no-underline! hover:bg-sand";
 
 function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -67,7 +68,7 @@ export function DesktopNavbar({
       <div className="mx-auto flex h-[76px] max-w-[1290px] items-center gap-6 px-6">
         <Link
           to="/"
-          className="font-display text-[1.5rem] leading-none text-cream no-underline! [text-shadow:2px_2px_0_var(--sun)] hover:text-cream!"
+          className="font-display text-[1.5rem] whitespace-nowrap leading-none text-cream no-underline! [text-shadow:2px_2px_0_var(--sun)] hover:text-cream!"
         >
           Bahia Open Source
         </Link>
@@ -100,7 +101,7 @@ export function DesktopNavbar({
             e.preventDefault();
             toast("A busca geral chega em breve!");
           }}
-          className="ml-auto flex h-11 w-[300px] items-center gap-3 rounded-full border border-cream/30 bg-cream/10 px-4"
+          className="ml-auto hidden h-11 w-[300px] min-[1100px]:flex items-center gap-3 rounded-full border border-cream/30 bg-cream/10 px-4"
         >
           <MagnifyingGlass size={18} aria-hidden />
           <input
@@ -113,7 +114,7 @@ export function DesktopNavbar({
 
         <Link
           to="/feed?action=new"
-          className="flex h-11 items-center gap-2 rounded-full bg-sun px-5 text-[0.95rem] font-bold text-brown no-underline! hover:text-brown!"
+          className="flex h-11 items-center gap-2 rounded-full bg-sun px-5 max-[1099px]:ml-auto text-[0.95rem] font-bold text-brown no-underline! hover:text-brown!"
         >
           <Plus size={18} weight="bold" aria-hidden />
           Publicar
@@ -126,7 +127,7 @@ export function DesktopNavbar({
             aria-haspopup="menu"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
-            className="flex size-11 items-center justify-center overflow-hidden rounded-full bg-sun text-[0.95rem] font-bold text-brown"
+            className="flex size-11 items-center justify-center overflow-hidden rounded-full border-0 bg-sun text-[0.95rem] font-bold text-brown"
           >
             {avatarUrl ? (
               <img src={avatarUrl} alt="" className="size-full object-cover" />
@@ -145,24 +146,28 @@ export function DesktopNavbar({
               </p>
               <Link
                 to="/feed?action=new"
-                className={MENU_ITEM}
+                className={`${MENU_ITEM} ${MENU_BROWN}`}
                 onClick={closeMenu}
               >
                 <ChatCircle size={18} aria-hidden /> Publicar no fórum
               </Link>
-              <Link to={profilePath} className={MENU_ITEM} onClick={closeMenu}>
+              <Link
+                to={profilePath}
+                className={`${MENU_ITEM} ${MENU_BROWN}`}
+                onClick={closeMenu}
+              >
                 <ListBullets size={18} aria-hidden /> Meus conteúdos
               </Link>
               <Link
                 to={`${profilePath}?edit=true`}
-                className={MENU_ITEM}
+                className={`${MENU_ITEM} ${MENU_BROWN}`}
                 onClick={closeMenu}
               >
                 <Gear size={18} aria-hidden /> Editar perfil
               </Link>
               <button
                 type="button"
-                className={MENU_ITEM}
+                className={`${MENU_ITEM} ${MENU_BROWN}`}
                 onClick={() => {
                   closeMenu();
                   toast("Código promocional / cupom de convite em breve!");
@@ -172,7 +177,7 @@ export function DesktopNavbar({
               </button>
               <button
                 type="button"
-                className={`${MENU_ITEM} text-clay`}
+                className={`${MENU_ITEM} text-clay! hover:text-clay!`}
                 onClick={() => {
                   closeMenu();
                   onSignOut();
