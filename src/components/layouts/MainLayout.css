@@ -24,35 +24,6 @@
   transform: translateY(-100%);
 }
 
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.navbar-sections {
-  display: flex;
-  gap: 1rem;
-  margin-left: 0.6rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.navbar-sections a {
-  color: var(--text);
-  text-decoration: none;
-}
-
-.navbar-sections a:hover {
-  color: var(--clay);
-}
-
-@media (max-width: 768px) {
-  .navbar-sections {
-    display: none;
-  }
-}
-
 .logo-terminal {
   display: flex;
   align-items: center;
@@ -96,13 +67,6 @@
 .nav-forum-btn:active {
   transform: translateY(0) scale(0.98);
   transition-duration: var(--duration-fast);
-}
-
-.navbar-right {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
 }
 
 /* ---------- Modo app (celular): sem navbar de topo, com tab bar ---------- */
