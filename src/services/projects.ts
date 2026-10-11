@@ -286,3 +286,25 @@ export async function removeMember(id: string) {
     .eq("id", id);
   if (error) throw error;
 }
+
+/** Contadores do perfil: projetos que participa e tarefas concluídas atribuídas a ela. */
+export async function fetchProfileCounts(userId: string) {
+  const [projects, done] = await Promise.all([
+    supabase
+      .from("project_participants")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId),
+    supabase
+      .from("tasks")
+      .select("id, project_statuses!inner(category)", {
+        count: "exact",
+        head: true,
+      })
+      .eq("assignee_id", userId)
+      .eq("project_statuses.category", "completed"),
+  ]);
+  return {
+    projects: projects.count ?? 0,
+    tasksDone: done.count ?? 0,
+  };
+}

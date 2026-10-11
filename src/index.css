@@ -407,13 +407,15 @@ cite {
   align-items: center;
   gap: var(--space-3);
 }
-.grid {
-  display: grid;
-  gap: var(--space-4);
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-.w-full {
-  width: 100%;
+@layer base {
+  .grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .w-full {
+    width: 100%;
+  }
 }
 .reveal {
   animation: fadeInUp 0.7s var(--ease-out) both;
