@@ -93,44 +93,16 @@ export function MainLayout() {
         />
       )}
 
-      {/* Topo da landing (visitantes) */}
+      {/* Topo de quem não está logado: só o logo e o caminho para entrar */}
       {!showTabBar && !showDesktopNav && (
         <header className={`top-navbar ${showNavbar ? "" : "navbar-hidden"}`}>
-          <div className="navbar-left">
-            <Link to="/" className="logo-terminal">
-              OpenBahia
-            </Link>
+          <Link to="/" className="logo-terminal">
+            OpenBahia
+          </Link>
 
-            <Link to="/feed" className="nav-forum-btn">
-              Fórum
-            </Link>
-
-            <Link to="/projects" className="nav-forum-btn">
-              Projetos
-            </Link>
-
-            <Link to="/vagas" className="nav-forum-btn">
-              Vagas
-            </Link>
-
-            {pathname === "/" && (
-              <nav className="navbar-sections" aria-label="Seções da página">
-                <a href="#about">Sobre</a>
-                <a href="#projects">Projetos</a>
-                <a href="#join">Participe</a>
-              </nav>
-            )}
-          </div>
-
-          <div className="navbar-right">
-            <Link
-              to="/login"
-              className="nav-forum-btn"
-              style={{ fontSize: "0.85rem", padding: "0.4rem 0.9rem" }}
-            >
-              Entrar
-            </Link>
-          </div>
+          <Link to="/login" className="nav-forum-btn">
+            Entrar
+          </Link>
         </header>
       )}
 
