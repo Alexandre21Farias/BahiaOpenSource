@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   ChatCircle,
   Gear,
@@ -49,6 +49,8 @@ export function DesktopNavbar({
 }: DesktopNavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  // Na tela de Vagas, o botão de ação vira "Anunciar vaga" e a busca sai.
+  const onJobs = useLocation().pathname.startsWith("/vagas");
 
   useEffect(() => {
     const onMouseDown = (e: MouseEvent) => {
@@ -95,30 +97,41 @@ export function DesktopNavbar({
           ))}
         </nav>
 
-        <form
-          role="search"
-          onSubmit={(e) => {
-            e.preventDefault();
-            toast("A busca geral chega em breve!");
-          }}
-          className="ml-auto hidden h-11 w-[300px] min-[1100px]:flex items-center gap-3 rounded-full border border-cream/30 bg-cream/10 px-4"
-        >
-          <MagnifyingGlass size={18} aria-hidden />
-          <input
-            type="search"
-            aria-label="Buscar posts, vagas, pessoas"
-            placeholder="Buscar posts, vagas, pessoas"
-            className="min-h-0 w-full border-0 bg-transparent p-0 text-sm text-cream outline-none placeholder:text-cream/70 focus:shadow-none"
-          />
-        </form>
+        {onJobs ? (
+          <Link
+            to="/vagas?action=new"
+            className="ml-auto flex h-11 items-center rounded-full border border-cream/40 px-5 text-[0.95rem] font-bold text-cream! no-underline! hover:bg-cream/10"
+          >
+            Anunciar vaga
+          </Link>
+        ) : (
+          <>
+            <form
+              role="search"
+              onSubmit={(e) => {
+                e.preventDefault();
+                toast("A busca geral chega em breve!");
+              }}
+              className="ml-auto hidden h-11 w-[300px] min-[1100px]:flex items-center gap-3 rounded-full border border-cream/30 bg-cream/10 px-4"
+            >
+              <MagnifyingGlass size={18} aria-hidden />
+              <input
+                type="search"
+                aria-label="Buscar posts, vagas, pessoas"
+                placeholder="Buscar posts, vagas, pessoas"
+                className="min-h-0 w-full border-0 bg-transparent p-0 text-sm text-cream outline-none placeholder:text-cream/70 focus:shadow-none"
+              />
+            </form>
 
-        <Link
-          to="/feed?action=new"
-          className="flex h-11 items-center gap-2 rounded-full bg-sun px-5 max-[1099px]:ml-auto text-[0.95rem] font-bold text-brown no-underline! hover:text-brown!"
-        >
-          <Plus size={18} weight="bold" aria-hidden />
-          Publicar
-        </Link>
+            <Link
+              to="/feed?action=new"
+              className="flex h-11 items-center gap-2 rounded-full bg-sun px-5 max-[1099px]:ml-auto text-[0.95rem] font-bold text-brown no-underline! hover:text-brown!"
+            >
+              <Plus size={18} weight="bold" aria-hidden />
+              Publicar
+            </Link>
+          </>
+        )}
 
         <div className="relative" ref={menuRef}>
           <button
