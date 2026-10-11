@@ -50,7 +50,10 @@ export function DesktopNavbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   // Na tela de Vagas, o botão de ação vira "Anunciar vaga" e a busca sai.
-  const onJobs = useLocation().pathname.startsWith("/vagas");
+  const { pathname } = useLocation();
+  const onJobs = pathname.startsWith("/vagas");
+  // No quadro de um projeto a barra fica só com abas e avatar.
+  const onBoard = /^\/projects\/[^/]+/.test(pathname);
 
   useEffect(() => {
     const onMouseDown = (e: MouseEvent) => {
@@ -97,7 +100,7 @@ export function DesktopNavbar({
           ))}
         </nav>
 
-        {onJobs ? (
+        {onBoard ? null : onJobs ? (
           <Link
             to="/vagas?action=new"
             className="ml-auto flex h-11 items-center rounded-full border border-cream/40 px-5 text-[0.95rem] font-bold text-cream! no-underline! hover:bg-cream/10"
@@ -133,7 +136,7 @@ export function DesktopNavbar({
           </>
         )}
 
-        <div className="relative" ref={menuRef}>
+        <div className={`relative ${onBoard ? "ml-auto" : ""}`} ref={menuRef}>
           <button
             type="button"
             aria-label={`Menu de ${displayName}`}

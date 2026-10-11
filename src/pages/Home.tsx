@@ -8,13 +8,14 @@ import Footer from "../components/Landing/Footer/Footer";
 import { useAuth } from "../contexts/AuthContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { HomeApp } from "./HomeApp";
+import { HomeDesktop } from "./HomeDesktop";
 
 export default function Home(): React.JSX.Element {
   const { user } = useAuth();
   const isMobile = useIsMobile();
 
-  // No celular, quem está logado vê a home do app; os demais veem a landing.
-  if (isMobile && user) return <HomeApp />;
+  // Quem está logado vê a home do app (celular ou desktop); os demais veem a landing.
+  if (user) return isMobile ? <HomeApp /> : <HomeDesktop />;
 
   return (
     <div className="home-page">

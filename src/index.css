@@ -1281,6 +1281,10 @@ dialog form {
   --color-sky: var(--sky);
   --color-sand: var(--sand);
   --color-success: var(--success);
+  --color-text-mid: var(--text-mid);
+  --color-text-muted: var(--text-muted);
+  --color-text-ghost: var(--text-ghost);
+  --color-bg-soft: var(--bg-soft);
   --color-mocha: var(--mocha);
   --color-surface: var(--surface);
   --color-border-strong: var(--border-strong);

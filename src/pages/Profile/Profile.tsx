@@ -1,25 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { ProfileMobile } from "./ProfileMobile";
-import {
-  Link,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import { ProfileDesktop } from "./ProfileDesktop";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   At,
-  Calendar,
   Camera,
-  ChatCircle,
   FloppyDisk,
   LinkSimple,
   MapPin,
-  PencilSimple,
-  SignOut,
   User,
   WarningCircle,
-  Article,
 } from "@phosphor-icons/react";
 import { Icon } from "../../components/ui/icon";
 import { Button } from "../../components/ui/Button";
@@ -38,7 +29,7 @@ import {
   type CareerForm,
 } from "../../services/career";
 import type { JobLevel, WorkMode } from "../../services/jobs";
-import { ProfileCareerFields, ProfileCareerView } from "./ProfileCareer";
+import { ProfileCareerFields } from "./ProfileCareer";
 import {
   fetchUserPublications,
   Publication,
@@ -73,13 +64,6 @@ const EMPTY_FORM = {
   website: "",
 };
 const BIO_MAX = 280;
-
-const formatDate = (date: string) =>
-  new Date(date).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
 
 export function Profile() {
   const { username: paramUsername } = useParams<{ username?: string }>();
@@ -125,8 +109,11 @@ export function Profile() {
       setPosts([]);
       setLoading(false);
       if (!data) return;
+      // Mantém a query (ex.: ?edit=true) ao trocar /profile por /<username>.
       if (!cleanUsername && data.username)
-        navigate(`/${data.username}`, { replace: true });
+        navigate(`/${data.username}${window.location.search}`, {
+          replace: true,
+        });
       fetchUserPublications(data.id)
         .then((pubs) => active && setPosts(pubs))
         .catch((err) => console.error("Erro ao carregar publicações:", err));
@@ -307,11 +294,6 @@ export function Profile() {
   const avatar =
     profile.avatar_url ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=eebb48&color=3f1d12&size=256`;
-  const websiteUrl =
-    profile.website &&
-    (profile.website.startsWith("http")
-      ? profile.website
-      : `https://${profile.website}`);
 
   if (isMobile && !editing) {
     return (
@@ -328,268 +310,157 @@ export function Profile() {
     );
   }
 
+  if (!editing) {
+    return (
+      <ProfileDesktop
+        profile={profile}
+        name={name}
+        isOwn={isOwn}
+        loggedIn={Boolean(user)}
+        posts={posts}
+        onEdit={startEdit}
+      />
+    );
+  }
+
   return (
     <div className="profile-page">
       <div className="profile-cover" />
 
       <div className="profile-shell">
-        {editing ? (
-          <form className="profile-edit" onSubmit={handleSave}>
-            <div className="profile-edit-head">
-              <label className="profile-avatar-edit" title="Trocar foto">
-                <img
-                  src={avatarPreview ?? avatar}
-                  alt=""
-                  className="profile-avatar profile-avatar-sm"
-                />
-                <span className="profile-avatar-badge">
-                  <Icon icon={Camera} size="sm" />
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={handleAvatarChange}
-                  disabled={saving}
-                />
-              </label>
-              <div>
-                <h2>Editar perfil</h2>
-                <p>
-                  {form.username
-                    ? `Seu perfil ficará em /${form.username.replace(/^@/, "")}`
-                    : "Escolha seu @"}
-                </p>
-              </div>
+        <form className="profile-edit" onSubmit={handleSave}>
+          <div className="profile-edit-head">
+            <label className="profile-avatar-edit" title="Trocar foto">
+              <img
+                src={avatarPreview ?? avatar}
+                alt=""
+                className="profile-avatar profile-avatar-sm"
+              />
+              <span className="profile-avatar-badge">
+                <Icon icon={Camera} size="sm" />
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleAvatarChange}
+                disabled={saving}
+              />
+            </label>
+            <div>
+              <h2>Editar perfil</h2>
+              <p>
+                {form.username
+                  ? `Seu perfil ficará em /${form.username.replace(/^@/, "")}`
+                  : "Escolha seu @"}
+              </p>
             </div>
+          </div>
 
-            {error && (
-              <div className="auth-error-alert" role="alert">
-                <Icon icon={WarningCircle} size="md" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <div className="profile-form-grid">
-              <Input
-                label="Nome completo"
-                icon={<Icon icon={User} />}
-                value={form.full_name}
-                onChange={field("full_name")}
-                disabled={saving}
-                autoComplete="name"
-              />
-              <Input
-                label="Nome de usuário"
-                icon={<Icon icon={At} />}
-                value={form.username}
-                onChange={field("username")}
-                disabled={saving}
-                autoComplete="username"
-                required
-              />
-              <Input
-                label="Localização"
-                icon={<Icon icon={MapPin} />}
-                placeholder="Feira de Santana, BA"
-                value={form.location}
-                onChange={field("location")}
-                disabled={saving}
-              />
-              <Input
-                label="Website"
-                icon={<Icon icon={LinkSimple} />}
-                placeholder="seusite.com"
-                value={form.website}
-                onChange={field("website")}
-                disabled={saving}
-              />
-              <div className="input-wrapper profile-form-full">
-                <label className="input-label" htmlFor="profile-bio">
-                  Biografia
-                </label>
-                <textarea
-                  id="profile-bio"
-                  rows={4}
-                  maxLength={BIO_MAX}
-                  placeholder="Conte um pouco sobre você e o que gosta de criar..."
-                  value={form.bio}
-                  onChange={field("bio")}
-                  disabled={saving}
-                />
-                <span className="hint profile-counter">
-                  {form.bio.length}/{BIO_MAX}
-                </span>
-              </div>
+          {error && (
+            <div className="auth-error-alert" role="alert">
+              <Icon icon={WarningCircle} size="md" />
+              <span>{error}</span>
             </div>
+          )}
 
-            <ProfileCareerFields
-              value={career}
-              onChange={setCareer}
+          <div className="profile-form-grid">
+            <Input
+              label="Nome completo"
+              icon={<Icon icon={User} />}
+              value={form.full_name}
+              onChange={field("full_name")}
               disabled={saving}
-              resumeName={
-                resumeFile
-                  ? resumeFile.name
-                  : profile.resume_path && !resumeRemoved
-                    ? "curriculo.pdf"
-                    : null
-              }
-              onPickResume={(file) => {
-                if (
-                  file.type !== "application/pdf" ||
-                  file.size > RESUME_MAX_BYTES
-                ) {
-                  setError("Envie um PDF de até 5 MB.");
-                  return;
-                }
-                setError(null);
-                setResumeFile(file);
-                setResumeRemoved(false);
-              }}
-              onRemoveResume={() => {
-                setResumeFile(null);
-                setResumeRemoved(true);
-              }}
+              autoComplete="name"
             />
-
-            <div className="profile-edit-foot">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setEditing(false)}
+            <Input
+              label="Nome de usuário"
+              icon={<Icon icon={At} />}
+              value={form.username}
+              onChange={field("username")}
+              disabled={saving}
+              autoComplete="username"
+              required
+            />
+            <Input
+              label="Localização"
+              icon={<Icon icon={MapPin} />}
+              placeholder="Feira de Santana, BA"
+              value={form.location}
+              onChange={field("location")}
+              disabled={saving}
+            />
+            <Input
+              label="Website"
+              icon={<Icon icon={LinkSimple} />}
+              placeholder="seusite.com"
+              value={form.website}
+              onChange={field("website")}
+              disabled={saving}
+            />
+            <div className="input-wrapper profile-form-full">
+              <label className="input-label" htmlFor="profile-bio">
+                Biografia
+              </label>
+              <textarea
+                id="profile-bio"
+                rows={4}
+                maxLength={BIO_MAX}
+                placeholder="Conte um pouco sobre você e o que gosta de criar..."
+                value={form.bio}
+                onChange={field("bio")}
                 disabled={saving}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" isLoading={saving}>
-                <Icon icon={FloppyDisk} size="sm" />
-                Salvar alterações
-              </Button>
+              />
+              <span className="hint profile-counter">
+                {form.bio.length}/{BIO_MAX}
+              </span>
             </div>
-          </form>
-        ) : (
-          <>
-            <section className="profile-card">
-              <img src={avatar} alt={name} className="profile-avatar" />
-              <div className="profile-main">
-                <h1>{name}</h1>
-                <p className="profile-handle">
-                  @{profile.username || profile.id.slice(0, 8)}
-                </p>
-                {profile.headline && (
-                  <p className="profile-headline">{profile.headline}</p>
-                )}
-                <p className="profile-bio">
-                  {profile.bio || "Ainda sem biografia por aqui."}
-                </p>
-              </div>
-              {isOwn && (
-                <div className="profile-actions">
-                  <Button variant="secondary" onClick={startEdit}>
-                    <Icon icon={PencilSimple} size="sm" />
-                    Editar perfil
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      supabase.auth.signOut().then(() => navigate("/login"))
-                    }
-                  >
-                    <Icon icon={SignOut} size="sm" />
-                    Sair
-                  </Button>
-                </div>
-              )}
-            </section>
+          </div>
 
-            <div className="profile-grid">
-              <aside className="profile-about">
-                <h3>Sobre</h3>
-                <ul className="list-reset">
-                  {profile.location && (
-                    <li>
-                      <Icon icon={MapPin} size="sm" /> {profile.location}
-                    </li>
-                  )}
-                  {websiteUrl && (
-                    <li>
-                      <Icon icon={LinkSimple} size="sm" />
-                      <a
-                        href={websiteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {profile.website!.replace(/^https?:\/\//, "")}
-                      </a>
-                    </li>
-                  )}
-                  <li>
-                    <Icon icon={Calendar} size="sm" /> Entrou em{" "}
-                    {new Date(profile.created_at).toLocaleDateString("pt-BR", {
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </li>
-                  <li>
-                    <Icon icon={Article} size="sm" /> {posts.length}{" "}
-                    {posts.length === 1 ? "publicação" : "publicações"}
-                  </li>
-                </ul>
-                <ProfileCareerView
-                  profile={profile}
-                  isOwn={isOwn}
-                  loggedIn={Boolean(user)}
-                />
-              </aside>
+          <ProfileCareerFields
+            value={career}
+            onChange={setCareer}
+            disabled={saving}
+            resumeName={
+              resumeFile
+                ? resumeFile.name
+                : profile.resume_path && !resumeRemoved
+                  ? "curriculo.pdf"
+                  : null
+            }
+            onPickResume={(file) => {
+              if (
+                file.type !== "application/pdf" ||
+                file.size > RESUME_MAX_BYTES
+              ) {
+                setError("Envie um PDF de até 5 MB.");
+                return;
+              }
+              setError(null);
+              setResumeFile(file);
+              setResumeRemoved(false);
+            }}
+            onRemoveResume={() => {
+              setResumeFile(null);
+              setResumeRemoved(true);
+            }}
+          />
 
-              <div className="profile-feed">
-                <h3>
-                  {isOwn ? "Minhas publicações" : `Publicações de ${name}`}
-                </h3>
-                {posts.length === 0 ? (
-                  <div className="profile-empty">
-                    <p>
-                      {isOwn
-                        ? "Você ainda não publicou nada."
-                        : `${name} ainda não publicou nada.`}
-                    </p>
-                    {isOwn && (
-                      <Link
-                        to="/feed?action=new"
-                        className="btn btn-primary btn-sm"
-                      >
-                        Criar primeira publicação
-                      </Link>
-                    )}
-                  </div>
-                ) : (
-                  posts.map((pub) => (
-                    <article key={pub.id} className="profile-post">
-                      <div className="profile-post-meta">
-                        <span className="badge badge-sun">{pub.category}</span>
-                        <time dateTime={pub.created_at}>
-                          {formatDate(pub.created_at)}
-                        </time>
-                      </div>
-                      <h4>{pub.title}</h4>
-                      <p>{pub.content}</p>
-                      {pub.image_url && (
-                        <img src={pub.image_url} alt="" loading="lazy" />
-                      )}
-                      <footer>
-                        <Icon icon={ChatCircle} size="sm" />{" "}
-                        {pub.comments_count || 0}{" "}
-                        {pub.comments_count === 1
-                          ? "comentário"
-                          : "comentários"}
-                      </footer>
-                    </article>
-                  ))
-                )}
-              </div>
-            </div>
-          </>
-        )}
+          <div className="profile-edit-foot">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setEditing(false)}
+              disabled={saving}
+            >
+              Cancelar
+            </Button>
+            <Button type="submit" isLoading={saving}>
+              <Icon icon={FloppyDisk} size="sm" />
+              Salvar alterações
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   );
