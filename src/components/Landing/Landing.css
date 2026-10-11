@@ -89,7 +89,11 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: clamp(130px, 18vw, 230px);
+  /* Proporção do desenho (1440x260): sem teto de altura, senão em telas
+     largas a base é cortada e as gotas compridas ficam com o fim reto. */
+  height: auto;
+  aspect-ratio: 1440 / 260;
+  min-height: 130px; /* celular: mantém o tamanho e corta só as laterais */
   display: block;
   fill: var(--brown);
   pointer-events: none;
