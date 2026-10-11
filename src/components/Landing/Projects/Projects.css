@@ -1,6 +1,6 @@
-/* espaço para o gotejado do topo */
+/* espaço para o gotejado do topo: acompanha a altura do desenho (18,06vw) */
 .projects-section {
-  padding-top: clamp(9rem, 20vw, 14rem);
+  padding-top: max(9rem, calc(18.06vw + 1.5rem));
 }
 
 .projects-grid {
